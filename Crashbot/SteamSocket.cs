@@ -135,7 +135,7 @@ namespace Crashbot
                 Debug.WriteLine("SteamAPI.Init() failed!");
                 return;
             }
-            //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Connecting to Steam3...");
+            Console.WriteLine($"[{this.GetType().FullName}]: Connecting to Steam3...");
 
             this.bAborted = false;
             this.bConnected = false;
@@ -189,7 +189,7 @@ namespace Crashbot
 
             if (diff > STEAM3_TIMEOUT && !this.bConnected)
             {
-                //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Timeout connecting to Steam3.");
+                Console.WriteLine($"[{this.GetType().FullName}]: Timeout connecting to Steam3.");
                 this.OnFailedToReconnect?.Invoke();
                 Abort();
             }
@@ -207,14 +207,14 @@ namespace Crashbot
 
             if (!this.authenticatedUser)
             {
-                //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Logging anonymously into Steam3...");
+                Console.WriteLine($"[{this.GetType().FullName}]: Logging anonymously into Steam3...");
                 this.steamUser.LogOnAnonymous();
             }
             else
             {
                 if (this.logonDetails.Username != null)
                 {
-                    //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Logging '{this.logonDetails.Username}' into Steam3...");
+                    Console.WriteLine($"[{this.GetType().FullName}]: Logging '{this.logonDetails.Username}' into Steam3...");
                 }
 
                 if (this.authSession is null)
@@ -236,8 +236,8 @@ namespace Crashbot
                         }
                         catch (Exception ex)
                         {
-                            //this.Logger?.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex.Message);
-                            //this.Logger?.Error.WriteLine(ex);
+                            Console.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex.Message);
+                            Console.Error.WriteLine(ex);
                             this.Abort(false);
                             return;
                         }
@@ -262,7 +262,7 @@ namespace Crashbot
                     }
                     catch (Exception ex)
                     {
-                        //this.Logger?.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex.ToString());
+                        Console.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex.ToString());
                         this.OnFailedToReconnect?.Invoke();
                         this.Abort(false);
                         return;
@@ -279,13 +279,13 @@ namespace Crashbot
         {
             this.bDidDisconnect = true;
 
-            // this.Logger?.WriteLine(
+            // Console.WriteLine(
             //     $"[{this.GetType().FullName}]: Disconnected: bIsConnectionRecovery = {this.bIsConnectionRecovery}, UserInitiated = {disconnected.UserInitiated}, bExpectingDisconnectRemote = {this.bExpectingDisconnectRemote}");
 
             // When recovering the connection, we want to reconnect even if the remote disconnects us
             if (!this.bIsConnectionRecovery && (disconnected.UserInitiated || this.bExpectingDisconnectRemote))
             {
-                //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Disconnected from Steam");
+                Console.WriteLine($"[{this.GetType().FullName}]: Disconnected from Steam");
 
                 // Any operations outstanding need to be aborted
                 this.bAborted = true;
@@ -295,7 +295,7 @@ namespace Crashbot
             }
             else if (this.connectionBackoff >= 10)
             {
-                //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Could not connect to Steam after 10 tries");
+                Console.WriteLine($"[{this.GetType().FullName}]: Could not connect to Steam after 10 tries");
                 this.OnFailedToReconnect?.Invoke();
                 this.Abort(false);
             }
@@ -303,11 +303,11 @@ namespace Crashbot
             {
                 if (this.bConnecting)
                 {
-                    //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Connection to Steam failed. Trying again");
+                    Console.WriteLine($"[{this.GetType().FullName}]: Connection to Steam failed. Trying again");
                 }
                 else
                 {
-                    //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Lost connection to Steam. Reconnecting");
+                    Console.WriteLine($"[{this.GetType().FullName}]: Lost connection to Steam. Reconnecting");
                 }
 
                 Thread.Sleep(1000 * ++connectionBackoff);
@@ -331,16 +331,16 @@ namespace Crashbot
 
                 if (!isAccessToken)
                 {
-                    //this.Logger?.WriteLine($"[{this.GetType().FullName}]: This account is protected by Steam Guard.");
+                    Console.WriteLine($"[{this.GetType().FullName}]: This account is protected by Steam Guard.");
                 }
 
                 if (is2FA)
                 {
                     do
                     {
-                        //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Please enter your 2 factor auth code from your authenticator app");
+                        Console.WriteLine($"[{this.GetType().FullName}]: Please enter your 2 factor auth code from your authenticator app");
                         break;
-                        //this.logonDetails.TwoFactorCode = this.Logger?.ReadLine();
+                        //this.logonDetails.TwoFactorCode = Console.ReadLine();
                     } while (string.Empty == this.logonDetails.TwoFactorCode);
                 }
                 else if (isAccessToken)
@@ -349,7 +349,7 @@ namespace Crashbot
                     //this.settings.Save();
 
                     // TODO: Handle gracefully by falling back to password prompt?
-                    //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Access token was rejected.");
+                    Console.WriteLine($"[{this.GetType().FullName}]: Access token was rejected.");
                     this.OnFailedToReconnect?.Invoke();
                     this.Abort(false);
                     return;
@@ -358,13 +358,13 @@ namespace Crashbot
                 {
                     do
                     {
-                        //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Please enter the authentication code sent to your email address: ");
-                        //this.logonDetails.AuthCode = this.Logger?.ReadLine();
+                        Console.WriteLine($"[{this.GetType().FullName}]: Please enter the authentication code sent to your email address: ");
+                        //this.logonDetails.AuthCode = Console.ReadLine();
                         break;
                     } while (string.Empty == this.logonDetails.AuthCode);
                 }
 
-                //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Retrying Steam3 connection...");
+                Console.WriteLine($"[{this.GetType().FullName}]: Retrying Steam3 connection...");
                 this.Connect();
 
                 return;
@@ -372,7 +372,7 @@ namespace Crashbot
 
             if (loggedOn.Result == EResult.TryAnotherCM)
             {
-                //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Retrying Steam3 connection (TryAnotherCM)...");
+                Console.WriteLine($"[{this.GetType().FullName}]: Retrying Steam3 connection (TryAnotherCM)...");
 
                 this.Reconnect();
 
@@ -381,7 +381,7 @@ namespace Crashbot
 
             if (loggedOn.Result == EResult.ServiceUnavailable)
             {
-                //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Unable to login to Steam3: {loggedOn.Result}");
+                Console.WriteLine($"[{this.GetType().FullName}]: Unable to login to Steam3: {loggedOn.Result}");
                 this.OnFailedToReconnect?.Invoke();
                 this.Abort(false);
 
@@ -390,14 +390,14 @@ namespace Crashbot
 
             if (loggedOn.Result != EResult.OK)
             {
-                //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Unable to login to Steam3: {loggedOn.Result}");
+                Console.WriteLine($"[{this.GetType().FullName}]: Unable to login to Steam3: {loggedOn.Result}");
                 this.OnFailedToReconnect?.Invoke();
                 this.Abort();
 
                 return;
             }
 
-            //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Logged In");
+            Console.WriteLine($"[{this.GetType().FullName}]: Logged In");
 
             this.OnClientsLogin?.Invoke(loggedOn);
 
