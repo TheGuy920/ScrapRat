@@ -26,11 +26,15 @@ namespace Crashbot
 
             Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out var state);
             Console.WriteLine(state.m_bConnectionActive);
-            Console.WriteLine(state);
+            Console.WriteLine(state.m_nRemoteIP);
+            Console.WriteLine(state.m_nRemotePort);
+            Console.WriteLine(state.m_bConnecting);
+            Console.WriteLine(state.m_bUsingRelay);
+
 
             byte[] data = new byte[1024];
             Steamworks.SteamNetworking.ReadP2PPacket(data, 1, out var steamID, out var channel);
-            Console.WriteLine(data);
+            Console.WriteLine(string.Join(" ", data.Select(d => d.ToString("XX"))));
             Console.WriteLine(steamID);
             Console.WriteLine(channel);
 
