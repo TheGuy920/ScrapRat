@@ -57,24 +57,31 @@ namespace Crashbot
                     if (state.m_bConnectionActive == 1)
                     {
                         Console.WriteLine("Connection is active");
+                        Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
                     }
                     else if (state.m_eP2PSessionError != 0)
                     {
                         Console.WriteLine("Connection error: " + state.m_eP2PSessionError);
+                        Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
+
                         t.Stop();
                         Steamworks.SteamNetworking.CloseP2PChannelWithUser(cSteamID, 0);
                         Steamworks.SteamNetworking.CloseP2PSessionWithUser(cSteamID);
-                        Environment.Exit(-1);
                     }
                 };
 
                 t.Start();
 
                 Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
-                var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [], 0, Steamworks.EP2PSend.k_EP2PSendReliable);
-                Console.WriteLine(result);
+                //var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [], 0, Steamworks.EP2PSend.k_EP2PSendReliable);
+                //Console.WriteLine(result);
 
-                Steamworks.SteamNetworking.AcceptP2PSessionWithUser(cSteamID);
+                SteamNetworkingIdentity remoteIdentity = new();
+                remoteIdentity.SetSteamID(cSteamID);
+
+                Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
+
+                //Steamworks.SteamNetworking.AcceptP2PSessionWithUser(cSteamID);
 
                 Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
                 Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
