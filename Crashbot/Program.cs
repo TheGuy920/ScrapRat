@@ -2,6 +2,7 @@
 using Steamworks;
 using System.Diagnostics;
 using System.Reflection;
+using static SteamKit2.GC.Dota.Internal.CMsgDOTALeague;
 
 namespace Crashbot
 {
@@ -110,7 +111,10 @@ namespace Crashbot
                         Steamworks.SteamNetworkingSockets.RunCallbacks();
                         conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
                         Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn.Value);
+                        Console.WriteLine("Init connection...");
                         Steamworks.SteamNetworkingSockets.RunCallbacks();
+                        Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
+                        Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
                     }
                     else
                     {
