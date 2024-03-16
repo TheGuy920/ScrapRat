@@ -31,9 +31,8 @@ namespace Crashbot
                 //SteamClient.Init(387990);
 
                 //var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
-                var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
-                Console.WriteLine(sock);
-                Console.WriteLine(sock.m_SNetSocket);
+                //var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
+                //Console.WriteLine(sock);
 
                 System.Timers.Timer t = new()
                 {
@@ -62,6 +61,19 @@ namespace Crashbot
 
                 var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1, 1], 2, Steamworks.EP2PSend.k_EP2PSendReliable);
                 Console.WriteLine(result);
+
+                while (SteamNetworking.IsP2PPacketAvailable(out uint size))
+                {
+                    // allocate buffer and needed variables
+                    var buffer = new byte[size];
+
+                    // read the message into the buffer
+                    if (SteamNetworking.ReadP2PPacket(buffer, size, out uint bytesRead, out CSteamID remoteId))
+                    {
+                        string message = System.Text.Encoding.UTF8.GetString(buffer, 0, (int)bytesRead);
+                        Console.WriteLine("2 Received a message: " + message);
+                    }
+                }
             };
 
             steam.WaitForCredentials();
