@@ -93,32 +93,28 @@ namespace Crashbot
 
             Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
 
-            Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
-            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [], 0, Steamworks.EP2PSend.k_EP2PSendReliable);
-            Console.WriteLine(result);
-
-            /*
             Steamworks.SteamNetworkingSockets.RunCallbacks();
             var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
             Console.WriteLine(res);
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
-            Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
-            var conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
-            Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
-            */
-            Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
-            Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
-
+            
 
             while (true)
             {
-                Console.ReadLine();
+                string line = Console.ReadLine();
 
-                Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out state);
-                Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
+                if (line.Length > 0)
+                {
+                    Steamworks.SteamNetworkingSockets.RunCallbacks();
+                    var conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
+                    Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
+                    Steamworks.SteamNetworkingSockets.RunCallbacks();
+                }
+                else
+                {
+                    Steamworks.SteamNetworkingSockets.RunCallbacks();
+                    Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
+                    Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
+                }
             }
         }
     }
