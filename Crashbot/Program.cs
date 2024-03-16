@@ -61,21 +61,21 @@ namespace Crashbot
                     else if (state.m_eP2PSessionError != 0)
                     {
                         Console.WriteLine("Connection error: " + state.m_eP2PSessionError);
+                        t.Stop();
+                        Environment.Exit(-1);
                     }
                 };
 
                 t.Start();
 
                 Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
-                var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable, 1);
+                var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
                 Console.WriteLine(result);
 
                 Steamworks.SteamNetworking.AcceptP2PSessionWithUser(cSteamID);
 
                 Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
                 Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
-
-                
             };
 
             steam.WaitForCredentials();
