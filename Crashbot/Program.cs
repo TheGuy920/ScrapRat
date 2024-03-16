@@ -52,6 +52,16 @@ namespace Crashbot
                             Console.WriteLine("Received a message: " + message);
                         }
                     }
+
+                    Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
+                    if (state.m_bConnectionActive == 1)
+                    {
+                        Console.WriteLine("Connection is active");
+                    }
+                    else if (state.m_eP2PSessionError != 0)
+                    {
+                        Console.WriteLine("Connection error: " + state.m_eP2PSessionError);
+                    }
                 };
 
                 t.Start();
