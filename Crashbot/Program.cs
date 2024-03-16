@@ -103,7 +103,8 @@ namespace Crashbot
             {
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out status);
-                Thread.Sleep(100);
+                Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
+                Thread.Sleep(300);
             }
 
             Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
