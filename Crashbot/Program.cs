@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Steamworks;
+using System.Reflection;
 
 namespace Crashbot
 {
@@ -19,8 +20,14 @@ namespace Crashbot
 
             socket.Connect();
 
-            var result = socket.ConnectToTarget(new SteamKit2.SteamID(76561198299556567));
+            var steamuser = new SteamKit2.SteamID(76561198299556567);
+            CSteamID cSteamID = new(steamuser.AccountID);
+            Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
+
+            var result = socket.ConnectToTarget(steamuser);
             Console.WriteLine(result);
+
+            //socket.ReadIncomming();
         }
     }
 }

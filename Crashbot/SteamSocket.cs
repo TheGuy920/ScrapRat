@@ -91,7 +91,7 @@ namespace Crashbot
         {
             return Steamworks.SteamNetworking.SendP2PPacket(
                 new Steamworks.CSteamID() { m_SteamID = target },
-                [255, 255, 255, 255, 255, 255, 255, 255],
+                [1],
                 9845, Steamworks.EP2PSend.k_EP2PSendReliable);
         }
 
@@ -416,6 +416,11 @@ namespace Crashbot
         private void SessionTokenCallback(SteamUser.SessionTokenCallback sessionToken)
         {
             this.credentials.SessionToken = sessionToken.SessionToken;
+        }
+
+        public void ReadIncomming()
+        {
+            
         }
     }
 }
