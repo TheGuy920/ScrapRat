@@ -59,7 +59,7 @@ namespace Crashbot
                 };
 
                 t.Start();
-                Task.Delay(600).Wait();
+                Task.Delay(900).Wait();
 
                 var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
                 Console.WriteLine(result);
