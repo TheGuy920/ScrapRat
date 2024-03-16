@@ -94,47 +94,34 @@ namespace Crashbot
 
             Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
 
-            SteamAPI.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
             var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
+            Steamworks.SteamNetworkingSockets.RunCallbacks();
             Console.WriteLine(res);
+
+            Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
+            while (status.m_eAvail != ESteamNetworkingAvailability.k_ESteamNetworkingAvailability_Current)
+            {
+                Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out status);
+                Thread.Sleep(100);
+            }
+
+            Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
 
             bool state = false;
             HSteamNetConnection? conn = null;
+
+            Steamworks.SteamNetworkingSockets.RunCallbacks();
+
+            conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
+            Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn.Value);
+            Console.WriteLine("Init connection...");
+            
+            Steamworks.SteamNetworkingSockets.RunCallbacks();
+
             while (true)
             {
-                string line = Console.ReadLine();
-
-                if (line.Length > 0 || state)
-                {
-                    if (!state)
-                    {
-                        SteamAPI.RunCallbacks();
-                        Steamworks.SteamNetworkingSockets.RunCallbacks();
-                        conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
-                        Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn.Value);
-                        Console.WriteLine("Init connection...");
-                        SteamAPI.RunCallbacks();
-                        Steamworks.SteamNetworkingSockets.RunCallbacks();
-                        Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
-                        Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-                        state = true;
-                    }
-                    else
-                    {
-                        SteamAPI.RunCallbacks();
-                        Steamworks.SteamNetworkingSockets.RunCallbacks();
-                        Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
-                        Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-                    }
-                }
-                else
-                {
-                    SteamAPI.RunCallbacks();
-                    Steamworks.SteamNetworkingSockets.RunCallbacks();
-                    Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
-                    Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
-                }
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
+                Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
             }
         }
     }
