@@ -22,7 +22,6 @@ namespace Crashbot
             });
 
             steam.Connect();
-            Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
 
             steam.OnClientsLogin += _ =>
             {
@@ -57,11 +56,16 @@ namespace Crashbot
 
                 t.Start();
 
+                Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
                 var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable, 1);
                 Console.WriteLine(result);
 
+                Steamworks.SteamNetworking.AcceptP2PSessionWithUser(cSteamID);
+
                 Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
                 Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
+
+                
             };
 
             steam.WaitForCredentials();
