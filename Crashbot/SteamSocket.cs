@@ -89,7 +89,7 @@ namespace Crashbot
         {
             Steamworks.SteamNetworking.SendP2PPacket(
                 new Steamworks.CSteamID() { m_SteamID = target },
-                [255, 20, 255, 255, 255, 255, 255, 255],
+                [255, 255, 255, 255, 255, 255, 255, 255],
                 9845, Steamworks.EP2PSend.k_EP2PSendReliable);
         }
 

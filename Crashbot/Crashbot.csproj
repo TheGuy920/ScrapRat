@@ -9,4 +9,23 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SteamKit2" Version="2.5.0" />
+    <PackageReference Include="Steamworks.NET" Version="20.2.0" />
+  </ItemGroup>
+	
+	
+
+  <ItemGroup>
+    <None Update="Assets\priv.key">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\priv.password">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="steam_appid.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
