@@ -1,4 +1,6 @@
 ﻿using Steamworks;
+using System.Diagnostics;
+using System.Drawing;
 using System.Reflection;
 
 namespace Crashbot
@@ -21,25 +23,21 @@ namespace Crashbot
 
             var steamuser = new SteamKit2.SteamID(76561198299556567);
             CSteamID cSteamID = new(steamuser.AccountID);
-            /*
-            var socket = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
-            Console.WriteLine(socket.m_SNetSocket);
+            var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
+            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
 
-            Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out var state);
-            Console.WriteLine(state.m_bConnectionActive);
-            Console.WriteLine(state.m_nRemoteIP);
-            Console.WriteLine(state.m_nRemotePort);
-            Console.WriteLine(state.m_bConnecting);
-            Console.WriteLine(state.m_bUsingRelay);
+            while (SteamNetworking.IsP2PPacketAvailable(out uint size))
+            {
+                // allocate buffer and needed variables
+                var buffer = new byte[size];
 
-
-            byte[] data = new byte[1024];
-            Steamworks.SteamNetworking.ReadP2PPacket(data, 1, out var steamID, out var channel);
-            Console.WriteLine(string.Join(" ", data.Select(d => d.ToString("x2").ToUpperInvariant())));
-            Console.WriteLine(steamID);
-            Console.WriteLine(channel);
-            */
-            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1, 1, 255, 255, 255, 255], 6, Steamworks.EP2PSend.k_EP2PSendReliable);
+                // read the message into the buffer
+                if (SteamNetworking.ReadP2PPacket(buffer, size, out uint bytesRead, out CSteamID remoteId))
+                {
+                    string message = System.Text.Encoding.UTF8.GetString(buffer, 0, (int)bytesRead);
+                    Console.WriteLine("Received a message: " + message);
+                }
+            }
 
             Console.WriteLine(result);
 
