@@ -53,7 +53,7 @@ namespace Crashbot
                             Console.WriteLine("Received a message: " + message);
                         }
                     }
-
+                    /*
                     Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
                     if (state.m_bConnectionActive == 1)
                     {
@@ -66,9 +66,9 @@ namespace Crashbot
                         Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
 
                         t.Stop();
-                        Steamworks.SteamNetworking.CloseP2PChannelWithUser(cSteamID, 0);
-                        Steamworks.SteamNetworking.CloseP2PSessionWithUser(cSteamID);
-                    }
+                        //Steamworks.SteamNetworking.CloseP2PChannelWithUser(cSteamID, 0);
+                        //Steamworks.SteamNetworking.CloseP2PSessionWithUser(cSteamID);
+                    }*/
                 };
 
                 t.Start();
@@ -80,13 +80,16 @@ namespace Crashbot
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(cSteamID);
 
-                Steamworks.SteamNetworkingSockets.InitAuthentication();
+                var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
+                Console.WriteLine(res);
+                Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
+                Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
                 var conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
                 Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-                Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
-                Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
+                //Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
+                //Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
             };
 
             steam.WaitForCredentials();
