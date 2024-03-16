@@ -1,9 +1,14 @@
-﻿namespace Crashbot
+﻿using System.Reflection;
+
+namespace Crashbot
 {
     internal class Program
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Crashbot");
+            Console.WriteLine(Environment.CurrentDirectory);
+            Environment.CurrentDirectory = Assembly.GetExecutingAssembly().Location;
             Console.WriteLine(Environment.CurrentDirectory);
 
             var socket = new SteamSocket(new SteamKit2.SteamUser.LogOnDetails()
