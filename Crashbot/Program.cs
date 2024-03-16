@@ -139,7 +139,7 @@ namespace Crashbot
             Console.WriteLine("Connected!");
 
             Console.ReadLine();
-            Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "Bye!", false);
+            Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
         }
     }
 }
