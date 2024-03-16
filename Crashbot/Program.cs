@@ -24,6 +24,16 @@ namespace Crashbot
             var socket = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
             Console.WriteLine(socket.m_SNetSocket);
 
+            Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out var state);
+            Console.WriteLine(state.m_bConnectionActive);
+            Console.WriteLine(state);
+
+            byte[] data = new byte[1024];
+            Steamworks.SteamNetworking.ReadP2PPacket(data, 1, out var steamID, out var channel);
+            Console.WriteLine(data);
+            Console.WriteLine(steamID);
+            Console.WriteLine(channel);
+
             var result = Steamworks.SteamNetworking.SendP2PPacket(
                 new Steamworks.CSteamID() { m_SteamID = steamuser.AccountID },
                 [1],
