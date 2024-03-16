@@ -59,7 +59,7 @@ namespace Crashbot
                 t.Start();
 
 
-                Console.WriteLine(result);
+                //Console.WriteLine(result);
             };
 
             steam.WaitForCredentials();
