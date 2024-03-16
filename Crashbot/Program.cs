@@ -39,6 +39,7 @@ namespace Crashbot
                 t.Elapsed += (s, e) =>
                 {
                     SteamAPI.RunCallbacks();
+                    Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                     while (SteamNetworking.IsP2PPacketAvailable(out uint size))
                     {
@@ -72,16 +73,17 @@ namespace Crashbot
 
                 t.Start();
 
-                Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
+                //Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
                 //var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [], 0, Steamworks.EP2PSend.k_EP2PSendReliable);
                 //Console.WriteLine(result);
 
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(cSteamID);
 
-                Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
-
-                //Steamworks.SteamNetworking.AcceptP2PSessionWithUser(cSteamID);
+                Steamworks.SteamNetworkingSockets.InitAuthentication();
+                var conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
+                Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                 Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
                 Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
