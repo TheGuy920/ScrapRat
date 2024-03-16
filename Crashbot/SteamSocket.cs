@@ -149,6 +149,14 @@ namespace Crashbot
             this.steamClient.Connect();
         }
 
+        public void WaitForCredentials()
+        {
+            if (this.credentials.IsValid || this.bAborted)
+                return;
+
+            this.WaitUntilCallback(() => { }, () => { return this.credentials.IsValid; });
+        }
+
         private void Abort(bool sendLogOff = true)
         {
             this.OnFailedToReconnect?.Invoke();
@@ -181,7 +189,7 @@ namespace Crashbot
             this.Connect();
         }
 
-        private void WaitForCallbacks()
+        public void WaitForCallbacks()
         {
             this.callbacks.RunWaitCallbacks(TimeSpan.FromSeconds(1));
 
