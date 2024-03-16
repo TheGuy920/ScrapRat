@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Steamworks;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Crashbot
@@ -34,6 +35,12 @@ namespace Crashbot
 
             steam.OnClientsLogin += _ =>
             {
+                if (!Steamworks.SteamAPI.Init())
+                {
+                    Debug.WriteLine("SteamAPI.Init() failed!");
+                    return;
+                }
+
                 var steamuser = new SteamKit2.SteamID(76561198299556567);
                 CSteamID cSteamID = new(steamuser.ConvertToUInt64());
                 Console.WriteLine($"Logged in + [{cSteamID.m_SteamID}]");
