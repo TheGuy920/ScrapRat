@@ -118,7 +118,7 @@ namespace Crashbot
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-            conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
+            conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 0, []);
             Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn.Value);
             Console.WriteLine("Init connection...");
 
