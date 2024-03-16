@@ -34,7 +34,7 @@ namespace Crashbot
 
             byte[] data = new byte[1024];
             Steamworks.SteamNetworking.ReadP2PPacket(data, 1, out var steamID, out var channel);
-            Console.WriteLine(string.Join(" ", data.Select(d => d.ToString("xx").ToUpperInvariant())));
+            Console.WriteLine(string.Join(" ", data.Select(d => d.ToString("x2").ToUpperInvariant())));
             Console.WriteLine(steamID);
             Console.WriteLine(channel);
 
