@@ -24,8 +24,7 @@ namespace Crashbot
             var steamuser = new SteamKit2.SteamID(76561198299556567);
             CSteamID cSteamID = new(steamuser.AccountID);
             var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
-            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
-
+            
             while (SteamNetworking.IsP2PPacketAvailable(out uint size))
             {
                 // allocate buffer and needed variables
@@ -38,6 +37,8 @@ namespace Crashbot
                     Console.WriteLine("Received a message: " + message);
                 }
             }
+
+            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
 
             Console.WriteLine(result);
 
