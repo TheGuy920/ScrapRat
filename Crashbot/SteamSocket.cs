@@ -83,7 +83,7 @@ namespace Crashbot
             this.SubscribeAll();
 
             this.LoginTokens = [];
-
+            /*
             string GameName = "Scrap Mechanic";
             DirectoryInfo SteamDirectory = new(Path.Combine(Environment.GetEnvironmentVariable("HOME")!, ".steam/steam"));
             DirectoryInfo GameDirectory = null;
@@ -112,7 +112,7 @@ namespace Crashbot
 
                 if (File.Exists(steamApiDll) && !File.Exists(destSteamApiDll))
                     File.Copy(steamApiDll, destSteamApiDll, false);
-            }
+            }*/
         }
 
         public void ConnectToTarget(SteamID target)
