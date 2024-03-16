@@ -47,7 +47,6 @@ namespace Crashbot
 
                 t.Elapsed += (s, e) =>
                 {
-                    SteamAPI.RunCallbacks();
                     Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                     while (SteamNetworking.IsP2PPacketAvailable(out uint size))
