@@ -61,6 +61,8 @@ namespace Crashbot
                 Console.WriteLine(result);
             };
 
+            steam.WaitForCredentials();
+
             while (true)
             {
                 Console.ReadLine();
