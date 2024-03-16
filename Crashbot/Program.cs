@@ -88,17 +88,17 @@ namespace Crashbot
 
             t.Start();*/
 
-            //Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
-            //var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [], 0, Steamworks.EP2PSend.k_EP2PSendReliable);
-            //Console.WriteLine(result);
-
             SteamNetworkingIdentity remoteIdentity = new();
             remoteIdentity.SetSteamID(cSteamID);
 
             Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
 
+            Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
+            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [], 0, Steamworks.EP2PSend.k_EP2PSendReliable);
+            Console.WriteLine(result);
+
+            /*
             Steamworks.SteamNetworkingSockets.RunCallbacks();
-                
             var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
             Console.WriteLine(res);
             Steamworks.SteamNetworkingSockets.RunCallbacks();
@@ -108,7 +108,7 @@ namespace Crashbot
             var conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
             Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
             Steamworks.SteamNetworkingSockets.RunCallbacks();
-
+            */
             Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
             Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
 
@@ -116,6 +116,9 @@ namespace Crashbot
             while (true)
             {
                 Console.ReadLine();
+
+                Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
+                Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
             }
         }
     }
