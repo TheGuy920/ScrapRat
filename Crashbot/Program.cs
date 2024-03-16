@@ -88,11 +88,13 @@ namespace Crashbot
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(cSteamID);
 
-               
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
                 var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
                 Console.WriteLine(res);
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
                 Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
                 var conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
                 Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
