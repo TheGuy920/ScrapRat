@@ -117,7 +117,7 @@ namespace Crashbot
             {
                 Console.ReadLine();
 
-                Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
+                Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out state);
                 Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
             }
         }
