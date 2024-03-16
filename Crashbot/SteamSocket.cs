@@ -279,8 +279,8 @@ namespace Crashbot
         {
             this.bDidDisconnect = true;
 
-            // Console.WriteLine(
-            //     $"[{this.GetType().FullName}]: Disconnected: bIsConnectionRecovery = {this.bIsConnectionRecovery}, UserInitiated = {disconnected.UserInitiated}, bExpectingDisconnectRemote = {this.bExpectingDisconnectRemote}");
+            Console.WriteLine(
+                 $"[{this.GetType().FullName}]: Disconnected: bIsConnectionRecovery = {this.bIsConnectionRecovery}, UserInitiated = {disconnected.UserInitiated}, bExpectingDisconnectRemote = {this.bExpectingDisconnectRemote}");
 
             // When recovering the connection, we want to reconnect even if the remote disconnects us
             if (!this.bIsConnectionRecovery && (disconnected.UserInitiated || this.bExpectingDisconnectRemote))
