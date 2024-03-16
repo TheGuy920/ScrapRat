@@ -1,4 +1,5 @@
-﻿using SteamKit2;
+﻿using smSteamUtility;
+using SteamKit2;
 using SteamKit2.Authentication;
 using System.Diagnostics;
 
@@ -58,6 +59,8 @@ namespace Crashbot
         public delegate void FailedToReconnect();
         public event FailedToReconnect? OnFailedToReconnect;
 
+        private Steam steamconnection;
+
         public SteamSocket(SteamUser.LogOnDetails details)
         {
             this.logonDetails = details;
@@ -83,6 +86,8 @@ namespace Crashbot
             this.SubscribeAll();
 
             this.LoginTokens = [];
+
+            this.steamconnection = new Steam("Scrap Mechanic", 387990);
         }
 
         public void ConnectToTarget(SteamID target)
@@ -136,13 +141,6 @@ namespace Crashbot
 
         public void Connect()
         {
-            if (!Steamworks.SteamAPI.Init())
-            {
-                Debug.WriteLine("SteamAPI.Init() failed!");
-                return;
-            }
-            //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Connecting to Steam3...");
-
             this.bAborted = false;
             this.bConnected = false;
             this.bConnecting = true;
