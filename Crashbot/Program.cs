@@ -23,14 +23,15 @@ namespace Crashbot
 
             steam.OnClientsLogin += _ =>
             {
-                Console.WriteLine("Logged in");
-
-
                 var steamuser = new SteamKit2.SteamID(76561198299556567);
+                Console.WriteLine($"Logged in + [{steamuser.AccountID}]");
+
                 CSteamID cSteamID = new(steamuser.AccountID);
 
-                var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
-                //var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
+                //SteamClient.Init(387990);
+
+                //var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
+                var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
 
                 System.Timers.Timer t = new()
                 {
