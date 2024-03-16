@@ -8,7 +8,7 @@ namespace Crashbot
         {
             Console.WriteLine("Crashbot");
             Console.WriteLine(Environment.CurrentDirectory);
-            Environment.CurrentDirectory = Assembly.GetExecutingAssembly().Location;
+            Environment.CurrentDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
             Console.WriteLine(Environment.CurrentDirectory);
 
             var socket = new SteamSocket(new SteamKit2.SteamUser.LogOnDetails()
