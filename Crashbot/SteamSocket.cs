@@ -141,6 +141,13 @@ namespace Crashbot
 
         public void Connect()
         {
+            if (!this.steamconnection.ConnectToSteam())
+            {
+                Debug.WriteLine("SteamAPI.Init() failed!");
+                return;
+            }
+            //this.Logger?.WriteLine($"[{this.GetType().FullName}]: Connecting to Steam3...");
+
             this.bAborted = false;
             this.bConnected = false;
             this.bConnecting = true;
