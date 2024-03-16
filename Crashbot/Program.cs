@@ -96,11 +96,13 @@ namespace Crashbot
 
             var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
+            Steamworks.SteamAPI.RunCallbacks();
             Console.WriteLine(res);
 
             Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
             while (status.m_eAvail != ESteamNetworkingAvailability.k_ESteamNetworkingAvailability_Current)
             {
+                Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out status);
                 Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
