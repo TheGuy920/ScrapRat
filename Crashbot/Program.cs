@@ -106,8 +106,7 @@ namespace Crashbot
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                 Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out status);
-                Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
-                Thread.Sleep(300);
+                Thread.Sleep(100);
             }
 
             Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
@@ -125,15 +124,19 @@ namespace Crashbot
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-            while (true)
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
+            while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
-                Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-                Console.ReadLine();
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+
+                Thread.Sleep(100);
             }
+
+            Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
+            Console.WriteLine("Connected!");
         }
     }
 }
