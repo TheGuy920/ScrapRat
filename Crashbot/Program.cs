@@ -137,6 +137,9 @@ namespace Crashbot
 
             Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
             Console.WriteLine("Connected!");
+
+            Console.ReadLine();
+            Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "Bye!", false);
         }
     }
 }
