@@ -27,14 +27,8 @@ namespace Crashbot
             steam.OnClientsLogin += _ =>
             {
                 var steamuser = new SteamKit2.SteamID(76561198299556567);
-                Console.WriteLine($"Logged in + [{steamuser.ConvertToUInt64()}]");
-
                 CSteamID cSteamID = new(steamuser.ConvertToUInt64());
-
-                //SteamClient.Init(387990);
-
-                //var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
-                
+                Console.WriteLine($"Logged in + [{cSteamID.m_SteamID}]");
 
                 System.Timers.Timer t = new()
                 {
@@ -64,7 +58,7 @@ namespace Crashbot
                 //var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1, 1], 2, Steamworks.EP2PSend.k_EP2PSendReliable);
                 //Console.WriteLine(result);
 
-                var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
+                var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 0, 999, true);
                 Console.WriteLine(sock);
 
                 Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
