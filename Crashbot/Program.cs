@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Steamworks;
-using System.Diagnostics;
-using System.Drawing;
 using System.Reflection;
-using System.Text.Json.Serialization;
 
 namespace Crashbot
 {
@@ -22,6 +19,18 @@ namespace Crashbot
             });
 
             steam.Connect();
+
+            System.Timers.Timer mainloop = new()
+            {
+                Interval = 100,
+                AutoReset = true,
+                Enabled = true
+            };
+            mainloop.Elapsed += (s, e) =>
+            {
+                SteamAPI.RunCallbacks();
+            };
+            mainloop.Start();
 
             steam.OnClientsLogin += _ =>
             {
@@ -80,6 +89,7 @@ namespace Crashbot
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(cSteamID);
 
+               
                 var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
                 Console.WriteLine(res);
                 Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
