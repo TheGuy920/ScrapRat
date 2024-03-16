@@ -1,7 +1,9 @@
-﻿using Steamworks;
+﻿using Newtonsoft.Json;
+using Steamworks;
 using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace Crashbot
 {
@@ -18,6 +20,9 @@ namespace Crashbot
                 Username = "tgo_inc",
                 Password = CredentialManager.GetPassword(),
             });
+
+            Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
+            
 
             steam.Connect();
 
@@ -64,18 +69,9 @@ namespace Crashbot
                 var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
                 Console.WriteLine(sock);
 
-                while (SteamNetworking.IsP2PPacketAvailable(out uint size))
-                {
-                    // allocate buffer and needed variables
-                    var buffer = new byte[size];
+                Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
+                Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented)); 
 
-                    // read the message into the buffer
-                    if (SteamNetworking.ReadP2PPacket(buffer, size, out uint bytesRead, out CSteamID remoteId))
-                    {
-                        string message = System.Text.Encoding.UTF8.GetString(buffer, 0, (int)bytesRead);
-                        Console.WriteLine("2 Received a message: " + message);
-                    }
-                }
             };
 
             steam.WaitForCredentials();
