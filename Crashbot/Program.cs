@@ -8,23 +8,27 @@ namespace Crashbot
         static void Main(string[] args)
         {
             Console.WriteLine("Crashbot");
-            Console.WriteLine(Environment.CurrentDirectory);
             Environment.CurrentDirectory = Directory.GetParent(Assembly.GetExecutingAssembly()?.Location ?? AppContext.BaseDirectory)!.FullName;
             Console.WriteLine(Environment.CurrentDirectory);
 
-            var socket = new SteamSocket(new SteamKit2.SteamUser.LogOnDetails()
+            var steam = new SteamSocket(new SteamKit2.SteamUser.LogOnDetails()
             {
                 Username = "tgo_inc",
                 Password = CredentialManager.GetPassword(),
             });
 
-            socket.Connect();
+            steam.Connect();
 
             var steamuser = new SteamKit2.SteamID(76561198299556567);
             CSteamID cSteamID = new(steamuser.AccountID);
-            Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
+            var socket = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
+            Console.WriteLine(socket.m_SNetSocket);
 
-            var result = socket.ConnectToTarget(steamuser);
+            var result = Steamworks.SteamNetworking.SendP2PPacket(
+                new Steamworks.CSteamID() { m_SteamID = steamuser.AccountID },
+                [1],
+                9845, Steamworks.EP2PSend.k_EP2PSendReliable);
+
             Console.WriteLine(result);
 
             //socket.ReadIncomming();

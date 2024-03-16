@@ -87,14 +87,6 @@ namespace Crashbot
             File.WriteAllText("steam_appid.txt", "387990");
         }
 
-        public bool ConnectToTarget(SteamID target)
-        {
-            return Steamworks.SteamNetworking.SendP2PPacket(
-                new Steamworks.CSteamID() { m_SteamID = target },
-                [1],
-                9845, Steamworks.EP2PSend.k_EP2PSendReliable);
-        }
-
         private void SubscribeAll()
         {
             this.callbacks.Subscribe<SteamClient.ConnectedCallback>(ConnectedCallback);
@@ -416,11 +408,6 @@ namespace Crashbot
         private void SessionTokenCallback(SteamUser.SessionTokenCallback sessionToken)
         {
             this.credentials.SessionToken = sessionToken.SessionToken;
-        }
-
-        public void ReadIncomming()
-        {
-            
         }
     }
 }
