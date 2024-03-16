@@ -27,7 +27,7 @@ namespace Crashbot
             var result = Steamworks.SteamNetworking.SendP2PPacket(
                 new Steamworks.CSteamID() { m_SteamID = steamuser.AccountID },
                 [1],
-                9845, Steamworks.EP2PSend.k_EP2PSendReliable);
+                1, Steamworks.EP2PSend.k_EP2PSendReliable);
 
             Console.WriteLine(result);
 
