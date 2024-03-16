@@ -21,43 +21,50 @@ namespace Crashbot
 
             steam.Connect();
 
-            var steamuser = new SteamKit2.SteamID(76561198299556567);
-            CSteamID cSteamID = new(steamuser.AccountID);
-
-            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
-            //var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
-
-            System.Timers.Timer t = new()
+            steam.OnClientsLogin += _ =>
             {
-                Enabled = true,
-                AutoReset = true,
-                Interval = 50
-            };
-            t.Elapsed += (s, e) =>
-            {
-                while (SteamNetworking.IsP2PPacketAvailable(out uint size))
+                Console.WriteLine("Logged in");
+
+
+                var steamuser = new SteamKit2.SteamID(76561198299556567);
+                CSteamID cSteamID = new(steamuser.AccountID);
+
+                var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
+                //var sock = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
+
+                System.Timers.Timer t = new()
                 {
-                    // allocate buffer and needed variables
-                    var buffer = new byte[size];
+                    Enabled = true,
+                    AutoReset = true,
+                    Interval = 50
+                };
 
-                    // read the message into the buffer
-                    if (SteamNetworking.ReadP2PPacket(buffer, size, out uint bytesRead, out CSteamID remoteId))
+                t.Elapsed += (s, e) =>
+                {
+                    while (SteamNetworking.IsP2PPacketAvailable(out uint size))
                     {
-                        string message = System.Text.Encoding.UTF8.GetString(buffer, 0, (int)bytesRead);
-                        Console.WriteLine("Received a message: " + message);
+                        // allocate buffer and needed variables
+                        var buffer = new byte[size];
+
+                        // read the message into the buffer
+                        if (SteamNetworking.ReadP2PPacket(buffer, size, out uint bytesRead, out CSteamID remoteId))
+                        {
+                            string message = System.Text.Encoding.UTF8.GetString(buffer, 0, (int)bytesRead);
+                            Console.WriteLine("Received a message: " + message);
+                        }
                     }
-                }
+                };
+
+                t.Start();
+
+
+                Console.WriteLine(result);
             };
-            t.Start();
-
-
-            Console.WriteLine(result);
 
             while (true)
             {
                 Console.ReadLine();
             }
-            //socket.ReadIncomming();
         }
     }
 }
