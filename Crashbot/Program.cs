@@ -35,6 +35,9 @@ namespace Crashbot
                 Console.WriteLine(sock);
                 Console.WriteLine(sock.m_SNetSocket);
 
+                var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
+                Console.WriteLine(result);
+
                 System.Timers.Timer t = new()
                 {
                     Enabled = true,
