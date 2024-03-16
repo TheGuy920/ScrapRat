@@ -21,10 +21,8 @@ namespace Crashbot
                 Password = CredentialManager.GetPassword(),
             });
 
-            Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
-            
-
             steam.Connect();
+            Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
 
             steam.OnClientsLogin += _ =>
             {
