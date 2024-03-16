@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="SteamKit2" Version="2.5.0" />
+    <PackageReference Include="SteamUtility" Version="1.0.5.9" />
     <PackageReference Include="Steamworks.NET" Version="20.2.0" />
   </ItemGroup>
 	
@@ -29,15 +30,13 @@
     <None Update="runtimes\linux-x64\lib\netstandard2.1\Steamworks.NET.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="runtimes\linux-x64\lib\netstandard2.1\steam_appid.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+	  
     <None Update="steam_appid.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-	
-	
-
-  <ItemGroup>
-    <Folder Include="runtimes\linux-x64\lib\netstandard2.1\" />
   </ItemGroup>
 
 </Project>
