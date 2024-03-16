@@ -62,6 +62,8 @@ namespace Crashbot
                     {
                         Console.WriteLine("Connection error: " + state.m_eP2PSessionError);
                         t.Stop();
+                        Steamworks.SteamNetworking.CloseP2PChannelWithUser(cSteamID, 0);
+                        Steamworks.SteamNetworking.CloseP2PSessionWithUser(cSteamID);
                         Environment.Exit(-1);
                     }
                 };
@@ -69,7 +71,7 @@ namespace Crashbot
                 t.Start();
 
                 Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
-                var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1], 1, Steamworks.EP2PSend.k_EP2PSendReliable);
+                var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [], 0, Steamworks.EP2PSend.k_EP2PSendReliable);
                 Console.WriteLine(result);
 
                 Steamworks.SteamNetworking.AcceptP2PSessionWithUser(cSteamID);
