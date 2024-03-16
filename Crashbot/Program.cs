@@ -88,7 +88,10 @@ namespace Crashbot
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(cSteamID);
 
+                Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
+
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
+                
                 var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
                 Console.WriteLine(res);
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
