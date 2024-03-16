@@ -21,6 +21,7 @@ namespace Crashbot
 
             var steamuser = new SteamKit2.SteamID(76561198299556567);
             CSteamID cSteamID = new(steamuser.AccountID);
+            /*
             var socket = Steamworks.SteamNetworking.CreateP2PConnectionSocket(cSteamID, 1, 0, true);
             Console.WriteLine(socket.m_SNetSocket);
 
@@ -37,11 +38,8 @@ namespace Crashbot
             Console.WriteLine(string.Join(" ", data.Select(d => d.ToString("x2").ToUpperInvariant())));
             Console.WriteLine(steamID);
             Console.WriteLine(channel);
-
-            var result = Steamworks.SteamNetworking.SendP2PPacket(
-                new Steamworks.CSteamID() { m_SteamID = steamuser.AccountID },
-                [1],
-                1, Steamworks.EP2PSend.k_EP2PSendReliable);
+            */
+            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID,[1],1, Steamworks.EP2PSend.k_EP2PSendReliable);
 
             Console.WriteLine(result);
 
