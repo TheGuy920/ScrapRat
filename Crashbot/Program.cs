@@ -104,6 +104,7 @@ namespace Crashbot
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
+
                 Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out status);
                 Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
                 Thread.Sleep(300);
@@ -114,18 +115,24 @@ namespace Crashbot
             bool state = false;
             HSteamNetConnection? conn = null;
 
+            Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
             conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 1, 0, []);
             Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn.Value);
             Console.WriteLine("Init connection...");
-            
+
+            Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
             while (true)
             {
+                Steamworks.SteamAPI.RunCallbacks();
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
+
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
                 Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
+                Console.ReadLine();
             }
         }
     }
