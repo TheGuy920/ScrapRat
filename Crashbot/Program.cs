@@ -12,6 +12,7 @@ namespace Crashbot
             Console.WriteLine("Crashbot");
             Environment.CurrentDirectory = Directory.GetParent(Assembly.GetExecutingAssembly()?.Location ?? AppContext.BaseDirectory)!.FullName;
             Console.WriteLine(Environment.CurrentDirectory);
+            File.WriteAllText("steam_appid.txt", "387990");
 
             System.Timers.Timer mainloop = new()
             {
