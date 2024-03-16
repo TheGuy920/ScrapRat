@@ -83,6 +83,36 @@ namespace Crashbot
             this.SubscribeAll();
 
             this.LoginTokens = [];
+
+            string GameName = "Scrap Mechanic";
+            DirectoryInfo SteamDirectory = new(Path.Combine(Environment.GetEnvironmentVariable("HOME")!, ".steam/steam"));
+            DirectoryInfo GameDirectory = null;
+
+            if (!Directory.Exists(Path.Combine(SteamDirectory!.FullName, "steamapps", "common", GameName)))
+            {
+                string[] fileContents = File.ReadAllText(
+                    Path.Combine(SteamDirectory.FullName, "steamapps", "libraryfolders.vdf"))
+                    .Split("\"");
+
+                foreach (string path in fileContents)
+                {
+                    string smPath = Path.Combine(path, "steamapps", "common", GameName);
+                    if (Directory.Exists(smPath))
+                    {
+                        GameDirectory = new DirectoryInfo(smPath.Replace("\\\\", "\\"));
+                        break;
+                    }
+                }
+
+                string steamApiDll = new DirectoryInfo(GameDirectory!.FullName)
+                    .GetFiles("steam_api64.dll", SearchOption.AllDirectories)
+                    .First().FullName;
+
+                string destSteamApiDll = Path.Combine(Environment.CurrentDirectory, "steam_api64.dll");
+
+                if (File.Exists(steamApiDll) && !File.Exists(destSteamApiDll))
+                    File.Copy(steamApiDll, destSteamApiDll, false);
+            }
         }
 
         public void ConnectToTarget(SteamID target)
