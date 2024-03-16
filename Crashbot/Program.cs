@@ -39,7 +39,7 @@ namespace Crashbot
             Console.WriteLine(steamID);
             Console.WriteLine(channel);
             */
-            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1, 1], 2, Steamworks.EP2PSend.k_EP2PSendReliable);
+            var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [1, 1, 255, 255, 255, 255], 6, Steamworks.EP2PSend.k_EP2PSendReliable);
 
             Console.WriteLine(result);
 
