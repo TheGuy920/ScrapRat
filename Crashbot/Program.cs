@@ -101,6 +101,7 @@ namespace Crashbot
             Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
             while (status.m_eAvail != ESteamNetworkingAvailability.k_ESteamNetworkingAvailability_Current)
             {
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out status);
                 Thread.Sleep(100);
             }
