@@ -87,9 +87,9 @@ namespace Crashbot
             File.WriteAllText("steam_appid.txt", "387990");
         }
 
-        public void ConnectToTarget(SteamID target)
+        public bool ConnectToTarget(SteamID target)
         {
-            Steamworks.SteamNetworking.SendP2PPacket(
+            return Steamworks.SteamNetworking.SendP2PPacket(
                 new Steamworks.CSteamID() { m_SteamID = target },
                 [255, 255, 255, 255, 255, 255, 255, 255],
                 9845, Steamworks.EP2PSend.k_EP2PSendReliable);

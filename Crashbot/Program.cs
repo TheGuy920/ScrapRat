@@ -19,7 +19,8 @@ namespace Crashbot
 
             socket.Connect();
 
-            socket.ConnectToTarget(new SteamKit2.SteamID(76561198299556567));
+            var result = socket.ConnectToTarget(new SteamKit2.SteamID(76561198299556567));
+            Console.WriteLine(result);
         }
     }
 }
