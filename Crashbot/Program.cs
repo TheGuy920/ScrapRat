@@ -40,11 +40,17 @@ namespace Crashbot
                     Debug.WriteLine("SteamAPI.Init() failed!");
                     return;
                 }
+                else
+                {
+                    Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
+                    Console.WriteLine("SteamID: " + Steamworks.SteamUser.GetSteamID());
+
+                }
 
                 var steamuser = new SteamKit2.SteamID(76561198299556567);
                 CSteamID cSteamID = new(steamuser.ConvertToUInt64());
                 Console.WriteLine($"Logged in + [{cSteamID.m_SteamID}]");
-
+                /*
                 System.Timers.Timer t = new()
                 {
                     Enabled = true,
@@ -68,7 +74,7 @@ namespace Crashbot
                             Console.WriteLine("Received a message: " + message);
                         }
                     }
-                    /*
+                    
                     Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
                     if (state.m_bConnectionActive == 1)
                     {
@@ -83,10 +89,10 @@ namespace Crashbot
                         t.Stop();
                         //Steamworks.SteamNetworking.CloseP2PChannelWithUser(cSteamID, 0);
                         //Steamworks.SteamNetworking.CloseP2PSessionWithUser(cSteamID);
-                    }*/
+                    }
                 };
 
-                t.Start();
+                t.Start();*/
 
                 //Steamworks.SteamNetworking.AllowP2PPacketRelay(true);
                 //var result = Steamworks.SteamNetworking.SendP2PPacket(cSteamID, [], 0, Steamworks.EP2PSend.k_EP2PSendReliable);
