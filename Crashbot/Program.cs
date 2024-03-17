@@ -86,23 +86,38 @@ namespace Crashbot
                 }
             }
 
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
+            Console.Write("Press any key to continue...");
+            Console.ReadKey();
+
+            // confirm crashed
+            const int desiredTimeoutValue = 300;
+            // Create an array of connection parameters (config values)
+            SteamNetworkingConfigValue_t[] connectionParams = new SteamNetworkingConfigValue_t[1];
+
+            // Set the timeout option
+            connectionParams[0].m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial;
+            connectionParams[0].m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = desiredTimeoutValue };
+
+            // Start the connection attempt
+            SteamNetworkingIdentity remoteIdentity2 = new();
+            remoteIdentity2.SetSteamID(cSteamID);
+            var conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity2, 0, 1, connectionParams);
+
             while (string.IsNullOrWhiteSpace(Console.ReadLine().Trim()))
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
-                Steamworks.SteamNetworkingSockets.GetDetailedConnectionStatus(conn, out string status, 255 * 255);
-                
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out var info2);
+                Steamworks.SteamNetworkingSockets.GetDetailedConnectionStatus(conn2, out string status, 255 * 255);
+
                 Console.WriteLine(status);
-                Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-            }            
+                Console.WriteLine(JsonConvert.SerializeObject(info2, Formatting.Indented));
+            }
 
             bool crashed = false;
             Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash");
             
-
             goto start;
         }
     }
