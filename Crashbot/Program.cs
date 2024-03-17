@@ -51,7 +51,8 @@ namespace Crashbot
             ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
             
             var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
-            Console.WriteLine("Connected!");
+            if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
+                Console.WriteLine("Connected!");
 
             int maxMessages = 1;
             while (true)
@@ -82,21 +83,8 @@ namespace Crashbot
             Console.ReadKey();
 
             var (conn2, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
-            Console.WriteLine("Connected!");
 
-            while (string.IsNullOrWhiteSpace(Console.ReadLine().Trim()))
-            {
-                Steamworks.SteamAPI.RunCallbacks();
-                Steamworks.SteamNetworkingSockets.RunCallbacks();
-
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info2);
-                Steamworks.SteamNetworkingSockets.GetDetailedConnectionStatus(conn2, out string status, 255 * 255);
-
-                Console.WriteLine(status);
-                Console.WriteLine(JsonConvert.SerializeObject(info2, Formatting.Indented));
-            }
-
-            bool crashed = false;
+            bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
             Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash");
 
             goto start;
