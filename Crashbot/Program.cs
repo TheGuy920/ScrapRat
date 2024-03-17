@@ -73,9 +73,10 @@ namespace Crashbot
 
                 // Initiate the connection
                 var t = new CSteamID(target);
-                Steamworks.SteamFriends.RequestUserInformation(t, true);
-                
-                Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetFriendPersonaName(t)}'");
+                var res = Steamworks.SteamFriends.RequestUserInformation(t, true);
+                Steamworks.SteamAPI.RunCallbacks();
+
+                Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetFriendPersonaName(t)}' = {res}");
 
                 int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
                 Console.WriteLine($"[{DateTime.Now}] RichPresence Keys: {keycount}");
