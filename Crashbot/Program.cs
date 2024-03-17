@@ -137,7 +137,9 @@ namespace Crashbot
             }
 
             Console.WriteLine(info.m_eState);
-            Console.WriteLine(info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected ? "Failed to Crash" : "Successfully Crashed!");
+            bool crashed = info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected ||
+                info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None;
+            Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
 
             Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
 
