@@ -162,6 +162,8 @@ namespace Crashbot
 
         private static ulong VerifyHostSteamid(CSteamID user)
         {
+
+        FindRichPresnse:
             string oldRP = "";
             int oldKeyCount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(user);
             if (oldKeyCount > 0)
@@ -201,6 +203,9 @@ namespace Crashbot
             }
 
             string connect = Steamworks.SteamFriends.GetFriendRichPresence(user, "connect").Trim();
+            if (string.IsNullOrEmpty(connect))
+                goto FindRichPresnse;
+
             string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
             ulong host_steamid = ulong.Parse(host_id);
 
