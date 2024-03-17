@@ -164,13 +164,12 @@ namespace Crashbot
 
         private static ulong VerifyHostSteamid(CSteamID user)
         {
-            Steamworks.SteamFriends.GetFriendRelationship(user);
-            Console.WriteLine($"[{DateTime.Now}] {user}");
+            Console.WriteLine($"[{DateTime.Now}] {Steamworks.SteamFriends.GetFriendRelationship(user)}");
 
             if (!Steamworks.SteamFriends.GetFriendGamePlayed(user, out FriendGameInfo_t _))
             {
                 Console.WriteLine($"[{DateTime.Now}] Unable to access game stat information");
-                return 0;
+                return user.m_SteamID;
             }
 
         FindRichPresnse:
