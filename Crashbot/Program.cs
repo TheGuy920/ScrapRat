@@ -49,7 +49,7 @@ namespace Crashbot
             Console.WriteLine("Test: 76561198299556567");
 
         start:
-
+            Console.WriteLine(Environment.NewLine);
             Console.Write("Enter target SteamID64: ");
             ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
 
@@ -89,7 +89,6 @@ namespace Crashbot
 
             bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
             Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash");
-            Console.WriteLine(Environment.NewLine);
 
             goto start;
         }
