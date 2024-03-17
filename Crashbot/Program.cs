@@ -88,8 +88,8 @@ namespace Crashbot
                 }
             }
 
-            Steamworks.SteamAPI.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+            Console.WriteLine(info.m_eState);
             Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
 
             // confirm crashed
