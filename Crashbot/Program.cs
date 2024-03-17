@@ -76,7 +76,24 @@ namespace Crashbot
                 var res = Steamworks.SteamFriends.RequestUserInformation(t, true);
                 Steamworks.SteamAPI.RunCallbacks();
 
-                Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetPlayerNickname(t)}' = {res}");
+                string targetName = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                if (targetName.Equals("unknown"))
+                {
+                    bool wait = true;
+                    Callback<PersonaStateChange_t>.Create(persona =>
+                    {
+                        wait = false;
+                    });
+
+                    while (wait)
+                    {
+                        Steamworks.SteamAPI.RunCallbacks();
+                        Thread.Sleep(10);
+                    }
+
+                    targetName = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                }
+                Console.WriteLine($"[{DateTime.Now}] Targeting '{targetName}' = {res}");
 
                 int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
                 Console.WriteLine($"[{DateTime.Now}] RichPresence Keys: {keycount}");
@@ -94,8 +111,26 @@ namespace Crashbot
                 {
                     var friend = Steamworks.SteamFriends.GetCoplayFriend(i);
                     Console.WriteLine($"[{DateTime.Now}] Coplay Friend: {friend.m_SteamID}");
+
                     Steamworks.SteamFriends.RequestUserInformation(friend, true);
-                    string name = Steamworks.SteamFriends.GetPlayerNickname(t);
+                    string name = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                    if (name.Equals("unknown"))
+                    {
+                        bool wait = true;
+                        Callback<PersonaStateChange_t>.Create(persona =>
+                        {
+                            wait = false;
+                        });
+
+                        while (wait)
+                        {
+                            Steamworks.SteamAPI.RunCallbacks();
+                            Thread.Sleep(10);
+                        }
+
+                        name = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                    }
+                    
                     Console.WriteLine($"[{DateTime.Now}] Coplay Friend: {name}");
                 }
 
