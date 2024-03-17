@@ -1,10 +1,5 @@
-﻿using Newtonsoft.Json;
-using Steamworks;
-using System.Diagnostics;
+﻿using Steamworks;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using static SteamKit2.GC.Dota.Internal.CMsgDOTALeague;
 
 namespace Crashbot
 {
