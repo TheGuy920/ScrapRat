@@ -111,8 +111,9 @@ namespace Crashbot
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
-            while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting
+            while ((info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting
                 || info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
+                && info.m_nFlags == 0)
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
