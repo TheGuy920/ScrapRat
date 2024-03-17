@@ -48,13 +48,12 @@ namespace Crashbot
 
             Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             Console.Write("Enter target SteamID64: ");
-
             ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
+            
             var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
-
             Console.WriteLine("Connected!");
-            int maxMessages = 1;
 
+            int maxMessages = 1;
             while (true)
             {
                 IntPtr[] messagePointers = new IntPtr[maxMessages];
@@ -82,7 +81,8 @@ namespace Crashbot
             Console.Write("Press any key to continue...");
             Console.ReadKey();
 
-            var (conn2, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);            
+            var (conn2, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
+            Console.WriteLine("Connected!");
 
             while (string.IsNullOrWhiteSpace(Console.ReadLine().Trim()))
             {
