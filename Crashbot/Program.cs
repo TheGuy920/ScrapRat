@@ -118,6 +118,7 @@ namespace Crashbot
             Steamworks.SteamNetworkingSockets.RunCallbacks();
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out Steamworks.SteamNetConnectionInfo_t info);
 
+            int timeout = 200;
             while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
             {
                 Steamworks.SteamAPI.RunCallbacks();
@@ -125,6 +126,10 @@ namespace Crashbot
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
 
                 Thread.Sleep(10);
+                timeout--;
+
+                if (timeout <= 0)
+                    break;
             }
 
             return (conn, info);
