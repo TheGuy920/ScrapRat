@@ -160,35 +160,58 @@ namespace Crashbot
             return (targetName, res);
         }
 
-        private static ulong VerifyHostSteamid(CSteamID t)
+        private static ulong VerifyHostSteamid(CSteamID user)
         {
-            Steamworks.SteamFriends.RequestFriendRichPresence(t);
-            Steamworks.SteamAPI.RunCallbacks();
-
-            int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
-            int timeout = 100;
-            while (keycount == 0 && timeout-- > 0)
+            string oldRP = "";
+            int oldKeyCount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(user);
+            if (oldKeyCount > 0)
             {
-                Steamworks.SteamFriends.RequestFriendRichPresence(t);
-                Steamworks.SteamAPI.RunCallbacks();
-                keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
-                Thread.Sleep(10);
-            }
-
-            if (timeout > 0)
-            {
-                string connect = Steamworks.SteamFriends.GetFriendRichPresence(t, "connect").Trim();
-                string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
-                ulong host_steamid = ulong.Parse(host_id);
-
-                if (t.m_SteamID != host_steamid)
+                for (int i = 0; i < oldKeyCount; i++)
                 {
-                    Console.WriteLine($"[{DateTime.Now}] Target is not host. Targeting: {host_steamid}");
-                    return host_steamid;
+                    string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(user, i);
+                    string value = Steamworks.SteamFriends.GetFriendRichPresence(user, key);
+                    oldRP += $"{key}={value}\n";
                 }
             }
 
-            return t.m_SteamID;
+            Steamworks.SteamFriends.RequestFriendRichPresence(user);
+            Steamworks.SteamAPI.RunCallbacks();
+
+            int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(user);
+            while (keycount == 0)
+            {
+                Steamworks.SteamFriends.RequestFriendRichPresence(user);
+                Steamworks.SteamAPI.RunCallbacks();
+                keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(user);
+
+                string currentRP = "";
+                for (int i = 0; i < keycount; i++)
+                {
+                    string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(user, i);
+                    string value = Steamworks.SteamFriends.GetFriendRichPresence(user, key);
+                    currentRP += $"{key}={value}\n";
+                }
+
+                if (keycount > 0 && (oldKeyCount == 0 || currentRP != oldRP))
+                {
+                    Console.WriteLine($"[{DateTime.Now}] Rich Presence Changed Detected");
+                    break;
+                }
+
+                Thread.Sleep(10);
+            }
+
+            string connect = Steamworks.SteamFriends.GetFriendRichPresence(user, "connect").Trim();
+            string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+            ulong host_steamid = ulong.Parse(host_id);
+
+            if (user.m_SteamID != host_steamid)
+            {
+                Console.WriteLine($"[{DateTime.Now}] Target is not host. Targeting: {host_steamid}");
+                return host_steamid;
+            }
+
+            return user.m_SteamID;
         }
 
         private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait(ulong target, SteamNetworkingConfigValue_t[] options)
