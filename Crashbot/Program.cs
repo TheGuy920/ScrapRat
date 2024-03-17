@@ -98,7 +98,7 @@ namespace Crashbot
             var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
             Steamworks.SteamAPI.RunCallbacks();
-            Console.WriteLine(res);
+            // Console.WriteLine(res);
 
             Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
             while (status.m_eAvail != ESteamNetworkingAvailability.k_ESteamNetworkingAvailability_Current)
@@ -110,7 +110,8 @@ namespace Crashbot
                 Thread.Sleep(100);
             }
 
-            Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
+            // Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
+            Console.WriteLine("m_eAvail: " + status.m_eAvail);
 
             bool state = false;
             HSteamNetConnection? conn = null;
@@ -136,7 +137,8 @@ namespace Crashbot
                 Thread.Sleep(100);
             }
 
-            Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
+            // Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
+            Console.WriteLine("m_eState: " + info.m_eState);
             Console.WriteLine("Connected!");
 
             //Console.ReadLine();
@@ -162,6 +164,7 @@ namespace Crashbot
                     }
                     */
                     Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn.Value, 0, 0, 0, out long messageID);
+                    Console.WriteLine("Crashing client...");
                 }
                 else
                 {
