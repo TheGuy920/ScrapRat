@@ -157,6 +157,8 @@ namespace Crashbot
 
                 targetName = Steamworks.SteamFriends.GetFriendPersonaName(steamid);
             }
+
+            res = Steamworks.SteamFriends.RequestUserInformation(steamid, true);
             return (targetName, res);
         }
 
