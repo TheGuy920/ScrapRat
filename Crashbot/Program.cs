@@ -99,6 +99,14 @@ namespace Crashbot
                 Steamworks.SteamAPI.RunCallbacks();
 
                 int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
+                int timeout = 100;
+                while (keycount == 0 && timeout-- > 0)
+                {
+                    Steamworks.SteamFriends.RequestFriendRichPresence(t);
+                    Steamworks.SteamAPI.RunCallbacks();
+                    keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
+                    Thread.Sleep(10);
+                }
                 Console.WriteLine($"[{DateTime.Now}] RichPresence Keys: {keycount}");
 
                 for (int i = 0; i < keycount; i++)
