@@ -116,7 +116,10 @@ namespace Crashbot
                     Console.WriteLine($"[{DateTime.Now}] RichPresence: {key} = {value}");
                 }
 
-                Console.WriteLine($"[{DateTime.Now}] {Steamworks.SteamFriends.GetFriendRelationship(t)}");
+                string connect = Steamworks.SteamFriends.GetFriendRichPresence(t, "connect");
+                string host_id = connect.Split('-').First().Split(' ').Last();
+                ulong host_steamid = ulong.Parse(host_id);
+                Console.WriteLine($"[{DateTime.Now}] host_steamid: {host_steamid} : {target == host_steamid}");
 
                 int fcount = Steamworks.SteamFriends.GetCoplayFriendCount();
                 Console.WriteLine($"[{DateTime.Now}] Coplay Friends: {fcount}");
