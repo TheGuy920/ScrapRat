@@ -91,6 +91,9 @@ namespace Crashbot
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
+                Steamworks.SteamNetworkingSockets.GetDetailedConnectionStatus(conn, out string status, 1);
+                if (timeout % 10 == 0)
+                    Console.WriteLine(status);
                 Thread.Sleep(10);
 
                 timeout--;
