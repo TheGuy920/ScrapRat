@@ -107,6 +107,9 @@ namespace Crashbot
                 }
             }
 
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+            Console.WriteLine(info.m_eState);
+
             // confirm crashed
             const int desiredTimeoutValue = 300;
             // Create an array of connection parameters (config values)
@@ -115,8 +118,6 @@ namespace Crashbot
             // Set the timeout option
             connectionParams[0].m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial;
             connectionParams[0].m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = desiredTimeoutValue };
-
-            // The desiredTimeoutValue is in milliseconds. Set this to the timeout you want.
 
             // Start the connection attempt
             conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, connectionParams);
@@ -135,8 +136,7 @@ namespace Crashbot
             }
 
             Console.WriteLine(info.m_eState);
-            bool crashed = info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected ||
-                info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None;
+            bool crashed = info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
             Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
 
             Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
