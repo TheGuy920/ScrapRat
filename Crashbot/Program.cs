@@ -93,6 +93,10 @@ namespace Crashbot
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
             Console.WriteLine(info.m_eState);
             Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
+            Thread.Sleep(10);
+
+            Steamworks.SteamAPI.RunCallbacks();
+            Steamworks.SteamNetworkingSockets.RunCallbacks();
 
             // confirm crashed
             const int desiredTimeoutValue = 300;
@@ -104,7 +108,9 @@ namespace Crashbot
             connectionParams[0].m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = desiredTimeoutValue };
 
             // Start the connection attempt
-            var conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, connectionParams);
+            SteamNetworkingIdentity remoteIdentity2 = new();
+            remoteIdentity2.SetSteamID(cSteamID);
+            var conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity2, 0, 1, connectionParams);
 
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
