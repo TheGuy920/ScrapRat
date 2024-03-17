@@ -76,7 +76,7 @@ namespace Crashbot
                 var res = Steamworks.SteamFriends.RequestUserInformation(t, true);
                 Steamworks.SteamAPI.RunCallbacks();
 
-                Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetFriendPersonaName(t)}' = {res}");
+                Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetPlayerNickname(t)}' = {res}");
 
                 int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
                 Console.WriteLine($"[{DateTime.Now}] RichPresence Keys: {keycount}");
