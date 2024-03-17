@@ -71,6 +71,17 @@ namespace Crashbot
                 ulong target = ulong.Parse(steamid);
 
                 // Initiate the connection
+                Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetFriendPersonaName(new CSteamID(target))}'");
+
+                var t = new CSteamID(target);
+                int count = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
+                for (int i = 0; i < count; i++)
+                {
+                    string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(t, i);
+                    string value = Steamworks.SteamFriends.GetFriendRichPresence(t, key);
+                    Console.WriteLine($"[{DateTime.Now}] RichPresence: {key} = {value}");
+                }
+
                 Console.WriteLine($"[{DateTime.Now}] Connecting...");
                 var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
 
