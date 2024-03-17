@@ -95,6 +95,9 @@ namespace Crashbot
                 }
                 Console.WriteLine($"[{DateTime.Now}] Targeting '{targetName}' = {res}");
 
+                Steamworks.SteamFriends.RequestFriendRichPresence(t);
+                Steamworks.SteamAPI.RunCallbacks();
+
                 int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
                 Console.WriteLine($"[{DateTime.Now}] RichPresence Keys: {keycount}");
 
@@ -104,6 +107,8 @@ namespace Crashbot
                     string value = Steamworks.SteamFriends.GetFriendRichPresence(t, key);
                     Console.WriteLine($"[{DateTime.Now}] RichPresence: {key} = {value}");
                 }
+
+                Console.WriteLine($"[{DateTime.Now}] {Steamworks.SteamFriends.GetFriendRelationship(t)}");
 
                 int fcount = Steamworks.SteamFriends.GetCoplayFriendCount();
                 Console.WriteLine($"[{DateTime.Now}] Coplay Friends: {fcount}");
