@@ -31,21 +31,30 @@ namespace Crashbot
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Crashbot");
             Environment.CurrentDirectory = Directory.GetParent(Assembly.GetExecutingAssembly()?.Location ?? AppContext.BaseDirectory)!.FullName;
-            Console.WriteLine(Environment.CurrentDirectory);
             File.WriteAllText("steam_appid.txt", "387990");
 
-            var proc = Process.GetCurrentProcess();
-            if (!Steamworks.SteamAPI.Init())
+            bool steamInitialized = false;
+            TextWriter originalOutput = Console.Out;
+            try
             {
-                proc.StandardOutput.DiscardBufferedData();
+                using var writer = new StringWriter();
+                Console.SetOut(writer);
+                steamInitialized = Steamworks.SteamAPI.Init();
+            }
+            finally
+            {
+                // Restore original output stream
+                Console.SetOut(originalOutput);
+            }
+
+            if (!steamInitialized)
+            {
                 Console.WriteLine("SteamAPI.Init() failed!");
                 return;
             }
             else
             {
-                proc.StandardOutput.DiscardBufferedData();
                 Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             }
 
