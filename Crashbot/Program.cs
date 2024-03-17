@@ -67,11 +67,12 @@ namespace Crashbot
                 {
                     Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
                     Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
-                    Console.WriteLine("Crashing client...");
 
                     Steamworks.SteamAPI.RunCallbacks();
                     Steamworks.SteamNetworkingSockets.RunCallbacks();
-                    Thread.Sleep(100);
+
+                    Console.WriteLine("Crashing client...");
+                    Thread.Sleep(300);
 
                     Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, string.Empty, false);
                     break;
@@ -82,8 +83,8 @@ namespace Crashbot
                 }
             }
 
-            Console.Write("Press any key to continue...");
-            Console.ReadKey();
+            // Console.Write("Press any key to continue...");
+            // Console.ReadKey();
 
             var (conn2, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
 
