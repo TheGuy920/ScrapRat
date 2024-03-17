@@ -34,32 +34,19 @@ namespace Crashbot
             Environment.CurrentDirectory = Directory.GetParent(Assembly.GetExecutingAssembly()?.Location ?? AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
 
-            bool steamInitialized = false;
-            TextWriter originalOutput = Console.Out;
-            try
+            if (!Steamworks.SteamAPI.Init())
             {
-                using var writer = new StringWriter();
-                Console.SetOut(writer);
-                steamInitialized = Steamworks.SteamAPI.Init();
-            }
-            finally
-            {
-                // Restore original output stream
-                Console.SetOut(originalOutput);
-            }
-
-            if (!steamInitialized)
-            {
+                Console.Clear();
                 Console.WriteLine("SteamAPI.Init() failed!");
                 return;
             }
             else
             {
+                Console.Clear();
                 Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             }
 
-            Console.WriteLine("76561198299556567");
-
+            Console.WriteLine("Test: 76561198299556567");
 
         start:
 
