@@ -73,6 +73,8 @@ namespace Crashbot
 
                 // Initiate the connection
                 var t = new CSteamID(target);
+                Steamworks.SteamFriends.RequestUserInformation(t, true);
+                
                 Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetFriendPersonaName(t)}'");
 
                 int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
@@ -83,6 +85,17 @@ namespace Crashbot
                     string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(t, i);
                     string value = Steamworks.SteamFriends.GetFriendRichPresence(t, key);
                     Console.WriteLine($"[{DateTime.Now}] RichPresence: {key} = {value}");
+                }
+
+                int fcount = Steamworks.SteamFriends.GetCoplayFriendCount();
+                Console.WriteLine($"[{DateTime.Now}] Coplay Friends: {fcount}");
+                for (int i = 0; i < fcount; i++)
+                {
+                    var friend = Steamworks.SteamFriends.GetCoplayFriend(i);
+                    Console.WriteLine($"[{DateTime.Now}] Coplay Friend: {friend.m_SteamID}");
+                    Steamworks.SteamFriends.RequestUserInformation(friend, true);
+                    string name = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                    Console.WriteLine($"[{DateTime.Now}] Coplay Friend: {name}");
                 }
 
                 Console.WriteLine($"[{DateTime.Now}] Connecting...");
