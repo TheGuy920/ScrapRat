@@ -37,16 +37,15 @@ namespace Crashbot
             File.WriteAllText("steam_appid.txt", "387990");
 
             var proc = Process.GetCurrentProcess();
-            proc.CancelOutputRead();
             if (!Steamworks.SteamAPI.Init())
             {
-                proc.BeginOutputReadLine();
+                proc.StandardOutput.DiscardBufferedData();
                 Console.WriteLine("SteamAPI.Init() failed!");
                 return;
             }
             else
             {
-                proc.BeginOutputReadLine();
+                proc.StandardOutput.DiscardBufferedData();
                 Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             }
 
