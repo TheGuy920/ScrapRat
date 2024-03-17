@@ -2,6 +2,7 @@
 using Steamworks;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using static SteamKit2.GC.Dota.Internal.CMsgDOTALeague;
 
 namespace Crashbot
@@ -138,8 +139,37 @@ namespace Crashbot
             Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
             Console.WriteLine("Connected!");
 
-            Console.ReadLine();
-            Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
+            //Console.ReadLine();
+            int maxMessages = 1;
+            while (true)
+            {
+                IntPtr[] messagePointers = new IntPtr[maxMessages];
+                int messageCount = Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(conn.Value, messagePointers, maxMessages);
+
+                if (messageCount > 0)
+                {
+                    /*
+                    for (int i = 0; i < messageCount; i++)
+                    {
+                        // Marshaling the message pointer to a SteamNetworkingMessage_t structure
+                        SteamNetworkingMessage_t netMessage = Marshal.PtrToStructure<SteamNetworkingMessage_t>(messagePointers[i]);
+
+                        // Process the message
+                        ProcessMessage(netMessage);
+
+                        // Don't forget to release the message
+                        netMessage.Release();
+                    }
+                    */
+                    Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn.Value, 0, 0, 0, out long messageID);
+                }
+                else
+                {
+                    // No messages received - you can add a sleep here to reduce CPU usage
+                    Thread.Sleep(10); // Sleep for 10 milliseconds
+                }
+            }
+            //Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
         }
     }
 }
