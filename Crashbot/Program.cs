@@ -165,12 +165,6 @@ namespace Crashbot
                 Thread.Sleep(10);
             }
 
-            for (int i = 0; i < keycount; i++)
-            {
-                string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(t, i);
-                string value = Steamworks.SteamFriends.GetFriendRichPresence(t, key);
-            }
-
             if (timeout > 0)
             {
                 string connect = Steamworks.SteamFriends.GetFriendRichPresence(t, "connect").Trim();
