@@ -72,9 +72,12 @@ namespace Crashbot
                     Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
                     Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
                     Console.WriteLine("Crashing client...");
+
                     Steamworks.SteamAPI.RunCallbacks();
                     Steamworks.SteamNetworkingSockets.RunCallbacks();
-                    Thread.Sleep(50);
+                    Thread.Sleep(100);
+
+                    Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, string.Empty, false);
                     break;
                 }
                 else
@@ -83,30 +86,22 @@ namespace Crashbot
                 }
             }
 
-            int timeout = 100;
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
-            while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
+            while (string.IsNullOrWhiteSpace(Console.ReadLine().Trim()))
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
                 Steamworks.SteamNetworkingSockets.GetDetailedConnectionStatus(conn, out string status, 255 * 255);
-                if (timeout % 10 == 0)
-                    Console.WriteLine(status);
-                Thread.Sleep(10);
+                
+                Console.WriteLine(status);
+                Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
+            }            
 
-                timeout--;
-                if (timeout <= 0)
-                    break;
-            }
-
-            Console.WriteLine(timeout);
-            Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-
-            bool crashed = timeout <= 0;
-            Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
-            Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
+            bool crashed = false;
+            Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash");
+            
 
             goto start;
         }
