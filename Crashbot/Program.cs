@@ -90,7 +90,7 @@ namespace Crashbot
                 Console.WriteLine($"[{DateTime.Now}] {(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private")}");
 
                 // Forever Crash
-                int count = 0;
+                int count = 1;
                 while (crashed)
                 {
                     var (conn_x, _) = ConnectAndWait(target, PersistantTimeoutOptions);
