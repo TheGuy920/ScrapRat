@@ -95,7 +95,7 @@ namespace Crashbot
                     var friend = Steamworks.SteamFriends.GetCoplayFriend(i);
                     Console.WriteLine($"[{DateTime.Now}] Coplay Friend: {friend.m_SteamID}");
                     Steamworks.SteamFriends.RequestUserInformation(friend, true);
-                    string name = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                    string name = Steamworks.SteamFriends.GetPlayerNickname(t);
                     Console.WriteLine($"[{DateTime.Now}] Coplay Friend: {name}");
                 }
 
