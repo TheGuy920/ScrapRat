@@ -44,10 +44,12 @@ namespace Crashbot
 
             Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
 
+            /*
             var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
             Steamworks.SteamAPI.RunCallbacks();
 
+            Thread.Sleep(10);
             Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
             while (status.m_eAvail != ESteamNetworkingAvailability.k_ESteamNetworkingAvailability_Current)
             {
@@ -59,6 +61,7 @@ namespace Crashbot
             }
 
             Console.WriteLine("m_eAvail: " + status.m_eAvail);
+            */
 
             bool state = false;
             HSteamNetConnection? conn = null;
@@ -72,6 +75,7 @@ namespace Crashbot
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
+            Thread.Sleep(10);
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
             while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
             {
@@ -120,6 +124,7 @@ namespace Crashbot
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
+            Thread.Sleep(10);
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
             while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
             {
@@ -127,6 +132,7 @@ namespace Crashbot
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+                Thread.Sleep(10);
             }
 
             Console.WriteLine(info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected ? "Failed to Crash" : "Successfully Crashed!");
