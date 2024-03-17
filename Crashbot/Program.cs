@@ -90,8 +90,6 @@ namespace Crashbot
                 }
             }
 
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
-            Console.WriteLine(info.m_eState);
             Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
             Thread.Sleep(10);
 
@@ -116,29 +114,27 @@ namespace Crashbot
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
             Thread.Sleep(10);
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info);
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out var info2);
 
-            SteamNetConnectionRealTimeStatus_t status = new();
-            SteamNetConnectionRealTimeLaneStatus_t laneStatus = new();
+            while (info2.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
+            {
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info2);
+                Thread.Sleep(10);
+            }
 
-            while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting
-                || info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
+            while (info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting
+                || info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-                
-                Steamworks.SteamNetworkingSockets.GetConnectionRealTimeStatus(conn2, ref status, 1, ref laneStatus);
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info);
-                Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-
-                Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
-                Console.WriteLine(JsonConvert.SerializeObject(laneStatus, Formatting.Indented));
-                Thread.Sleep(500);
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info2);
+                Console.WriteLine(JsonConvert.SerializeObject(info2, Formatting.Indented));
+                Thread.Sleep(10);
             }
 
-            Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-            bool crashed = info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
+            Console.WriteLine(JsonConvert.SerializeObject(info2, Formatting.Indented));
+            bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
             Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
 
             Steamworks.SteamNetworkingSockets.CloseConnection(conn2, 0, "\0", false);
