@@ -74,8 +74,8 @@ namespace Crashbot
                 Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetFriendPersonaName(new CSteamID(target))}'");
 
                 var t = new CSteamID(target);
-                int count = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
-                for (int i = 0; i < count; i++)
+                int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
+                for (int i = 0; i < keycount; i++)
                 {
                     string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(t, i);
                     string value = Steamworks.SteamFriends.GetFriendRichPresence(t, key);
