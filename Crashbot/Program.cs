@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using Newtonsoft.Json.Linq;
+using Steamworks;
 using System.Reflection;
 
 namespace Crashbot
@@ -71,10 +72,12 @@ namespace Crashbot
                 ulong target = ulong.Parse(steamid);
 
                 // Initiate the connection
-                Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetFriendPersonaName(new CSteamID(target))}'");
-
                 var t = new CSteamID(target);
+                Console.WriteLine($"[{DateTime.Now}] Targeting '{Steamworks.SteamFriends.GetFriendPersonaName(t)}'");
+
                 int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
+                Console.WriteLine($"[{DateTime.Now}] RichPresence Keys: {keycount}");
+
                 for (int i = 0; i < keycount; i++)
                 {
                     string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(t, i);
