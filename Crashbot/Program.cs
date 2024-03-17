@@ -10,7 +10,7 @@ namespace Crashbot
             {
                 m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutConnected,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 300 }
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 500 }
             },
             new SteamNetworkingConfigValue_t
             {
@@ -29,6 +29,7 @@ namespace Crashbot
             }
         ];
 
+        /*
         private static readonly SteamNetworkingConfigValue_t[] PersistantTimeoutOptions = [
             new SteamNetworkingConfigValue_t
             {
@@ -37,6 +38,7 @@ namespace Crashbot
                 m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = Int32.MaxValue }
             }
         ];
+        */
 
         static void Main(string[] args)
         {
@@ -99,7 +101,7 @@ namespace Crashbot
                 int count = 1;
                 while (crashed)
                 {
-                    var (conn_x, _) = ConnectAndWait(target, PersistantTimeoutOptions);
+                    var (conn_x, _) = ConnectAndWait(target, LongTimeoutOptions);
                     Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
                     Thread.Sleep(500);
                     Steamworks.SteamNetworkingSockets.CloseConnection(conn_x, 0, string.Empty, false);
