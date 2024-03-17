@@ -16,7 +16,7 @@ namespace Crashbot
             {
                 m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 5000 }
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = Int32.MaxValue }
             }
         ];
 
