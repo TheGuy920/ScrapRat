@@ -49,19 +49,19 @@ namespace Crashbot
             options[0].m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutConnected; // or another relevant option
             options[0].m_val.m_int32 = 100;
 
-            HSteamNetConnection? conn = SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, options);
+            HSteamNetConnection conn = SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, options);
             Console.WriteLine("Init connection...");
 
             Thread.Sleep(10);
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out Steamworks.SteamNetConnectionInfo_t info);
 
             while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
 
                 Thread.Sleep(10);
             }
@@ -72,12 +72,12 @@ namespace Crashbot
             while (true)
             {
                 IntPtr[] messagePointers = new IntPtr[maxMessages];
-                int messageCount = Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(conn.Value, messagePointers, maxMessages);
+                int messageCount = Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, messagePointers, maxMessages);
 
                 if (messageCount > 0)
                 {
-                    Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn.Value, 0, 0, 0, out long _);
-                    Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn.Value);
+                    Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
+                    Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
                     Console.WriteLine("Crashing client...");
                     Steamworks.SteamAPI.RunCallbacks();
                     Steamworks.SteamNetworkingSockets.RunCallbacks();
@@ -90,9 +90,9 @@ namespace Crashbot
                 }
             }
 
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
             Console.WriteLine(info.m_eState);
-            Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
+            Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
 
             // confirm crashed
             const int desiredTimeoutValue = 300;
@@ -104,12 +104,13 @@ namespace Crashbot
             connectionParams[0].m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = desiredTimeoutValue };
 
             // Start the connection attempt
-            conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, connectionParams);
+            var conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, connectionParams);
 
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+            Thread.Sleep(10);
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info);
 
             SteamNetConnectionRealTimeStatus_t status = new();
             SteamNetConnectionRealTimeLaneStatus_t laneStatus = new();
@@ -121,8 +122,8 @@ namespace Crashbot
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                 
-                Steamworks.SteamNetworkingSockets.GetConnectionRealTimeStatus(conn.Value, ref status, 1, ref laneStatus);
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+                Steamworks.SteamNetworkingSockets.GetConnectionRealTimeStatus(conn2, ref status, 1, ref laneStatus);
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info);
                 Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
 
                 Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
@@ -134,7 +135,7 @@ namespace Crashbot
             bool crashed = info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
             Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
 
-            Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
+            Steamworks.SteamNetworkingSockets.CloseConnection(conn2, 0, "\0", false);
 
             goto start;
         }
