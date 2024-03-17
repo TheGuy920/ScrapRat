@@ -92,6 +92,7 @@ namespace Crashbot
 
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
                 Thread.Sleep(10);
+
                 timeout--;
                 if (timeout <= 0)
                     break;
@@ -100,7 +101,7 @@ namespace Crashbot
             Console.WriteLine(timeout);
             Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
 
-            bool crashed = timeout > 0;
+            bool crashed = timeout <= 0;
             Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
             Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
 
