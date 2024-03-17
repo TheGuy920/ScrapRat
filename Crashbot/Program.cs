@@ -90,7 +90,7 @@ namespace Crashbot
             Console.ReadKey();
 
             // confirm crashed
-            const int desiredTimeoutValue = 300;
+            const int desiredTimeoutValue = 800;
             // Create an array of connection parameters (config values)
             SteamNetworkingConfigValue_t[] connectionParams = new SteamNetworkingConfigValue_t[1];
 
