@@ -107,47 +107,24 @@ namespace Crashbot
                     keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
                     Thread.Sleep(10);
                 }
-                Console.WriteLine($"[{DateTime.Now}] RichPresence Keys: {keycount}");
 
                 for (int i = 0; i < keycount; i++)
                 {
                     string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(t, i);
                     string value = Steamworks.SteamFriends.GetFriendRichPresence(t, key);
-                    Console.WriteLine($"[{DateTime.Now}] RichPresence: {key} = {value}");
                 }
 
-                string connect = Steamworks.SteamFriends.GetFriendRichPresence(t, "connect").Trim();
-                string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
-                ulong host_steamid = ulong.Parse(host_id);
-                Console.WriteLine($"[{DateTime.Now}] host_steamid: {host_steamid} : {target == host_steamid}");
-
-                int fcount = Steamworks.SteamFriends.GetCoplayFriendCount();
-                Console.WriteLine($"[{DateTime.Now}] Coplay Friends: {fcount}");
-                for (int i = 0; i < fcount; i++)
+                if (timeout > 0)
                 {
-                    var friend = Steamworks.SteamFriends.GetCoplayFriend(i);
-                    Console.WriteLine($"[{DateTime.Now}] Coplay Friend: {friend.m_SteamID}");
+                    string connect = Steamworks.SteamFriends.GetFriendRichPresence(t, "connect").Trim();
+                    string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+                    ulong host_steamid = ulong.Parse(host_id);
 
-                    Steamworks.SteamFriends.RequestUserInformation(friend, true);
-                    string name = Steamworks.SteamFriends.GetFriendPersonaName(t);
-                    if (name.Equals("[unknown]"))
+                    if (target != host_steamid)
                     {
-                        bool wait = true;
-                        Callback<PersonaStateChange_t>.Create(persona =>
-                        {
-                            wait = false;
-                        });
-
-                        while (wait)
-                        {
-                            Steamworks.SteamAPI.RunCallbacks();
-                            Thread.Sleep(10);
-                        }
-
-                        name = Steamworks.SteamFriends.GetFriendPersonaName(t);
+                        Console.WriteLine($"[{DateTime.Now}] Target is not host");
+                        target = host_steamid;
                     }
-                    
-                    Console.WriteLine($"[{DateTime.Now}] Coplay Friend: {name}");
                 }
 
                 Console.WriteLine($"[{DateTime.Now}] Connecting...");
