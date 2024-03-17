@@ -28,6 +28,8 @@ namespace Crashbot
                 Console.WriteLine("SteamID: " + Steamworks.SteamUser.GetSteamID());
             }
 
+            Console.WriteLine("76561198299556567");
+
             start:
 
             Console.Write("Enter target SteamID64: ");
