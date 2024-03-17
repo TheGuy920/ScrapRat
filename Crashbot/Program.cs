@@ -164,8 +164,6 @@ namespace Crashbot
 
         private static ulong VerifyHostSteamid(CSteamID user)
         {
-            Console.WriteLine($"[{DateTime.Now}] {Steamworks.SteamFriends.GetFriendRelationship(user)}");
-
             if (!Steamworks.SteamFriends.GetFriendGamePlayed(user, out FriendGameInfo_t _))
             {
                 Console.WriteLine($"[{DateTime.Now}] Unable to access game stat information");
