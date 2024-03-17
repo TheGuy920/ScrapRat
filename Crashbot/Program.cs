@@ -107,8 +107,7 @@ namespace Crashbot
                 }
             }
 
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
-            Console.WriteLine(info.m_eState);
+            Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
 
             // confirm crashed
             const int desiredTimeoutValue = 300;
