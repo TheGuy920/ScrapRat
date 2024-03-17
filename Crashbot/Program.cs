@@ -91,10 +91,18 @@ namespace Crashbot
             }
 
             Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
-            Thread.Sleep(10);
 
-            Steamworks.SteamAPI.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
+            while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
+            {
+                Steamworks.SteamAPI.RunCallbacks();
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
+
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
 
             // confirm crashed
             const int desiredTimeoutValue = 300;
@@ -113,7 +121,6 @@ namespace Crashbot
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-            Thread.Sleep(10);
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out var info2);
 
             while (info2.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
@@ -121,6 +128,8 @@ namespace Crashbot
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info2);
                 Thread.Sleep(10);
             }
+
+            Console.WriteLine(info2.m_eState);
 
             while (info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting
                 || info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
@@ -130,7 +139,7 @@ namespace Crashbot
 
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info2);
                 Console.WriteLine(JsonConvert.SerializeObject(info2, Formatting.Indented));
-                Thread.Sleep(10);
+                Thread.Sleep(500);
             }
 
             Console.WriteLine(JsonConvert.SerializeObject(info2, Formatting.Indented));
