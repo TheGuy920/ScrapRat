@@ -45,8 +45,6 @@ namespace Crashbot
                 Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             }
 
-            Console.WriteLine("Test: 76561198299556567");
-
             while (true)
             {
                 // Gather target
