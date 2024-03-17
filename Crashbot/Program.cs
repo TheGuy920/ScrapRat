@@ -9,6 +9,25 @@ namespace Crashbot
 {
     internal class Program
     {
+        private static readonly SteamNetworkingConfigValue_t[] LongTimeoutOptions = [
+            new SteamNetworkingConfigValue_t
+            {
+                m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
+                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutConnected,
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 50 }
+            }
+        ];
+
+        private static readonly SteamNetworkingConfigValue_t[] ConnectionTimeoutOptions = [
+            new SteamNetworkingConfigValue_t
+            {
+                m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
+                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial,
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 1500 }
+            }
+        ];
+
+
         static void Main(string[] args)
         {
             Console.WriteLine("Crashbot");
@@ -25,39 +44,13 @@ namespace Crashbot
 
             Console.WriteLine("76561198299556567");
 
-            start:
+        start:
 
             Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             Console.Write("Enter target SteamID64: ");
 
             ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
-            var steamuser = new SteamKit2.SteamID(target);
-            CSteamID cSteamID = new(steamuser.ConvertToUInt64());
-
-            SteamNetworkingIdentity remoteIdentity = new();
-            remoteIdentity.SetSteamID(cSteamID);
-
-            SteamNetworkingConfigValue_t[] options = new SteamNetworkingConfigValue_t[1];
-            options[0].m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32;
-            options[0].m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutConnected; // or another relevant option
-            options[0].m_val.m_int32 = 50;
-
-            HSteamNetConnection conn = SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, options);
-            Console.WriteLine("Connecting...");
-
-            Thread.Sleep(10);
-            Steamworks.SteamAPI.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out Steamworks.SteamNetConnectionInfo_t info);
-
-            while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
-            {
-                Steamworks.SteamAPI.RunCallbacks();
-                Steamworks.SteamNetworkingSockets.RunCallbacks();
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
-
-                Thread.Sleep(10);
-            }
+            var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
 
             Console.WriteLine("Connected!");
             int maxMessages = 1;
@@ -89,34 +82,14 @@ namespace Crashbot
             Console.Write("Press any key to continue...");
             Console.ReadKey();
 
-            // confirm crashed
-            const int desiredTimeoutValue = 1500;
-            // Create an array of connection parameters (config values)
-            SteamNetworkingConfigValue_t[] connectionParams = new SteamNetworkingConfigValue_t[1];
-
-            // Set the timeout option
-            connectionParams[0].m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial;
-            connectionParams[0].m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = desiredTimeoutValue };
-
-            // Start the connection attempt
-            var steamuser2 = new SteamKit2.SteamID(target);
-            CSteamID cSteamID2 = new(steamuser2.ConvertToUInt64());
-            SteamNetworkingIdentity remoteIdentity2 = new();
-            remoteIdentity2.SetSteamID(cSteamID2);
-
-            HSteamNetConnection conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity2, 0, 1, connectionParams);
-            Console.WriteLine("Connecting...");
-
-            Thread.Sleep(10);
-            Steamworks.SteamAPI.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
+            var (conn2, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);            
 
             while (string.IsNullOrWhiteSpace(Console.ReadLine().Trim()))
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out var info2);
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info2);
                 Steamworks.SteamNetworkingSockets.GetDetailedConnectionStatus(conn2, out string status, 255 * 255);
 
                 Console.WriteLine(status);
@@ -125,8 +98,36 @@ namespace Crashbot
 
             bool crashed = false;
             Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash");
-            
+
             goto start;
+        }
+
+        private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait(ulong target, SteamNetworkingConfigValue_t[] options)
+        {
+            var steamuser = new SteamKit2.SteamID(target);
+            CSteamID cSteamID = new(steamuser.ConvertToUInt64());
+
+            SteamNetworkingIdentity remoteIdentity = new();
+            remoteIdentity.SetSteamID(cSteamID);
+
+            HSteamNetConnection conn = SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, options.Length, options);
+            Console.WriteLine("Connecting...");
+
+            Thread.Sleep(10);
+            Steamworks.SteamAPI.RunCallbacks();
+            Steamworks.SteamNetworkingSockets.RunCallbacks();
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out Steamworks.SteamNetConnectionInfo_t info);
+
+            while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
+            {
+                Steamworks.SteamAPI.RunCallbacks();
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
+
+                Thread.Sleep(10);
+            }
+
+            return (conn, info);
         }
     }
 }
