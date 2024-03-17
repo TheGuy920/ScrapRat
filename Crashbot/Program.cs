@@ -95,37 +95,7 @@ namespace Crashbot
                 }
                 Console.WriteLine($"[{DateTime.Now}] Targeting '{targetName}' = {res}");
 
-                Steamworks.SteamFriends.RequestFriendRichPresence(t);
-                Steamworks.SteamAPI.RunCallbacks();
-
-                int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
-                int timeout = 100;
-                while (keycount == 0 && timeout-- > 0)
-                {
-                    Steamworks.SteamFriends.RequestFriendRichPresence(t);
-                    Steamworks.SteamAPI.RunCallbacks();
-                    keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
-                    Thread.Sleep(10);
-                }
-
-                for (int i = 0; i < keycount; i++)
-                {
-                    string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(t, i);
-                    string value = Steamworks.SteamFriends.GetFriendRichPresence(t, key);
-                }
-
-                if (timeout > 0)
-                {
-                    string connect = Steamworks.SteamFriends.GetFriendRichPresence(t, "connect").Trim();
-                    string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
-                    ulong host_steamid = ulong.Parse(host_id);
-
-                    if (target != host_steamid)
-                    {
-                        Console.WriteLine($"[{DateTime.Now}] Target is not host");
-                        target = host_steamid;
-                    }
-                }
+                target = Program.VerifyHostSteamid(t, target);
 
                 Console.WriteLine($"[{DateTime.Now}] Connecting...");
                 var (conn, info) = ConnectAndWait(target, LongTimeoutOptions);
@@ -157,6 +127,7 @@ namespace Crashbot
                 int count = 1;
                 while (crashed)
                 {
+                    target = Program.VerifyHostSteamid(t, target);
                     var (conn_x, _) = ConnectAndWait(target, LongTimeoutOptions);
                     Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
                     Thread.Sleep(500);
@@ -177,6 +148,43 @@ namespace Crashbot
                 steamid = steamid.Split('/').Last();
             
             return steamid;
+        }
+
+        private static ulong VerifyHostSteamid(CSteamID t, ulong original)
+        {
+            Steamworks.SteamFriends.RequestFriendRichPresence(t);
+            Steamworks.SteamAPI.RunCallbacks();
+
+            int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
+            int timeout = 100;
+            while (keycount == 0 && timeout-- > 0)
+            {
+                Steamworks.SteamFriends.RequestFriendRichPresence(t);
+                Steamworks.SteamAPI.RunCallbacks();
+                keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(t);
+                Thread.Sleep(10);
+            }
+
+            for (int i = 0; i < keycount; i++)
+            {
+                string key = Steamworks.SteamFriends.GetFriendRichPresenceKeyByIndex(t, i);
+                string value = Steamworks.SteamFriends.GetFriendRichPresence(t, key);
+            }
+
+            if (timeout > 0)
+            {
+                string connect = Steamworks.SteamFriends.GetFriendRichPresence(t, "connect").Trim();
+                string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+                ulong host_steamid = ulong.Parse(host_id);
+
+                if (original != host_steamid)
+                {
+                    Console.WriteLine($"[{DateTime.Now}] Target is not host");
+                    return host_steamid;
+                }
+            }
+
+            return original;
         }
 
         private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait(ulong target, SteamNetworkingConfigValue_t[] options)
