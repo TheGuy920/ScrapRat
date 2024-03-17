@@ -112,14 +112,22 @@ namespace Crashbot
 
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
 
+            SteamNetConnectionRealTimeStatus_t status = new();
+            SteamNetConnectionRealTimeLaneStatus_t laneStatus = new();
+
             while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting
                 || info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
             {
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
 
+                
+                Steamworks.SteamNetworkingSockets.GetConnectionRealTimeStatus(conn.Value, ref status, 1, ref laneStatus);
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
                 Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
+
+                Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
+                Console.WriteLine(JsonConvert.SerializeObject(laneStatus, Formatting.Indented));
                 Thread.Sleep(500);
             }
 
