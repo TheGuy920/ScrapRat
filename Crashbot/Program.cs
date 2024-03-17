@@ -117,7 +117,7 @@ namespace Crashbot
                 }
 
                 string connect = Steamworks.SteamFriends.GetFriendRichPresence(t, "connect");
-                string host_id = connect.Split('-').First().Split(' ').Last();
+                string host_id = connect.Split('-', StringSplitOptions.RemoveEmptyEntries).First().Split(' ').Last();
                 ulong host_steamid = ulong.Parse(host_id);
                 Console.WriteLine($"[{DateTime.Now}] host_steamid: {host_steamid} : {target == host_steamid}");
 
