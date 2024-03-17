@@ -105,7 +105,11 @@ namespace Crashbot
             remoteIdentity2.SetSteamID(cSteamID2);
 
             HSteamNetConnection conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity2, 0, 1, connectionParams);
+            Console.WriteLine("Connecting...");
+
             Thread.Sleep(10);
+            Steamworks.SteamAPI.RunCallbacks();
+            Steamworks.SteamNetworkingSockets.RunCallbacks();
 
             while (string.IsNullOrWhiteSpace(Console.ReadLine().Trim()))
             {
