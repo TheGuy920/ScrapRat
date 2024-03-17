@@ -177,12 +177,11 @@ namespace Crashbot
             Steamworks.SteamFriends.RequestFriendRichPresence(user);
             Steamworks.SteamAPI.RunCallbacks();
 
-            int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(user);
-            while (keycount == 0)
+            while (true)
             {
                 Steamworks.SteamFriends.RequestFriendRichPresence(user);
                 Steamworks.SteamAPI.RunCallbacks();
-                keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(user);
+                int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(user);
 
                 string currentRP = "";
                 for (int i = 0; i < keycount; i++)
