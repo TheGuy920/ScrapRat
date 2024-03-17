@@ -73,7 +73,7 @@ namespace Crashbot
 
                 // Initiate the connection
                 var t = new CSteamID(target);
-                var res = Steamworks.SteamFriends.RequestUserInformation(t, true);
+                var res = Steamworks.SteamFriends.RequestUserInformation(t, false);
                 Steamworks.SteamAPI.RunCallbacks();
 
                 string targetName = Steamworks.SteamFriends.GetFriendPersonaName(t);
