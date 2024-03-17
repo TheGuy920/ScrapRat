@@ -90,8 +90,8 @@ namespace Crashbot
                 }
             }
 
-            Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
-
+            bool crashed = false;
+            int timeout = 100;
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
             while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
             {
@@ -100,53 +100,16 @@ namespace Crashbot
 
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
                 Thread.Sleep(10);
+                timeout--;
+                if (timeout <= 0)
+                    break;
             }
 
+            Console.WriteLine(timeout);
             Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-
-            // confirm crashed
-            const int desiredTimeoutValue = 300;
-            // Create an array of connection parameters (config values)
-            SteamNetworkingConfigValue_t[] connectionParams = new SteamNetworkingConfigValue_t[1];
-
-            // Set the timeout option
-            connectionParams[0].m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial;
-            connectionParams[0].m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = desiredTimeoutValue };
-
-            // Start the connection attempt
-            SteamNetworkingIdentity remoteIdentity2 = new();
-            remoteIdentity2.SetSteamID(cSteamID);
-            var conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity2, 0, 1, connectionParams);
-
-            Steamworks.SteamAPI.RunCallbacks();
-            Steamworks.SteamNetworkingSockets.RunCallbacks();
-
-            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out var info2);
-
-            while (info2.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
-            {
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info2);
-                Thread.Sleep(10);
-            }
-
-            Console.WriteLine(info2.m_eState);
-
-            while (info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting
-                || info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
-            {
-                Steamworks.SteamAPI.RunCallbacks();
-                Steamworks.SteamNetworkingSockets.RunCallbacks();
-
-                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn2, out info2);
-                Console.WriteLine(JsonConvert.SerializeObject(info2, Formatting.Indented));
-                Thread.Sleep(500);
-            }
-
-            Console.WriteLine(JsonConvert.SerializeObject(info2, Formatting.Indented));
-            bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
+            
             Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
-
-            Steamworks.SteamNetworkingSockets.CloseConnection(conn2, 0, "\0", false);
+            Steamworks.SteamNetworkingSockets.CloseConnection(conn, 0, "\0", false);
 
             goto start;
         }
