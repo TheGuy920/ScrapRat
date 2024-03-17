@@ -88,7 +88,7 @@ namespace Crashbot
             var (conn2, info2) = ConnectAndWait(target, ConnectionTimeoutOptions);
 
             bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
-            Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash");
+            Console.WriteLine(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private");
 
             goto start;
         }
