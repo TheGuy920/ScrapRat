@@ -117,7 +117,7 @@ namespace Crashbot
                 Thread.Sleep(10);
             }
 
-            Console.WriteLine(info.m_eState);
+            Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
             bool crashed = info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
             Console.WriteLine(crashed ? "Failed to Crash" : "Successfully Crashed!");
 
