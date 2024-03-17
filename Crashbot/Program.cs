@@ -37,9 +37,9 @@ namespace Crashbot
             else
             {
                 Console.Clear();
-                Console.WriteLine("UserName: " + Steamworks.SteamFriends.GetPersonaName());
+                Console.WriteLine("UserName: '" + Steamworks.SteamFriends.GetPersonaName()+"'");
                 Console.WriteLine("SteamId: " + Steamworks.SteamUser.GetSteamID().m_SteamID);
-                Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
+                Console.WriteLine("BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn()+"]");
             }
 
             while (true)
