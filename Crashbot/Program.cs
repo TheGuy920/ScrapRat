@@ -76,8 +76,8 @@ namespace Crashbot
 
                 if (messageCount > 0)
                 {
-                    Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
-                    Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
+                    //Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
+                    //Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
                     Console.WriteLine("Crashing client...");
                     Steamworks.SteamAPI.RunCallbacks();
                     Steamworks.SteamNetworkingSockets.RunCallbacks();
