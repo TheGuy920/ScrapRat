@@ -24,7 +24,7 @@ namespace Crashbot
             {
                 m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 1500 }
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 300 }
             }
         ];
 
@@ -70,8 +70,8 @@ namespace Crashbot
 
                 if (messageCount > 0)
                 {
-                    // Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
-                    // Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
+                    Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
+                    Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn);
                     Console.WriteLine("Crashing client...");
 
                     Steamworks.SteamAPI.RunCallbacks();
