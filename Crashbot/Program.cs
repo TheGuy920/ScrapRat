@@ -2,6 +2,7 @@
 using Steamworks;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static SteamKit2.GC.Dota.Internal.CMsgDOTALeague;
 
@@ -35,18 +36,25 @@ namespace Crashbot
             Console.WriteLine(Environment.CurrentDirectory);
             File.WriteAllText("steam_appid.txt", "387990");
 
-
+            var proc = Process.GetCurrentProcess();
+            proc.CancelOutputRead();
             if (!Steamworks.SteamAPI.Init())
             {
-                Debug.WriteLine("SteamAPI.Init() failed!");
+                proc.BeginOutputReadLine();
+                Console.WriteLine("SteamAPI.Init() failed!");
                 return;
+            }
+            else
+            {
+                proc.BeginOutputReadLine();
+                Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             }
 
             Console.WriteLine("76561198299556567");
 
+
         start:
 
-            Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
             Console.Write("Enter target SteamID64: ");
             ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
             
