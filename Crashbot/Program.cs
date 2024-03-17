@@ -28,7 +28,6 @@ namespace Crashbot
             }
         ];
 
-
         static void Main(string[] args)
         {
             Environment.CurrentDirectory = Directory.GetParent(Assembly.GetExecutingAssembly()?.Location ?? AppContext.BaseDirectory)!.FullName;
