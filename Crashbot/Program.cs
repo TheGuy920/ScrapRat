@@ -69,13 +69,14 @@ namespace Crashbot
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
+            Thread.Sleep(10);
             conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 0, []);
             Console.WriteLine("Init connection...");
 
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
-            Thread.Sleep(10);
+            Thread.Sleep(50);
             Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out Steamworks.SteamNetConnectionInfo_t info);
             while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
             {
@@ -135,6 +136,7 @@ namespace Crashbot
                 Thread.Sleep(10);
             }
 
+            Console.WriteLine(info.m_eState);
             Console.WriteLine(info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected ? "Failed to Crash" : "Successfully Crashed!");
 
             Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
