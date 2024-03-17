@@ -77,7 +77,7 @@ namespace Crashbot
                 Steamworks.SteamAPI.RunCallbacks();
 
                 string targetName = Steamworks.SteamFriends.GetFriendPersonaName(t);
-                if (targetName.Equals("unknown"))
+                if (targetName.Equals("[unknown]"))
                 {
                     bool wait = true;
                     Callback<PersonaStateChange_t>.Create(persona =>
@@ -114,7 +114,7 @@ namespace Crashbot
 
                     Steamworks.SteamFriends.RequestUserInformation(friend, true);
                     string name = Steamworks.SteamFriends.GetFriendPersonaName(t);
-                    if (name.Equals("unknown"))
+                    if (name.Equals("[unknown]"))
                     {
                         bool wait = true;
                         Callback<PersonaStateChange_t>.Create(persona =>
