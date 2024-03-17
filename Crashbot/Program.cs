@@ -99,9 +99,13 @@ namespace Crashbot
             connectionParams[0].m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = desiredTimeoutValue };
 
             // Start the connection attempt
+            var steamuser2 = new SteamKit2.SteamID(target);
+            CSteamID cSteamID2 = new(steamuser2.ConvertToUInt64());
             SteamNetworkingIdentity remoteIdentity2 = new();
-            remoteIdentity2.SetSteamID(cSteamID);
-            var conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity2, 0, 1, connectionParams);
+            remoteIdentity2.SetSteamID(cSteamID2);
+
+            HSteamNetConnection conn2 = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity2, 0, 1, connectionParams);
+            Thread.Sleep(10);
 
             while (string.IsNullOrWhiteSpace(Console.ReadLine().Trim()))
             {
