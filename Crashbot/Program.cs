@@ -149,7 +149,7 @@ namespace Crashbot
             while (true)
             {
                 IntPtr[] messagePointers = new IntPtr[maxMessages];
-                int messageCount = 1; // Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, messagePointers, maxMessages);
+                int messageCount = Steamworks.SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, messagePointers, maxMessages);
 
                 if (messageCount > 0)
                 {
