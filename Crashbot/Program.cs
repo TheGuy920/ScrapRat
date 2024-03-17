@@ -119,7 +119,7 @@ namespace Crashbot
             // The desiredTimeoutValue is in milliseconds. Set this to the timeout you want.
 
             // Start the connection attempt
-            conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 0, connectionParams);
+            conn = Steamworks.SteamNetworkingSockets.ConnectP2P(ref remoteIdentity, 0, 1, connectionParams);
 
             Steamworks.SteamAPI.RunCallbacks();
             Steamworks.SteamNetworkingSockets.RunCallbacks();
