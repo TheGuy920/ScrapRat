@@ -84,7 +84,6 @@ namespace Crashbot
 
                 // Check if the profile is private
                 bool isPrivateProfile = Program.GetUserVisibility(originalUserSteamid);
-                Console.WriteLine($"[{DateTime.Now}] Profile is {(isPrivateProfile ? "Private" : "Public")}");
 
                 ulong hostTarget = originalUserSteamid.m_SteamID;
                 // If profile is not private, check if the target is the host, if not, target the host
@@ -310,15 +309,13 @@ namespace Crashbot
 
             // first xml element is <profile>
             XElement profile = xDocument.Elements().First();
-            xDocument.Elements().ToList().ForEach(e => Console.WriteLine(e.Name));
-            profile.Elements().ToList().ForEach(e => Console.WriteLine(e.Name));
 
             // now we look for the <privacyState> and <visibilityState> elements
             string privacyDesc = profile.Element("privacyState")?.Value;
-            string privacyState = profile.Element("visibilityState")?.Value;
+            int privacyState = int.Parse(profile.Element("visibilityState")?.Value);
 
             Console.WriteLine($"[{DateTime.Now}] Profile Visibility: {privacyDesc} ({privacyState})");
-            return true;
+            return privacyState == 3;
         }
     }
 }
