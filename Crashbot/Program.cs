@@ -306,10 +306,11 @@ namespace Crashbot
             string url = "https://steamcommunity.com/profiles/" + steamid.m_SteamID;
             var httpresponse = new HttpClient().GetAsync(url).GetAwaiter().GetResult();
             string response = httpresponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            XElement xElement = XElement.Parse(response);
-            
+            XDocument xDocument = XDocument.Parse(response);
+            //XElement xElement = XElement.Parse(response);
+
             // first xml element is <profile>
-            XElement profile = xElement.Elements().First();
+            XElement profile = xDocument.Root.Elements().First();
             string visibilityDesc = profile.Element("privacyState").Value;
             string visibility = profile.Element("visibilityState").Value;
 
