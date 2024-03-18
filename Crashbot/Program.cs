@@ -309,7 +309,8 @@ namespace Crashbot
             XDocument xDocument = XDocument.Parse(response);
 
             // first xml element is <profile>
-            XElement profile = xDocument.Root.Elements().First();
+            XElement profile = xDocument.Elements().First();
+            xDocument.Elements().ToList().ForEach(e => Console.WriteLine(e.Name));
             profile.Elements().ToList().ForEach(e => Console.WriteLine(e.Name));
 
             // now we look for the <privacyState> and <visibilityState> elements
