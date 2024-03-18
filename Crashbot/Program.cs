@@ -303,7 +303,7 @@ namespace Crashbot
         private static bool GetUserVisibility(CSteamID steamid)
         {
             string url = "https://partner.steam-api.com/ISteamUser/GetPlayerSummaries/v2/?key=" + STEAM_API_KEY + "&steamids=" + steamid.m_SteamID;
-            string response = new HttpClient().GetStringAsync(url).Result;
+            string response = new HttpClient().GetStringAsync(url).GetAwaiter().GetResult();
             JObject json = JObject.Parse(response);
             return json["response"]["players"][0]["communityvisibilitystate"].Value<int>() == 1;
         }
