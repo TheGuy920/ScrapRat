@@ -4,6 +4,8 @@ using Steamworks;
 using System.Diagnostics;
 using System.Net;
 using System.Reflection;
+using System.Xml;
+using System.Xml.Linq;
 using static SteamKit2.Internal.CMsgRemoteClientBroadcastStatus;
 
 namespace Crashbot
@@ -299,15 +301,20 @@ namespace Crashbot
             }
         }
 
-        private const string STEAM_API_KEY = "D3AC90289D43FC75AFDC81AF39CBF5DC";
-
         private static bool GetUserVisibility(CSteamID steamid)
         {
-            string url = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + STEAM_API_KEY + "&steamids=" + steamid.m_SteamID;
+            string url = "https://steamcommunity.com/profiles/" + steamid.m_SteamID;
             var httpresponse = new HttpClient().GetAsync(url).GetAwaiter().GetResult();
             string response = httpresponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            JObject json = JObject.Parse(response);
-            return json["response"]["players"][0]["communityvisibilitystate"].Value<int>() == 1;
+            XElement xElement = XElement.Parse(response);
+            
+            // first xml element is <profile>
+            XElement profile = xElement.Elements().First();
+            string visibilityDesc = profile.Element("privacyState").Value;
+            string visibility = profile.Element("visibilityState").Value;
+
+            Console.WriteLine($"[{DateTime.Now}] Profile Visibility: {visibilityDesc} ({visibility})");
+            return true;
         }
     }
 }
