@@ -78,7 +78,7 @@ namespace Crashbot
                 // Initiate user information
                 CSteamID originalUserSteamid = new(ulong.Parse(steamid));
                 var (originalUserName, res) = Program.GetUsersName(originalUserSteamid);
-                Console.WriteLine($"[{DateTime.Now}] Targeting '{originalUserName}' = {res}");
+                Console.WriteLine($"[{DateTime.Now}] Targeting '{originalUserName}'");
 
                 // Check if the profile is private
                 bool isPrivateProfile = Program.GetUserVisibility(originalUserSteamid);
