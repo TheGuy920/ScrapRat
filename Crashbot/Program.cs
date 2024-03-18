@@ -129,6 +129,7 @@ namespace Crashbot
                     Program.ReadOneAndSendOne(conn_x, 0, 0, 0);
                     Thread.Sleep(500);
                     Steamworks.SteamNetworkingSockets.CloseConnection(conn_x, 0, string.Empty, false);
+                    Console.SetCursorPosition(0, Console.CursorTop - 1);
                     Console.WriteLine($"[{DateTime.Now}] Crashed client {++count}x");
                 }
             }
