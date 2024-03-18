@@ -305,7 +305,7 @@ namespace Crashbot
             string url = "https://partner.steam-api.com/ISteamUser/GetPlayerSummaries/v2/?key=" + STEAM_API_KEY + "&steamids=" + steamid.m_SteamID;
             var httpresponse = new HttpClient().GetAsync(url).GetAwaiter().GetResult();
             string response = httpresponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            Debug.WriteLine(response);
+            Console.WriteLine(response);
             JObject json = JObject.Parse(response);
             return json["response"]["players"][0]["communityvisibilitystate"].Value<int>() == 1;
         }
