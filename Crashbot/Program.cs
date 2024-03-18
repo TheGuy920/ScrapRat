@@ -305,9 +305,9 @@ namespace Crashbot
         {
             string url = "https://steamcommunity.com/profiles/" + steamid.m_SteamID;
             var httpresponse = new HttpClient().GetAsync(url).GetAwaiter().GetResult();
-            string response = httpresponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            string response = httpresponse.Content.ReadAsStringAsync().GetAwaiter().GetResult().Trim();
+            Console.WriteLine($"[{DateTime.Now}]\n{response}\n\n");
             XDocument xDocument = XDocument.Parse(response);
-            //XElement xElement = XElement.Parse(response);
 
             // first xml element is <profile>
             XElement profile = xDocument.Root.Elements().First();
