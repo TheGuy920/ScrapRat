@@ -201,7 +201,7 @@ namespace Crashbot
             Stopwatch timer = Stopwatch.StartNew();
             while (true)
             {
-                if (timer.Elapsed.Minutes > 5)
+                if (timer.Elapsed.Seconds > 2)
                 {
                     Steamworks.SteamFriends.RequestFriendRichPresence(user);
                     timer.Restart();
