@@ -77,7 +77,7 @@ namespace Crashbot
 
                 // Initiate user information
                 CSteamID originalUserSteamid = new(ulong.Parse(steamid));
-                var (originalUserName, res) = Program.GetUsersName(originalUserSteamid);
+                var (originalUserName, _) = Program.GetUsersName(originalUserSteamid);
                 Console.WriteLine($"[{DateTime.Now}] Targeting '{originalUserName}'");
 
                 // Check if the profile is private
@@ -116,7 +116,7 @@ namespace Crashbot
 
                 // Log the result
                 bool crashed = info2.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally;
-                Console.WriteLine($"[{DateTime.Now}] {(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private")}");
+                Console.WriteLine($"[{DateTime.Now}] {(crashed ? "Successfully Crashed!" : "Failed to Crash. Possibly Friends Only or Private")}\n");
 
                 // Forever Crash
                 int count = 1;
