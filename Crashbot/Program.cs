@@ -310,10 +310,13 @@ namespace Crashbot
 
             // first xml element is <profile>
             XElement profile = xDocument.Root.Elements().First();
-            string visibilityDesc = profile.Element("privacyState").Value;
-            string visibility = profile.Element("visibilityState").Value;
+            profile.Elements().ToList().ForEach(e => Console.WriteLine(e.Name));
 
-            Console.WriteLine($"[{DateTime.Now}] Profile Visibility: {visibilityDesc} ({visibility})");
+            // now we look for the <privacyState> and <visibilityState> elements
+            string privacyDesc = profile.Element("privacyState")?.Value;
+            string privacyState = profile.Element("visibilityState")?.Value;
+
+            Console.WriteLine($"[{DateTime.Now}] Profile Visibility: {privacyDesc} ({privacyState})");
             return true;
         }
     }
