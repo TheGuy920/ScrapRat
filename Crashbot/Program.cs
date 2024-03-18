@@ -197,7 +197,7 @@ namespace Crashbot
             Steamworks.SteamFriends.RequestFriendRichPresence(user);
             Steamworks.SteamAPI.RunCallbacks();
 
-            Console.WriteLine($"[{DateTime.Now}] Waiting for RichPresence...");
+            // Console.WriteLine($"[{DateTime.Now}] Waiting for RichPresence...");
             Stopwatch timer = Stopwatch.StartNew();
             while (true)
             {
@@ -220,7 +220,7 @@ namespace Crashbot
 
                 if (keycount > 0 && (oldKeyCount == 0 || currentRP != oldRP))
                 {
-                    Console.WriteLine($"[{DateTime.Now}] RichPresence Updated");
+                    // Console.WriteLine($"[{DateTime.Now}] RichPresence Updated");
                     break;
                 }
 
