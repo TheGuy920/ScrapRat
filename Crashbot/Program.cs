@@ -302,7 +302,7 @@ namespace Crashbot
 
         private static bool GetUserVisibility(CSteamID steamid)
         {
-            string url = "https://api.steam-api.com/ISteamUser/GetPlayerSummaries/v2/?key=" + STEAM_API_KEY + "&steamids=" + steamid.m_SteamID;
+            string url = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + STEAM_API_KEY + "&steamids=" + steamid.m_SteamID;
             var httpresponse = new HttpClient().GetAsync(url).GetAwaiter().GetResult();
             string response = httpresponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             Console.WriteLine(response);
