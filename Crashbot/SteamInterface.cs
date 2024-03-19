@@ -107,11 +107,20 @@ namespace Crashbot
                 }
 
                 bool previousState = victim.IsPlayingScrapMechanic;
+                CancellationTokenSource previousSource = interuptSource;
+
                 // wait for RP and fast track
                 void onGameChange(bool isPlaying)
                 {
                     if (isPlaying && isPlaying != previousState)
+                    {
+                        previousSource.Cancel();
+                        previousSource.Token.WaitHandle.WaitOne(1000);
+
+                        interuptSource = new();
                         this.CrashClientAsync(victim, interuptSource);
+                        previousSource = interuptSource;
+                    }
 
                     previousState = isPlaying;
                 };
