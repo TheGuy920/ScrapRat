@@ -1,4 +1,7 @@
 ﻿using Steamworks;
+using System.Net;
+using System.Net.Cache;
+using System.Net.Http.Headers;
 using System.Timers;
 using System.Xml.Linq;
 
@@ -214,8 +217,26 @@ namespace Crashbot
         }
 
         private readonly HttpClient session = new();
+        private bool hasInitialized = false;
+
+        private void SetWebClientSettings()
+        {
+            session.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue()
+            {
+                NoCache = true,
+                NoStore = true,
+                MaxAge = new TimeSpan(0),
+                SharedMaxAge = new TimeSpan(0),
+            };
+            session.DefaultRequestHeaders.Add("User-Agent", "SteamUser/1.0");
+            this.hasInitialized = true;
+        }
+
         private XElement GetProfile()
         {
+            if (!this.hasInitialized)
+                this.SetWebClientSettings();
+
             string url = "https://steamcommunity.com/profiles/" + steamid.m_SteamID + "?xml=true";
             var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
             XDocument xDocument = XDocument.Parse(response);
