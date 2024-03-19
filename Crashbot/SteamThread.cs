@@ -97,6 +97,7 @@ namespace Crashbot
             SteamFunction original = action + @params;
             SteamFunction @new = new(() => 
             { 
+                Console.WriteLine("Invoking original function");
                 result.Add(original.Invoke());
                 Console.WriteLine("Result returned");
                 returnResultReady.Set();
