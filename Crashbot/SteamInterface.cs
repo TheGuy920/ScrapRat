@@ -182,8 +182,6 @@ namespace Crashbot
                 SteamNetConnectionInfo_t info = ix.Value;
                 HSteamNetConnection conn = cx.Value;
 
-                Task.Delay(500).Wait();
-
                 for (int i = 0; i < FUN_TIME; i++)
                 {
                     this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);

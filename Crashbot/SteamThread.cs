@@ -69,6 +69,7 @@ namespace Crashbot
                     if (cancel?.CanBeCanceled == true && cancel?.IsCancellationRequested == true)
                     {
                         SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
+                        SteamAPI.RunCallbacks();
                         connected.Set();
                         return;
                     }
