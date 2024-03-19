@@ -120,10 +120,13 @@ namespace Crashbot
             void onGameChange(bool isPlaying)
             {
                 if (isPlaying)
+                {
                     this.CrashClientAsync(victim, interuptSource);
+                }
                 else
                 {
                     interuptSource.Cancel();
+                    interuptSource.Token.WaitHandle.WaitOne(1000);
                     this.ResetVictimTracking(interuptSource, victim);
                 }
             };
