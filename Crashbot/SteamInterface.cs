@@ -36,6 +36,7 @@ namespace Crashbot
             }
         ];
 
+        private const int FUN_TIME = 7;
         private const int REQUEST_TIMEOUT = 1000;
         private readonly InterfaceMode OperationMode;
         private readonly SteamThread SteamThread;
@@ -173,8 +174,11 @@ namespace Crashbot
 
                     if (messageCount > 0 || timeGate.ElapsedMilliseconds > 2000)
                     {
-                        this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
-                        this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+                        for (int i = 0; i < FUN_TIME; i++)
+                        {
+                            this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
+                            this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+                        }
                         Task.Delay(500).Wait();
                         break;
                     }
