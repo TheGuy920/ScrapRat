@@ -131,7 +131,7 @@ namespace Crashbot
         /// <param name="duration"></param>
         public void FasterTracking(TimeSpan duration)
         {
-            this.trackingTimer.Interval = 1000;
+            this.trackingTimer.Interval = FAST_INTERVAL;
             Task.Delay(duration).ContinueWith((_) => this.trackingTimer.Interval = DEFAULT_INTERVAL);
         }
 
@@ -141,7 +141,7 @@ namespace Crashbot
         /// <param name="token"></param>
         public void FasterTracking(CancellationToken token)
         {
-            this.trackingTimer.Interval = 1000;
+            this.trackingTimer.Interval = FAST_INTERVAL;
             Task.Delay(Timeout.Infinite, token).ContinueWith(_ => this.trackingTimer.Interval = DEFAULT_INTERVAL);
         }
 
@@ -200,6 +200,7 @@ namespace Crashbot
         }
 
         private const int DEFAULT_INTERVAL = 60 * 1000;
+        private const int FAST_INTERVAL = 500;
         private const int DEFAULT_RICH_PRESENCE_INTERVAL = 5000;
         private readonly System.Timers.Timer trackingTimer = new()
         {
