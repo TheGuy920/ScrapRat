@@ -139,8 +139,6 @@ namespace Crashbot
 
             victim.GameStateChanged += onGameChange;
             victim.FasterTracking(interuptSource.Token);
-
-            onGameChange(victim.IsPlayingScrapMechanic);
         }
 
         private void CrashClientAsync(Victim mega_victim, CancellationTokenSource interuptSource)
