@@ -95,9 +95,19 @@ namespace Crashbot
                 Console.WriteLine($"Targeting '{name}'", Verbosity.Normal);
 
                 Step.WaitOne();
+                CancellationTokenSource interuptSource = new();
+
+                victim.GameStateChanged += onGameChange;
+                victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
+                victim.StartCollectRichPresence();
+
+                Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
+
+                Task.Delay(100).ContinueWith(_ => onGameChange(victim.IsPlayingScrapMechanic));
 
             TrackFlow:
-                CancellationTokenSource interuptSource = new();
+
+                interuptSource.TryReset();
                 if (victim.PrivacySettings == PrivacyState.Private)
                 {
                     // Direct connection, ocasionaly check if the profile is public
@@ -109,16 +119,10 @@ namespace Crashbot
                 void onGameChange(bool isPlaying)
                 {
                     if (isPlaying) this.CrashClientAsync(victim, interuptSource);
+                    else interuptSource.Cancel();
                 };
 
-                victim.GameStateChanged += onGameChange;
-                onGameChange(victim.IsPlayingScrapMechanic);
-
-                victim.FasterTracking(interuptSource.Token);
-                victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
-                victim.StartCollectRichPresence();
-                
-                Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
+                victim.FasterTracking(interuptSource.Token);               
             }
         }
 
