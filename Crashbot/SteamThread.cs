@@ -156,6 +156,8 @@ namespace Crashbot
                 }
                 Steamworks.SteamAPI.RunCallbacks();
             }
+
+            Console.WriteLine("SteamThread shutting down");
         }
 
         private static void RunAction(SteamFunction action)
