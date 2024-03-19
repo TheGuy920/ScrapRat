@@ -83,6 +83,11 @@ namespace Crashbot
                 connected.Set();
             }, [ir]));
 
+            this.QueueAction(new((HSteamNetConnection conn) =>
+            {
+                SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new IntPtr[1], 1);
+            }, []));
+
             connected.WaitOne();
             if (!ret.IsEmpty)
             {

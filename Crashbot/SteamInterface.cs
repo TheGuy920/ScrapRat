@@ -166,7 +166,7 @@ namespace Crashbot
                 SteamNetConnectionInfo_t info = ix.Value;
                 HSteamNetConnection conn = cx.Value;
 
-                int messageCount = this.SteamThread.Get(TimeSpan.FromSeconds(2), SteamNetworkingSockets.ReceiveMessagesOnConnection, conn, new IntPtr[1], 1);
+                // int messageCount = 
 
                 for (int i = 0; i < FUN_TIME; i++)
                 {
