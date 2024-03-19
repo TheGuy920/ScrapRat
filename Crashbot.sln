@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crashbot", "Crashbot\Crashb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrashbotWebApi", "CrashWebApi\CrashbotWebApi.csproj", "{4769E0D1-7485-4057-BE7B-5FF5970FAAF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrashbotCli", "CrashBotCli\CrashbotCli.csproj", "{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrashbotCli", "CrashbotCli\CrashbotCli.csproj", "{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
