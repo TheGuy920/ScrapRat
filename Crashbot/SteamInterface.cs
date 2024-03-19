@@ -154,6 +154,7 @@ namespace Crashbot
                     {
                         this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
                         this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+                        Task.Delay(100).Wait();
                         break;
                     }
                 }
