@@ -213,11 +213,11 @@ namespace Crashbot
             this.IsPlayingScrapMechanic = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
         }
 
+        private readonly HttpClient session = new();
         private XElement GetProfile()
         {
             string url = "https://steamcommunity.com/profiles/" + steamid.m_SteamID + "?xml=true";
-            var httpresponse = new HttpClient().GetAsync(url).GetAwaiter().GetResult();
-            string response = httpresponse.Content.ReadAsStringAsync().GetAwaiter().GetResult().Trim();
+            var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
             XDocument xDocument = XDocument.Parse(response);
 
             // first xml element is <profile>
