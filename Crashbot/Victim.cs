@@ -37,7 +37,10 @@ namespace Crashbot
             private set
             {
                 if (value.m_SteamID != this.hostSteamId.m_SteamID)
+                {
                     this.HostSteamIdChanged?.Invoke(value);
+                    Console.WriteLine($"Host SteamID changed to {value} for victim {this.Username} ({this.SteamId})");
+                }
                 this.hostSteamId = value;
             }
         }
@@ -53,7 +56,10 @@ namespace Crashbot
             private set
             {
                 if (value != this.isPlayingScrapMechanic)
+                {
                     this.GameStateChanged?.Invoke(value);
+                    Console.WriteLine($"Playing Scrapmechanic changed to {value} for victim {this.Username} ({this.SteamId})");
+                }
                 this.isPlayingScrapMechanic = value;
             }
         }
@@ -69,7 +75,10 @@ namespace Crashbot
             private set
             {
                 if (value != this.privacySettings)
+                {
                     this.PrivacySettingsChanged?.Invoke(value);
+                    Console.WriteLine($"Privacy settings changed to {value} for victim {this.Username} ({this.SteamId})");
+                }
                 this.privacySettings = value;
             }
         }

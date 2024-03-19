@@ -1,12 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using SteamKit2;
-using Steamworks;
-using System.Diagnostics;
-using System.Net;
+﻿using Steamworks;
 using System.Reflection;
-using System.Xml;
-using System.Xml.Linq;
-using static SteamKit2.Internal.CMsgRemoteClientBroadcastStatus;
 
 namespace Crashbot
 {
@@ -19,6 +12,7 @@ namespace Crashbot
             File.WriteAllText("steam_appid.txt", "387990");
 
             SteamInterface Steam = SteamInterface.NewAsyncInterface();
+            Steam.WaitUntilSteamReady();
 
             while (true)
             {

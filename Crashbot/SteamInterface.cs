@@ -206,5 +206,11 @@ namespace Crashbot
             byte[] hash = SHA512.HashData(Encoding.UTF8.GetBytes(richPresence));
             return BitConverter.ToUInt64(hash, 0);
         }
+
+        public void WaitUntilSteamReady()
+        {
+            while(!this.SteamThread.SteamIsReady)
+                Task.Delay(1).Wait();
+        }
     }
 }

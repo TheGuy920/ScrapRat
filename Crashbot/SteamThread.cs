@@ -31,6 +31,9 @@ namespace Crashbot
         private readonly AutoResetEvent _actionEvent = new(false);
         private readonly InterfaceMode mode;
         private bool _running = true;
+        private bool _steamReady = false;
+
+        public bool SteamIsReady => this._steamReady;
 
         public SteamThread(InterfaceMode mode)
         {
@@ -138,6 +141,7 @@ namespace Crashbot
             {
                 Console.Clear();
                 Console.WriteLine($"BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn() + "]");
+                this._steamReady = true;
             }
 
             while (this._running)
