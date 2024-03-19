@@ -240,7 +240,7 @@ namespace Crashbot
             if (!this.hasInitialized)
                 this.SetWebClientSettings();
 
-            string url = "https://steamcommunity.com/profiles/" + steamid.m_SteamID + "?xml=true";
+            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=true&{Guid.NewGuid()}";
             var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
             XDocument xDocument = XDocument.Parse(response);
 
