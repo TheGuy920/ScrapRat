@@ -182,9 +182,9 @@ namespace Crashbot
             Callback<FriendRichPresenceUpdate_t>.Create(result =>
             {
                 Console.WriteLine($"Rich presence updated for {result.m_steamIDFriend}");
-                if (result.m_steamIDFriend == steamid && this.victims.TryGetValue(steamid, out var victim))
+                if (this.victims.TryGetValue(result.m_steamIDFriend, out var victim))
                 {
-                    var currentRP = this.LoadUserRP(steamid);
+                    var currentRP = this.LoadUserRP(victim.SteamId);
                     victim.OnRichPresenceUpdate(currentRP);
                 }
             });
