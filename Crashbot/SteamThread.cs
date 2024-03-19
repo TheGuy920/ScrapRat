@@ -100,6 +100,7 @@ namespace Crashbot
             SteamFunction @new = new(() => 
             { 
                 result.Add(original.Invoke());
+                Console.WriteLine("Result returned");
                 returnResultReady.Set();
             }, []);
 
@@ -107,6 +108,7 @@ namespace Crashbot
             Console.WriteLine("Waiting for result from getSteamFunction");
             returnResultReady.WaitOne();
 
+            Console.WriteLine("Result aquired");
             return result.FirstOrDefault();
         }
 
