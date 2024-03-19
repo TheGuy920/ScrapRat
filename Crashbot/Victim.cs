@@ -105,7 +105,7 @@ namespace Crashbot
         /// </summary>
         public void StartCollectRichPresence()
         {
-            this.richPrecenseTimer.Elapsed += this.GetRichPresence;
+            this.richPrecenseTimer.Elapsed += (e, a) => this.GetRichPresence?.Invoke(e, a);
             this.richPrecenseTimer.Start();
         }
 
