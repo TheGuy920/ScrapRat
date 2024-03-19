@@ -95,9 +95,6 @@ namespace Crashbot
                 Step.WaitOne();
                 CancellationTokenSource interuptSource = new();
 
-                victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
-                victim.StartCollectRichPresence();
-
                 Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
 
                 if (victim.PrivacySettings == PrivacyState.Private)
@@ -125,9 +122,12 @@ namespace Crashbot
                     previousState = isPlaying;
                 };
 
+                victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
+                victim.StartCollectRichPresence();
 
                 victim.GameStateChanged += onGameChange;
                 victim.FasterTracking(interuptSource.Token);
+
                 onGameChange(victim.IsPlayingScrapMechanic);
             }
         }
