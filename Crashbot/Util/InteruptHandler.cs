@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Crashbot.Util
@@ -46,8 +47,12 @@ namespace Crashbot.Util
         /// <summary>
         /// 
         /// </summary>
-        public void Reset() =>
+        public void Reset()
+        {
             this.source.Cancel();
+            this.source.Token.WaitHandle.WaitOne();
+            this.source = new();
+        }
 
         /// <summary>
         /// 
