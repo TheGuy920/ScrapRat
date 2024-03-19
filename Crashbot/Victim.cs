@@ -126,7 +126,7 @@ namespace Crashbot
         public void FasterTracking(CancellationToken token)
         {
             this.trackingTimer.Interval = 1000;
-            Task.Delay(TimeSpan.MaxValue, token).ContinueWith((_) => this.trackingTimer.Interval = DEFAULT_INTERVAL);
+            Task.Delay(TimeSpan.MaxValue, token).ContinueWith(_ => this.trackingTimer.Interval = DEFAULT_INTERVAL);
         }
 
         /// <summary>

