@@ -188,6 +188,7 @@ namespace Crashbot
                 }
             });
 
+            Console.WriteLine($"Requesting up to date rich presence: {steamid}");
             this.SteamThread.Run(SteamFriends.RequestFriendRichPresence, steamid);
         }
 
