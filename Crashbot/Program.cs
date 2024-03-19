@@ -17,7 +17,7 @@ namespace Crashbot
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
 
-            args = ["-v", "3", "-urmom", "123"];
+            args = ["-v", "4", "-urmom", "123"];
 
             while (args.Length > 0)
             {
