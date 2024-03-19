@@ -200,7 +200,7 @@ namespace Crashbot
         }
 
         private const int DEFAULT_INTERVAL = 60 * 1000;
-        private const int FAST_INTERVAL = 500;
+        private const int FAST_INTERVAL = 1500;
         private const int DEFAULT_RICH_PRESENCE_INTERVAL = 5000;
         private readonly System.Timers.Timer trackingTimer = new()
         {

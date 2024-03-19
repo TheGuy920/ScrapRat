@@ -33,7 +33,7 @@ namespace Crashbot
             }
         ];
 
-        private const int FUN_TIME = 7;
+        private const int FUN_TIME = 3;
         private const int REQUEST_TIMEOUT = 1000;
         private readonly InterfaceMode OperationMode;
         private readonly SteamThread SteamThread;
@@ -60,14 +60,26 @@ namespace Crashbot
         public static SteamInterface NewSyncInterface()
             => new(InterfaceMode.Syncronous);
 
-
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="victim"></param>
+        /// <returns></returns>
         public bool AddNewVictim(Victim victim)
             => this.victims.TryAdd(victim.SteamId, victim);
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="victim"></param>
         public void GetVictimRichPresence(Victim victim)
             => this.GetVictimRichPresence(victim.SteamId);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="victim"></param>
+        /// <returns></returns>
         public string LoadVictimName(Victim victim)
         {
             string name = this.LoadVictimName(victim.SteamId);
@@ -75,6 +87,10 @@ namespace Crashbot
             return name;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
         public void CrashVictimWhenReady(Victim v)
         {
             if (this.victims.TryGetValue(v.SteamId, out var victim))
@@ -165,8 +181,6 @@ namespace Crashbot
 
                 SteamNetConnectionInfo_t info = ix.Value;
                 HSteamNetConnection conn = cx.Value;
-
-                // int messageCount = 
 
                 for (int i = 0; i < FUN_TIME; i++)
                 {
