@@ -255,21 +255,44 @@ namespace Crashbot
 
         private XElement GetProfile()
         {
-            if (!this.hasInitialized)
-                this.SetWebClientSettings();
+            // if (!this.hasInitialized)
+            //    this.SetWebClientSettings();
 
-            this.session.CancelPendingRequests();
-            string rand = GetThinUuid() + GetThinUuid() + GetThinUuid();
-            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=1&nothing={rand}";
-            // Console.WriteLine($"Fetching profile at {url}", Verbosity.Debug);
+            // this.session.CancelPendingRequests();
+            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}/?xml=1&nothing={Victim.NewUuid}";
 
-            var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
+            // var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
+            string response = Victim.ExecuteCurlCommand(url);
             XDocument xDocument = XDocument.Parse(response);
 
-            // first xml element is <profile>
             return xDocument.Elements().First();
         }
 
-        private static string GetThinUuid() => Guid.NewGuid().ToString().Replace("-", string.Empty);
+        private static string NewUuid => Guid.NewGuid().ToString().Replace("-", string.Empty);
+
+        private static string ExecuteCurlCommand(string url)
+        {
+            try
+            {
+                ProcessStartInfo startInfo = new()
+                {
+                    FileName = "curl",
+                    Arguments = url,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using Process? process = Process.Start(startInfo);
+                using StreamReader? reader = process?.StandardOutput;
+                string result = reader?.ReadToEnd() ?? string.Empty;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message, Verbosity.Normal);
+                return string.Empty;
+            }
+        }
     }
 }
