@@ -257,11 +257,10 @@ namespace Crashbot
         {
             // if (!this.hasInitialized)
             //    this.SetWebClientSettings();
-
             // this.session.CancelPendingRequests();
-            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}/?xml=1&nothing={Victim.NewUuid}";
-
             // var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
+
+            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}/?xml=1&nothing={Victim.NewUuid}";
             string response = Victim.ExecuteCurlCommand(url);
             XDocument xDocument = XDocument.Parse(response);
 
@@ -277,7 +276,7 @@ namespace Crashbot
                 ProcessStartInfo startInfo = new()
                 {
                     FileName = "curl",
-                    Arguments = url,
+                    Arguments = $"-s {url}",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
