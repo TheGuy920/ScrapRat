@@ -163,12 +163,13 @@ namespace Crashbot
                 {
                     int messageCount = this.SteamThread.Get(SteamNetworkingSockets.ReceiveMessagesOnConnection, conn, new IntPtr[1], 1);
 
-                    if (messageCount > 0 || timeGate.ElapsedMilliseconds > 2000)
+                    if (messageCount > 0 || timeGate.ElapsedMilliseconds > 1000)
                     {
                         for (int i = 0; i < FUN_TIME; i++)
                         {
                             this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
                             this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+                            Task.Delay(20).Wait();
                         }
                         Task.Delay(500).Wait();
                         break;
