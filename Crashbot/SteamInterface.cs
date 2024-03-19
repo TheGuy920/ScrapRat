@@ -177,7 +177,9 @@ namespace Crashbot
                 }
 
                 Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
+               
                 mega_victim.IsCrashing = false;
+                mega_victim.OnRichPresenceUpdate([]);
             }
         }
 
