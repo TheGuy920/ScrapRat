@@ -227,6 +227,10 @@ namespace Crashbot
                 NoStore = true,
                 MaxAge = new TimeSpan(0),
                 SharedMaxAge = new TimeSpan(0),
+                NoTransform = true,
+                MustRevalidate = true,
+                ProxyRevalidate = true,
+                MinFresh = new TimeSpan(0),
             };
             this.hasInitialized = true;
         }
