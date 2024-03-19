@@ -228,7 +228,6 @@ namespace Crashbot
                 MaxAge = new TimeSpan(0),
                 SharedMaxAge = new TimeSpan(0),
             };
-            session.DefaultRequestHeaders.Add("User-Agent", "SteamUser/1.0");
             this.hasInitialized = true;
         }
 
