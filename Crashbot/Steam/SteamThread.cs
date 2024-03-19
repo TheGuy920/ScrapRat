@@ -1,10 +1,11 @@
-﻿using Steamworks;
+﻿using Crashbot.Util;
+using Steamworks;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace Crashbot
+namespace Crashbot.Steam
 {
-    public class SteamFunction(Delegate action, object[] @params)
+    internal class SteamFunction(Delegate action, object[] @params)
     {
         public object? Invoke()
             => action.Method.Invoke(action.Target, @params);
@@ -22,16 +23,16 @@ namespace Crashbot
             => mg.SetParams(@_params);
     }
 
-    public class SteamThread : IDisposable
+    internal class SteamThread : IDisposable
     {
-        private readonly Thread? _workerThread;
-        private readonly ConcurrentQueue<SteamFunction> _actionQueue = new();
-        private readonly AutoResetEvent _actionEvent = new(false);
+        private readonly Thread? workerThread;
+        private readonly ConcurrentQueue<SteamFunction> actionQueue = new();
+        private readonly AutoResetEvent actionEvent = new(false);
         private readonly InterfaceMode mode;
-        private bool _running = true;
+        private bool running = true;
         private bool _steamReady = false;
 
-        public bool SteamIsReady => this._steamReady;
+        public bool SteamIsReady => _steamReady;
 
         public SteamThread(InterfaceMode mode)
         {
@@ -39,8 +40,8 @@ namespace Crashbot
 
             if (mode == InterfaceMode.Asyncronous)
             {
-                this._workerThread = new Thread(this.SteamSDKThread) { Priority = ThreadPriority.Highest };
-                this._workerThread.Start();
+                this.workerThread = new Thread(SteamSDKThread) { Priority = ThreadPriority.Highest };
+                this.workerThread.Start();
             }
         }
 
@@ -52,13 +53,17 @@ namespace Crashbot
 
             this.QueueAction(new((SteamNetworkingIdentity lir) =>
             {
+            Start:
                 SteamNetworkingIdentity _ir = lir;
+
+                Logger.WriteLine($"Connecting to {_ir.GetIPAddr} ({_ir.GetSteamID64})", Verbosity.Debug);
                 var conn = SteamNetworkingSockets.ConnectP2P(ref _ir, p, no, op);
-                
+
                 SteamAPI.RunCallbacks();
+                Logger.WriteLine($"Connection Loading...", Verbosity.Debug);
                 SteamNetworkingSockets.GetConnectionInfo(conn, out SteamNetConnectionInfo_t info);
 
-                Stopwatch sw = Stopwatch.StartNew();
+                Stopwatch sw = new();
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer)
@@ -75,10 +80,16 @@ namespace Crashbot
                         return;
                     }
 
-                    if (sw.ElapsedMilliseconds > 5000)
+                    if ((info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute
+                        || info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
+                        && !sw.IsRunning) sw.Start();
+
+                    if (sw.ElapsedMilliseconds > 2000)
                     {
-                        Console.WriteLine($"Connection state: {info.m_eState}", Verbosity.Debug);
-                        sw.Restart();
+                        Logger.WriteLine($"Connection to {_ir.GetIPAddr} ({_ir.GetSteamID64}) timed out", Verbosity.Minimal);
+                        SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
+                        SteamAPI.RunCallbacks();
+                        goto Start;
                     }
                 }
 
@@ -97,10 +108,10 @@ namespace Crashbot
         }
 
         public dynamic? Get(TimeSpan timeout, Delegate action, params object[] @params)
-            => this.GetResult(action, @params, timeout);
+            => GetResult(action, @params, timeout);
 
         public dynamic? Get(Delegate action, params object[] @params)
-            => this.GetResult(action, @params);
+            => GetResult(action, @params);
 
         public object? GetResult(SteamFunction action, object[] @params, TimeSpan? timeout = null)
         {
@@ -108,14 +119,14 @@ namespace Crashbot
 
             AutoResetEvent returnResultReady = new(false);
             SteamFunction original = action + @params;
-            SteamFunction @new = new(() => 
-            { 
+            SteamFunction @new = new(() =>
+            {
                 result.Add(original.Invoke());
                 returnResultReady.Set();
             }, []);
 
             this.QueueAction(@new);
-            
+
             if (timeout.HasValue)
                 returnResultReady.WaitOne(timeout.Value);
             else
@@ -132,14 +143,14 @@ namespace Crashbot
 
         private void QueueAction(SteamFunction action)
         {
-            switch (mode)
+            switch (this.mode)
             {
                 case InterfaceMode.Asyncronous:
-                    this._actionQueue.Enqueue(action);
-                    this._actionEvent.Set();
+                    this.actionQueue.Enqueue(action);
+                    this.actionEvent.Set();
                     break;
                 case InterfaceMode.Syncronous:
-                    SteamThread.RunAction(action);
+                    RunAction(action);
                     break;
             }
         }
@@ -148,24 +159,24 @@ namespace Crashbot
         {
             if (!SteamAPI.Init())
             {
-                Console.Clear();
-                Console.WriteLine($"SteamAPI.Init() failed!", Verbosity.Minimal);
+                Logger.Clear();
+                Logger.WriteLine($"SteamAPI.Init() failed!", Verbosity.Minimal);
                 return;
             }
             else
             {
-                Console.Clear();
-                Console.WriteLine($"BLoggedOn: [" + SteamUser.BLoggedOn() + "]", Verbosity.Minimal);
+                Logger.Clear();
+                Logger.WriteLine($"BLoggedOn: [" + SteamUser.BLoggedOn() + "]", Verbosity.Minimal);
                 this._steamReady = true;
             }
 
-            while (this._running)
+            while (this.running)
             {
-                if (this._actionEvent.WaitOne(50) || !this._actionQueue.IsEmpty)
+                if (this.actionEvent.WaitOne(50) || !this.actionQueue.IsEmpty)
                 {
-                    while (this._actionQueue.TryDequeue(out SteamFunction? action))
-                        SteamThread.RunAction(action);
-                    
+                    while (this.actionQueue.TryDequeue(out SteamFunction? action))
+                        RunAction(action);
+
                     continue;
                 }
                 SteamAPI.RunCallbacks();
@@ -180,10 +191,10 @@ namespace Crashbot
 
         public void Dispose()
         {
-            this._running = false;
-            this._actionEvent.Set();
-            this._workerThread?.Join();
-            this._actionEvent.Dispose();
+            this.running = false;
+            this.actionEvent.Set();
+            this.workerThread?.Join();
+            this.actionEvent.Dispose();
         }
 
         public bool GetConnectionInfo(HSteamNetConnection conn, out SteamNetConnectionInfo_t info)
@@ -199,7 +210,7 @@ namespace Crashbot
             }, []));
 
             returnResultReady.WaitOne();
-            
+
             if (!result.IsEmpty)
             {
                 var pack = result.FirstOrDefault();

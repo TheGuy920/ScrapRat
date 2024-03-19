@@ -1,7 +1,9 @@
-﻿using Steamworks;
-using System.Reflection;
+﻿using Crashbot;
+using Crashbot.Steam;
+using Crashbot.Util;
+using Steamworks;
 
-namespace Crashbot
+namespace CrashBotCli
 {
     internal class Program
     {
@@ -17,8 +19,6 @@ namespace Crashbot
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
 
-            args = ["-v", "4", "-urmom", "123"];
-
             while (args.Length > 0)
             {
                 int cnt = Math.Min(2, args.Length);
@@ -32,9 +32,9 @@ namespace Crashbot
                     case "-v":
                     case "--verbosity":
                         if (Enum.TryParse(value, true, out Verbosity v))
-                            Console.LogVerbosity = v;
+                            Logger.LogVerbosity = v;
                         else if (int.TryParse(value, out int enm))
-                            Console.LogVerbosity = (Verbosity)Math.Min(MaxVerbosity, Math.Abs(enm));
+                            Logger.LogVerbosity = (Verbosity)Math.Min(MaxVerbosity, Math.Abs(enm));
                         break;
                     case "-u":
                     case "--user":
@@ -42,16 +42,16 @@ namespace Crashbot
                         break;
                     case "-h":
                     case "--help":
-                        Console.WriteLine("Usage: Crashbot [-v|--verbosity <verbosity>] [-u|--user <steamid64>] [-h|--help]", Verbosity.None);
-                        Console.WriteLine("Verbosity levels: None = 0, Minimal = 1, Normal = 2, Verbose = 3, Debug = 4", Verbosity.None);
-                        Console.WriteLine("Additional Users: There is no limit on how many users can be added via the cli", Verbosity.None);
+                        Logger.WriteLine("Usage: Crashbot [-v|--verbosity <verbosity>] [-u|--user <steamid64>] [-h|--help]", Verbosity.None);
+                        Logger.WriteLine("Verbosity levels: None = 0, Minimal = 1, Normal = 2, Verbose = 3, Debug = 4", Verbosity.None);
+                        Logger.WriteLine("Additional Users: There is no limit on how many users can be added via the cli", Verbosity.None);
                         return;
                 }
             }
 
             SteamInterface Steam = SteamInterface.NewAsyncInterface();
             Steam.WaitUntilSteamReady();
-            Console.Write(Environment.NewLine, Verbosity.Minimal);
+            Logger.Write(Environment.NewLine, Verbosity.None);
 
             while (true)
             {
@@ -63,24 +63,10 @@ namespace Crashbot
                     Victim A = new(originalUserSteamid);
 
                     Steam.AddNewVictim(A);
-                    Steam.CrashVictimWhenReady(A);
                 }
 
                 Step.WaitOne();
             }
         }
-
-        private static string ReadSteamId()
-        {
-            string steamid = Console.ReadLine()?.Trim() ?? string.Empty;
-
-            if (string.IsNullOrEmpty(steamid))
-                Console.WriteLine($"Invalid SteamID64", Verbosity.Minimal);
-
-            if (steamid.Contains("http", StringComparison.InvariantCultureIgnoreCase))
-                steamid = steamid.Split('/').Last();
-
-            return steamid;
-        }        
     }
 }

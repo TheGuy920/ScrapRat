@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crashbot
+namespace Crashbot.Steam
 {
-    public enum InterfaceMode
+    internal enum InterfaceMode
     {
         Syncronous,
         Asyncronous
