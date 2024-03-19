@@ -233,7 +233,7 @@ namespace Crashbot
             //if (gstate != this.previousGameState)
             //    this.previousGameState = gstate;
             //else
-                this.IsPlayingScrapMechanic = gstate;
+            this.IsPlayingScrapMechanic = gstate;
         }
 
         private readonly HttpClient session = new();

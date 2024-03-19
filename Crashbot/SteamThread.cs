@@ -81,15 +81,9 @@ namespace Crashbot
 
                 ret.Add((_ir, conn, info));
                 connected.Set();
-            }, [ir]));
-
-            this.QueueAction(new((HSteamNetConnection conn) =>
-            {
-                if (cancel?.CanBeCanceled == true && cancel?.IsCancellationRequested == true)
-                    return;
 
                 SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new IntPtr[1], 1);
-            }, []));
+            }, [ir]));
 
             connected.WaitOne();
             if (!ret.IsEmpty)
