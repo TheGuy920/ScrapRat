@@ -212,7 +212,6 @@ namespace Crashbot
             XElement? inGameInfo = profile.Element("inGameInfo");
             string gameLink = inGameInfo?.Element("gameLink")?.Value.Trim() ?? string.Empty;
 
-            Console.WriteLine($"TrackingUpdate: {gameLink}");
             this.IsPlayingScrapMechanic = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
         }
 
