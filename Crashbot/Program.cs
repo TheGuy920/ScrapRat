@@ -10,7 +10,7 @@ namespace Crashbot
             // 76561198422873503,
         ];
 
-        private static readonly int MaxVerbosity = Enum.GetValues(typeof(Verbosity)).Cast<int>().Max();
+        private static readonly int MaxVerbosity = Enum.GetValues<Verbosity>().Cast<int>().Max();
 
         static void Main(string[] args)
         {
@@ -19,9 +19,11 @@ namespace Crashbot
 
             args = ["-v", "0", "-urmom", "123"];
 
-            while (args.Length != 0)
+            while (args.Length > 0)
             {
-                var kvp = args.Take(2 % args.Length);
+                int cnt = 2 % args.Length;
+                var kvp = args.Take(cnt);
+                args = args.Skip(cnt).ToArray();
                 string key = kvp.ElementAtOrDefault(0).Trim();
                 string value = kvp.ElementAtOrDefault(1).Trim();
 
