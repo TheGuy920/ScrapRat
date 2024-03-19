@@ -252,15 +252,17 @@ namespace Crashbot
 
         private XElement GetProfile()
         {
-            if (!this.hasInitialized)
-                this.SetWebClientSettings();
+            this.SetWebClientSettings();
+            string rand = GetThinUuid() + GetThinUuid() + GetThinUuid();
 
-            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=true&{Guid.NewGuid()}";
+            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=true&{rand}";
             var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
             XDocument xDocument = XDocument.Parse(response);
 
             // first xml element is <profile>
             return xDocument.Elements().First();
         }
+
+        private static string GetThinUuid() => Guid.NewGuid().ToString().Replace("-", string.Empty);
     }
 }
