@@ -45,7 +45,7 @@ namespace Crashbot
             }
         }
         public event HostSteamIdEvent? HostSteamIdChanged;
-        private CSteamID hostSteamId = steamid;
+        private CSteamID hostSteamId = new(steamid.m_SteamID);
 
         /// <summary>
         /// True if the current victim is playing Scrap Mechanic.
@@ -88,12 +88,12 @@ namespace Crashbot
         /// <summary>
         /// The 'steam' display name of the current victim's privacy settings.
         /// </summary>
-        public string PrivacyDisplayName { get; private set; }
+        public string PrivacyDisplayName { get; private set; } = string.Empty;
 
         /// <summary>
         /// Current state for the victim
         /// </summary>
-        public volatile bool IsCrashing;
+        public volatile bool IsCrashing = false;
 
         /// <summary>
         /// Elapsed event for triggering the SteamInterface to collect RichPresence on this victim
