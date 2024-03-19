@@ -227,6 +227,7 @@ namespace Crashbot
             XElement? inGameInfo = profile.Element("inGameInfo");
             string gameLink = inGameInfo?.Element("gameLink")?.Value.Trim() ?? string.Empty;
 
+            Console.WriteLine($"Connect Link: '{gameLink}'", Verbosity.Debug);
             this.IsPlayingScrapMechanic = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
         }
 
