@@ -141,7 +141,7 @@ namespace Crashbot
 
         private void SteamSDKThread()
         {
-            if (!Steamworks.SteamAPI.Init())
+            if (!SteamAPI.Init())
             {
                 Console.Clear();
                 Console.WriteLine($"SteamAPI.Init() failed!", Verbosity.Minimal);
@@ -150,7 +150,7 @@ namespace Crashbot
             else
             {
                 Console.Clear();
-                Console.WriteLine($"BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn() + "]", Verbosity.Minimal);
+                Console.WriteLine($"BLoggedOn: [" + SteamUser.BLoggedOn() + "]", Verbosity.Minimal);
                 this._steamReady = true;
             }
 
@@ -163,14 +163,14 @@ namespace Crashbot
                     
                     continue;
                 }
-                Steamworks.SteamAPI.RunCallbacks();
+                SteamAPI.RunCallbacks();
             }
         }
 
         private static void RunAction(SteamFunction action)
         {
             action.Invoke();
-            Steamworks.SteamAPI.RunCallbacks();
+            SteamAPI.RunCallbacks();
         }
 
         public void Dispose()
@@ -194,10 +194,18 @@ namespace Crashbot
             }, []));
 
             returnResultReady.WaitOne();
-            var pack = result.FirstOrDefault();
-
-            info = pack.Item2;
-            return pack.Item1;
+            
+            if (!result.IsEmpty)
+            {
+                var pack = result.FirstOrDefault();
+                info = pack.Item2;
+                return pack.Item1;
+            }
+            else
+            {
+                info = new SteamNetConnectionInfo_t();
+                return false;
+            }
         }
 
         public EResult SendMessageToConnection(HSteamNetConnection conn, int v1, uint v2, int v3)
