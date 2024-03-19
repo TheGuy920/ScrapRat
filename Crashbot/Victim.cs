@@ -255,7 +255,9 @@ namespace Crashbot
             this.SetWebClientSettings();
             string rand = GetThinUuid() + GetThinUuid() + GetThinUuid();
 
-            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=true&{rand}";
+            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=1&{rand}";
+            Console.WriteLine($"Fetching profile at {url}", Verbosity.Debug);
+
             var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
             XDocument xDocument = XDocument.Parse(response);
 
