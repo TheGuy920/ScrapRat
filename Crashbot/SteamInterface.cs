@@ -99,11 +99,11 @@ namespace Crashbot
 
                 Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
 
-                this.ResetVictimTracking(new(), victim);
+                this.ResetVictimTracking(new(), victim, true);
             }
         }
 
-        private void ResetVictimTracking(CancellationTokenSource interuptSource, Victim victim)
+        private void ResetVictimTracking(CancellationTokenSource interuptSource, Victim victim, bool @new)
         {
             if (victim.PrivacySettings == PrivacyState.Private)
             {
@@ -123,12 +123,15 @@ namespace Crashbot
                     victim.GameStateChanged -= onGameChange;
                     interuptSource.Cancel();
                     interuptSource.Token.WaitHandle.WaitOne(1000);
-                    this.ResetVictimTracking(new(), victim);
+                    this.ResetVictimTracking(new(), victim, false);
                 }
             };
 
             victim.GameStateChanged += onGameChange;
             victim.FasterTracking(interuptSource.Token);
+
+            if (@new)
+                onGameChange(victim.IsPlayingScrapMechanic);
         }
 
         private void CrashClientAsync(Victim mega_victim, CancellationTokenSource interuptSource)
