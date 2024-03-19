@@ -45,7 +45,7 @@ namespace Crashbot
             }
         }
         public event HostSteamIdEvent? HostSteamIdChanged;
-        private CSteamID hostSteamId;
+        private CSteamID hostSteamId = steamid;
 
         /// <summary>
         /// True if the current victim is playing Scrap Mechanic.

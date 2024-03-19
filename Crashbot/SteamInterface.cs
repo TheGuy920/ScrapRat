@@ -109,6 +109,7 @@ namespace Crashbot
                     if (isPlaying)
                         this.CrashClientAsync(victim, interuptSource);
                 };
+
                 victim.GameStateChanged += onGameChange;
                 onGameChange(victim.IsPlayingScrapMechanic);
 
@@ -131,6 +132,8 @@ namespace Crashbot
 
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(mega_victim.HostSteamId);
+
+                Console.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}");
                 var (cx, ix) =
                     this.SteamThread.ConnectP2P(ref remoteIdentity, 0, SteamInterface.LongTimeoutOptions.Length, SteamInterface.LongTimeoutOptions, interuptSource.Token);
 
