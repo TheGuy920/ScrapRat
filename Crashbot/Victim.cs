@@ -169,10 +169,12 @@ namespace Crashbot
 
             if (richPresence.Count <= 0 || !probablyInGame)
             {
+                Console.WriteLine($"Rich presence for {this.Username} ({this.SteamId}) is not in game", Verbosity.Debug);
                 this.IsPlayingScrapMechanic = false;
                 return;
             }
 
+            Console.WriteLine($"Rich presence for {this.Username} ({this.SteamId}) is in game", Verbosity.Debug);
             this.IsPlayingScrapMechanic = true;
 
             if (richPresence.TryGetValue("connect", out string? connectUrl))
