@@ -72,7 +72,7 @@ namespace Crashbot
                         return;
                     }
 
-                    if (sw.ElapsedMilliseconds > 1000)
+                    if (sw.ElapsedMilliseconds > 5000)
                     {
                         Console.WriteLine($"Connection state: {info.m_eState}", Verbosity.Debug);
                         sw.Restart();
