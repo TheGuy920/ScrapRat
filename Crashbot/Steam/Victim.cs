@@ -153,7 +153,7 @@ namespace Crashbot.Steam
             {
                 if (!this.WaitingOnRichPresence)
                 {
-                    this.WaitingOnRichPresence = true;
+                    // this.WaitingOnRichPresence = true;
                     this.GetRichPresence?.Invoke(e, a);
                 }
             };
