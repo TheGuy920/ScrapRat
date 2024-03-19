@@ -84,8 +84,6 @@ namespace Crashbot
 
                 ret.Add((_ir, conn, info));
                 connected.Set();
-
-                SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new IntPtr[1], 1);
             }, [ir]));
 
             connected.WaitOne();
