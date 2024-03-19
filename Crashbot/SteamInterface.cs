@@ -2,7 +2,6 @@
 using Crashbot.Util;
 using Steamworks;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using static Crashbot.Steam.Victim;
@@ -147,12 +146,12 @@ namespace Crashbot
                 }
 
                 bool previousState = !victim.IsPlayingScrapMechanic;
-
                 // wait for RP and fast track
                 void onGameChange(bool isPlaying)
                 {
                     SteamUser.Interupt.Cancel();
                     SteamUser.Interupt.Token.WaitHandle.WaitOne(1000);
+                    SteamUser.Interupt.Dispose();
 
                     if (isPlaying)
                     {

@@ -8,7 +8,8 @@ namespace CrashBotCli
     internal class Program
     {
         private static ulong[] steamids = [
-            76561198299556567,
+            76561198359772034
+            // 76561198299556567,
             // 76561198422873503,
         ];
 
