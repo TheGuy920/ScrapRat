@@ -58,6 +58,7 @@ namespace Crashbot
                 SteamAPI.RunCallbacks();
                 SteamNetworkingSockets.GetConnectionInfo(conn, out SteamNetConnectionInfo_t info);
 
+                Stopwatch sw = Stopwatch.StartNew();
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer)
@@ -69,6 +70,12 @@ namespace Crashbot
                     {
                         connected.Set();
                         return;
+                    }
+
+                    if (sw.ElapsedMilliseconds > 1000)
+                    {
+                        Console.WriteLine($"Connection state: {info.m_eState}", Verbosity.Debug);
+                        sw.Restart();
                     }
 
                     Task.Delay(15).Wait();
