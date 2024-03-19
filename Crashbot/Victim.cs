@@ -230,9 +230,9 @@ namespace Crashbot
             string gameLink = inGameInfo?.Element("gameLink")?.Value.Trim() ?? string.Empty;
 
             var gstate = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
-            if (gstate != this.previousGameState)
-                this.previousGameState = gstate;
-            else
+            //if (gstate != this.previousGameState)
+            //    this.previousGameState = gstate;
+            //else
                 this.IsPlayingScrapMechanic = gstate;
         }
 
