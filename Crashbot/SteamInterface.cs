@@ -151,7 +151,7 @@ namespace Crashbot
                 if (cx is null || ix is null)
                 {
                     mega_victim.IsCrashing = false;
-                    Console.WriteLine($"Exiting early, likely due to token cancelation {interuptSource.IsCancellationRequested}", Verbosity.Debug);
+                    Console.WriteLine($"Exiting early, likely due to token cancelation: {interuptSource.IsCancellationRequested}", Verbosity.Debug);
                     return;
                 }
 
