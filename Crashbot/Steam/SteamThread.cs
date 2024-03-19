@@ -80,8 +80,7 @@ namespace Crashbot.Steam
                         return;
                     }
 
-                    if ((info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute
-                        || info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
+                    if ((info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute)
                         && !sw.IsRunning) sw.Start();
 
                     if (sw.ElapsedMilliseconds > 2000)
