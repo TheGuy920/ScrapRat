@@ -214,6 +214,7 @@ namespace Crashbot
             Interval = DEFAULT_RICH_PRESENCE_INTERVAL,
         };
 
+        private bool previousGameState = false;
         private void TrackingUpdate(object? sender, System.Timers.ElapsedEventArgs e)
         {
             var profile = this.GetProfile();
@@ -227,8 +228,11 @@ namespace Crashbot
             XElement? inGameInfo = profile.Element("inGameInfo");
             string gameLink = inGameInfo?.Element("gameLink")?.Value.Trim() ?? string.Empty;
 
-            Console.WriteLine($"Connect Link: '{gameLink}'", Verbosity.Debug);
-            this.IsPlayingScrapMechanic = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
+            var gstate = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
+            if (gstate != this.previousGameState)
+                this.previousGameState = gstate;
+            else
+                this.IsPlayingScrapMechanic = gstate;
         }
 
         private readonly HttpClient session = new();
@@ -257,7 +261,7 @@ namespace Crashbot
 
             string rand = GetThinUuid() + GetThinUuid() + GetThinUuid();
             string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=1&nothing={rand}";
-            Console.WriteLine($"Fetching profile at {url}", Verbosity.Debug);
+            // Console.WriteLine($"Fetching profile at {url}", Verbosity.Debug);
 
             var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
             XDocument xDocument = XDocument.Parse(response);
