@@ -136,6 +136,7 @@ namespace Crashbot
         {
             this.trackingTimer.Elapsed += this.TrackingUpdate;
             this.trackingTimer.Start();
+            this.TrackingUpdate(null, null);
         }
 
         /// <summary>

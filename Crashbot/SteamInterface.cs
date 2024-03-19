@@ -161,6 +161,7 @@ namespace Crashbot
 
             if (!infoIsPreLoaded)
             {
+                Console.WriteLine("Waiting for user info to load");
                 AutoResetEvent nameLoaded = new(false);
                 Callback<PersonaStateChange_t>.Create(_ => nameLoaded.Set());
                 nameLoaded.WaitOne(REQUEST_TIMEOUT);

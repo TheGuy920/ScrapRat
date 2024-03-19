@@ -17,7 +17,7 @@ namespace Crashbot
             while (true)
             {
                 // Gather target
-                Console.WriteLine(Environment.NewLine);
+                Console.Write(Environment.NewLine);
                 Console.Write($"Enter target SteamID64: ");
 
                 // Pretty parse the steamid
