@@ -17,11 +17,11 @@ namespace Crashbot
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
 
-            args = ["-v", "0", "-urmom", "123"];
+            args = ["-v", "3", "-urmom", "123"];
 
             while (args.Length > 0)
             {
-                int cnt = 2 % args.Length;
+                int cnt = Math.Min(2, args.Length);
                 var kvp = args.Take(cnt);
                 args = args.Skip(cnt).ToArray();
                 string key = kvp.ElementAtOrDefault(0).Trim();
