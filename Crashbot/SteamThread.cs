@@ -5,9 +5,6 @@ namespace Crashbot
 {
     public class SteamFunction(Delegate action, object[] @params)
     {
-        public void Run()
-            => action.Method.Invoke(action.Target, @params);
-
         public object? Invoke()
             => action.Method.Invoke(action.Target, @params);
 
@@ -148,16 +145,18 @@ namespace Crashbot
             }
 
             while (this._running)
+            {
                 if (this._actionEvent.WaitOne(50) || !this._actionQueue.IsEmpty)
                     while (this._actionQueue.TryDequeue(out SteamFunction? action))
                         SteamThread.RunAction(action);
                 else
                     Steamworks.SteamAPI.RunCallbacks();
+            }
         }
 
         private static void RunAction(SteamFunction action)
         {
-            action.Run();
+            action.Invoke();
             Steamworks.SteamAPI.RunCallbacks();
         }
 
