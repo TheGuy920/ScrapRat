@@ -81,8 +81,9 @@ namespace Crashbot
         /// <returns></returns>
         public bool AddNewVictim(Victim victim)
         {
+            bool res = this.SteamUsers.TryAdd(victim.SteamId, (victim, new()));
             this.CrashVictimWhenReady(victim);
-            return this.SteamUsers.TryAdd(victim.SteamId, (victim, new()));
+            return res;
         }
 
         /// <summary>
