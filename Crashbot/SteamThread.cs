@@ -97,17 +97,13 @@ namespace Crashbot
             SteamFunction original = action + @params;
             SteamFunction @new = new(() => 
             { 
-                Console.WriteLine("Invoking original function");
                 result.Add(original.Invoke());
-                Console.WriteLine("Result returned");
                 returnResultReady.Set();
             }, []);
 
             this.QueueAction(@new);
-            Console.WriteLine("Waiting for result from getSteamFunction");
             returnResultReady.WaitOne();
 
-            Console.WriteLine("Result aquired");
             return result.FirstOrDefault();
         }
 
@@ -147,7 +143,6 @@ namespace Crashbot
                 this._steamReady = true;
             }
 
-            Console.WriteLine("SteamThread running");
             while (this._running)
             {
                 if (this._actionEvent.WaitOne(50) || !this._actionQueue.IsEmpty)
@@ -159,8 +154,6 @@ namespace Crashbot
                 }
                 Steamworks.SteamAPI.RunCallbacks();
             }
-
-            Console.WriteLine("SteamThread shutting down");
         }
 
         private static void RunAction(SteamFunction action)

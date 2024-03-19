@@ -113,6 +113,8 @@ namespace Crashbot
                 victim.FasterTracking(interuptSource.Token);
                 victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
                 victim.StartCollectRichPresence();
+
+                Console.WriteLine($"Now watching {name} ({v.SteamId})...");
             }
         }
 
@@ -161,7 +163,6 @@ namespace Crashbot
 
             if (!infoIsPreLoaded)
             {
-                Console.WriteLine("Waiting for user info to load");
                 AutoResetEvent nameLoaded = new(false);
                 Callback<PersonaStateChange_t>.Create(_ => nameLoaded.Set());
                 nameLoaded.WaitOne(REQUEST_TIMEOUT);
