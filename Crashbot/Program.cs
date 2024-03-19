@@ -18,11 +18,11 @@ namespace Crashbot
             {
                 // Gather target
                 Console.Write(Environment.NewLine);
-                Console.Write($"Enter target SteamID64: ");
+                // Console.Write($"Enter target SteamID64: ");
 
                 // Pretty parse the steamid
                 AutoResetEvent Step = new(false);
-                string steamid = Program.ReadSteamId();
+                string steamid = "76561198299556567"; // Program.ReadSteamId();
                 if (string.IsNullOrEmpty(steamid))
                     continue;
 

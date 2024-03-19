@@ -103,7 +103,7 @@ namespace Crashbot
                 returnResultReady.Set();
             }, []);
 
-            this.QueueAction(original);
+            this.QueueAction(@new);
             Console.WriteLine("Waiting for result from getSteamFunction");
             returnResultReady.WaitOne();
 
