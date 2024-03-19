@@ -99,6 +99,11 @@ namespace Crashbot
         public volatile bool IsCrashing = false;
 
         /// <summary>
+        /// Rich presence is being collected for the current victim
+        /// </summary>
+        public volatile bool WaitingOnRichPresence = false;
+
+        /// <summary>
         /// Elapsed event for triggering the SteamInterface to collect RichPresence on this victim
         /// </summary>
         public event ElapsedEventHandler? GetRichPresence;
@@ -108,7 +113,14 @@ namespace Crashbot
         /// </summary>
         public void StartCollectRichPresence()
         {
-            this.richPrecenseTimer.Elapsed += (e, a) => this.GetRichPresence?.Invoke(e, a);
+            this.richPrecenseTimer.Elapsed += (e, a) =>
+            {
+                if (!this.WaitingOnRichPresence)
+                {
+                    this.WaitingOnRichPresence = true;
+                    this.GetRichPresence?.Invoke(e, a);
+                }
+            };
             this.richPrecenseTimer.Start();
         }
 
@@ -148,6 +160,8 @@ namespace Crashbot
         /// <param name="richPresence"></param>
         public void OnRichPresenceUpdate(Dictionary<string, string> richPresence)
         {
+            this.WaitingOnRichPresence = false;
+
             bool probablyInGame =
                    richPresence.TryGetValue("connect", out var curl) && !string.IsNullOrWhiteSpace(curl)
                 && richPresence.TryGetValue("status", out var stat) && !string.IsNullOrWhiteSpace(stat)

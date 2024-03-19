@@ -96,6 +96,7 @@ namespace Crashbot
 
                 Step.WaitOne();
 
+            TrackFlow:
                 CancellationTokenSource interuptSource = new();
                 if (victim.PrivacySettings == PrivacyState.Private)
                 {
@@ -107,8 +108,7 @@ namespace Crashbot
                 // wait for RP and fast track
                 void onGameChange(bool isPlaying)
                 {
-                    if (isPlaying)
-                        this.CrashClientAsync(victim, interuptSource);
+                    if (isPlaying) this.CrashClientAsync(victim, interuptSource);
                 };
 
                 victim.GameStateChanged += onGameChange;
@@ -161,6 +161,7 @@ namespace Crashbot
                     }
                 }
 
+                Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})");
                 mega_victim.IsCrashing = false;
             }
         }
@@ -183,7 +184,6 @@ namespace Crashbot
         {
             Callback<FriendRichPresenceUpdate_t>.Create(result =>
             {
-                Console.WriteLine($"Rich presence updated for {result.m_steamIDFriend}");
                 if (this.victims.TryGetValue(result.m_steamIDFriend, out var victim))
                 {
                     var currentRP = this.LoadUserRP(victim.SteamId);
@@ -191,7 +191,6 @@ namespace Crashbot
                 }
             });
 
-            Console.WriteLine($"Requesting up to date rich presence: {steamid}");
             this.SteamThread.Run(SteamFriends.RequestFriendRichPresence, steamid);
         }
 
