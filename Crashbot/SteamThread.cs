@@ -1,5 +1,6 @@
 ﻿using Steamworks;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Crashbot
 {
@@ -147,10 +148,13 @@ namespace Crashbot
             while (this._running)
             {
                 if (this._actionEvent.WaitOne(50) || !this._actionQueue.IsEmpty)
+                {
                     while (this._actionQueue.TryDequeue(out SteamFunction? action))
                         SteamThread.RunAction(action);
-                else
-                    Steamworks.SteamAPI.RunCallbacks();
+                    
+                    continue;
+                }
+                Steamworks.SteamAPI.RunCallbacks();
             }
         }
 
@@ -162,6 +166,7 @@ namespace Crashbot
 
         public void Dispose()
         {
+            Console.WriteLine("Disposing SteamThread");
             this._running = false;
             this._actionEvent.Set();
             this._workerThread?.Join();
