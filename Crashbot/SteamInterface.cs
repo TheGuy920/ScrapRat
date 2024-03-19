@@ -1,12 +1,9 @@
 ﻿using Steamworks;
 using System.Collections.Concurrent;
-using System.Data;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using static Crashbot.Victim;
-using static SteamKit2.GC.Dota.Internal.CMsgDOTATournamentStateChange;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Crashbot
 {
@@ -96,26 +93,18 @@ namespace Crashbot
                 Console.WriteLine($"Targeting '{name}'", Verbosity.Normal);
 
                 Step.WaitOne();
-                CancellationTokenSource interuptSource = new();
 
                 victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
                 victim.StartCollectRichPresence();
 
                 Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
 
-                this.ResetVictimTracking(interuptSource, victim);
-                victim.OnRichPresenceUpdate(new()
-                {
-                    ["d"] = "h",
-                    ["d"] = "h"
-                });
+                this.ResetVictimTracking(new(), victim);
             }
         }
 
         private void ResetVictimTracking(CancellationTokenSource interuptSource, Victim victim)
         {
-            interuptSource.TryReset();
-
             if (victim.PrivacySettings == PrivacyState.Private)
             {
                 // Direct connection, ocasionaly check if the profile is public
@@ -134,7 +123,7 @@ namespace Crashbot
                     victim.GameStateChanged -= onGameChange;
                     interuptSource.Cancel();
                     interuptSource.Token.WaitHandle.WaitOne(1000);
-                    this.ResetVictimTracking(interuptSource, victim);
+                    this.ResetVictimTracking(new(), victim);
                 }
             };
 
