@@ -48,6 +48,11 @@ namespace Crashbot.Steam
         private bool isPlayingScrapMechanic = false;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public InteruptHandler Interupt { get; } = new();
+
+        /// <summary>
         /// The current victim's SteamId64
         /// </summary>
         public CSteamID SteamId => steamid;

