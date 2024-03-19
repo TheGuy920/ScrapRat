@@ -104,6 +104,7 @@ namespace Crashbot
             }, []);
 
             this.QueueAction(original);
+            Console.WriteLine("Waiting for result from getSteamFunction");
             returnResultReady.WaitOne();
 
             return result.FirstOrDefault();
