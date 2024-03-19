@@ -14,10 +14,10 @@ namespace Crashbot
             => System.Console.Write(allowed ? msg : string.Empty);
 
         public static void WriteLine(string message, Verbosity level)
-            => Console.CheckVerbosity(Console.LogVerbosity >= level, $"[{DateTime.Now}] {message}{Environment.NewLine}");
+            => Console.CheckVerbosity((int)Console.LogVerbosity >= (int)level, $"[{DateTime.Now}] {message}{Environment.NewLine}");
 
         public static void Write(string message, Verbosity level)
-            => Console.CheckVerbosity(Console.LogVerbosity >= level, message);
+            => Console.CheckVerbosity((int)Console.LogVerbosity >= (int)level, message);
 
         public static void Clear()
             => System.Console.Clear();
