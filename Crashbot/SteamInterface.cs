@@ -238,7 +238,7 @@ namespace Crashbot
                         mega_victim.IsCrashing = false;
                     });
 
-                Task.Delay(2000).ContinueWith(_ => cancellationTokenSource.Cancel());
+                Task.Delay(5000).ContinueWith(_ => cancellationTokenSource.Cancel());
             }
         }
 
