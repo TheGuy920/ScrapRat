@@ -92,7 +92,7 @@ namespace Crashbot
 
                 victim.StartTracking();
                 string name = this.LoadVictimName(victim);
-                Console.WriteLine($"Targeting '{name}'");
+                Console.WriteLine($"Targeting '{name}'", Verbosity.Normal);
 
                 Step.WaitOne();
 
@@ -117,8 +117,8 @@ namespace Crashbot
                 victim.FasterTracking(interuptSource.Token);
                 victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
                 victim.StartCollectRichPresence();
-
-                Console.WriteLine($"Now watching {name} ({v.SteamId})...");
+                
+                Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
             }
         }
 
@@ -134,7 +134,7 @@ namespace Crashbot
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(mega_victim.HostSteamId);
 
-                Console.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}");
+                Console.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}", Verbosity.Verbose);
                 var (cx, ix) =
                     this.SteamThread.ConnectP2P(ref remoteIdentity, 0, SteamInterface.LongTimeoutOptions.Length, SteamInterface.LongTimeoutOptions, interuptSource.Token);
 
@@ -161,7 +161,7 @@ namespace Crashbot
                     }
                 }
 
-                Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})");
+                Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
                 mega_victim.IsCrashing = false;
             }
         }

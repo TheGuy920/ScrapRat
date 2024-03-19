@@ -132,13 +132,13 @@ namespace Crashbot
             if (!Steamworks.SteamAPI.Init())
             {
                 Console.Clear();
-                Console.WriteLine($"SteamAPI.Init() failed!");
+                Console.WriteLine($"SteamAPI.Init() failed!", Verbosity.Minimal);
                 return;
             }
             else
             {
                 Console.Clear();
-                Console.WriteLine($"BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn() + "]");
+                Console.WriteLine($"BLoggedOn: [" + Steamworks.SteamUser.BLoggedOn() + "]", Verbosity.Minimal);
                 this._steamReady = true;
             }
 
@@ -163,7 +163,6 @@ namespace Crashbot
 
         public void Dispose()
         {
-            Console.WriteLine("Disposing SteamThread");
             this._running = false;
             this._actionEvent.Set();
             this._workerThread?.Join();

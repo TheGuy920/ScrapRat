@@ -42,7 +42,7 @@ namespace Crashbot
                 if (value.m_SteamID != this.hostSteamId.m_SteamID)
                 {
                     this.HostSteamIdChanged?.Invoke(value);
-                    Console.WriteLine($"Host SteamID changed to {value} for victim {this.Username} ({this.SteamId})");
+                    Console.WriteLine($"Host SteamID changed to {value} for victim {this.Username} ({this.SteamId})", Verbosity.Debug);
                 }
                 this.hostSteamId = value;
             }
@@ -61,7 +61,7 @@ namespace Crashbot
                 if (value != this.isPlayingScrapMechanic)
                 {
                     this.GameStateChanged?.Invoke(value);
-                    Console.WriteLine($"Playing Scrapmechanic changed to {value} for victim {this.Username} ({this.SteamId})");
+                    Console.WriteLine($"Playing Scrapmechanic changed to {value} for victim {this.Username} ({this.SteamId})", Verbosity.Debug);
                 }
                 this.isPlayingScrapMechanic = value;
             }
@@ -80,7 +80,7 @@ namespace Crashbot
                 if (value != this.privacySettings)
                 {
                     this.PrivacySettingsChanged?.Invoke(value);
-                    Console.WriteLine($"Privacy settings changed to {value} for victim {this.Username} ({this.SteamId})");
+                    Console.WriteLine($"Privacy settings changed to {value} for victim {this.Username} ({this.SteamId})", Verbosity.Debug);
                 }
                 this.privacySettings = value;
             }
@@ -169,12 +169,10 @@ namespace Crashbot
 
             if (richPresence.Count <= 0 || !probablyInGame)
             {
-                Console.WriteLine($"Rich presence for {this.Username} ({this.SteamId}) is not in game");
                 this.IsPlayingScrapMechanic = false;
                 return;
             }
 
-            Console.WriteLine($"Rich presence for {this.Username} ({this.SteamId}) is in game");
             this.IsPlayingScrapMechanic = true;
 
             if (richPresence.TryGetValue("connect", out string? connectUrl))
