@@ -95,10 +95,13 @@ namespace Crashbot
             return (null, null);
         }
 
+        public dynamic? Get(TimeSpan timeout, Delegate action, params object[] @params)
+            => this.GetResult(action, @params, timeout);
+
         public dynamic? Get(Delegate action, params object[] @params)
             => this.GetResult(action, @params);
 
-        public object? GetResult(SteamFunction action, object[] @params)
+        public object? GetResult(SteamFunction action, object[] @params, TimeSpan? timeout = null)
         {
             ConcurrentBag<object?> result = [];
 
@@ -111,7 +114,7 @@ namespace Crashbot
             }, []);
 
             this.QueueAction(@new);
-            returnResultReady.WaitOne();
+            returnResultReady.WaitOne(timeout ?? new TimeSpan(Timeout.Infinite));
 
             return result.FirstOrDefault();
         }

@@ -169,7 +169,7 @@ namespace Crashbot
                 Stopwatch timeGate = Stopwatch.StartNew();
                 while (true)
                 {
-                    int messageCount = this.SteamThread.Get(SteamNetworkingSockets.ReceiveMessagesOnConnection, conn, new IntPtr[1], 1);
+                    int messageCount = this.SteamThread.Get(TimeSpan.FromSeconds(1), SteamNetworkingSockets.ReceiveMessagesOnConnection, conn, new IntPtr[1], 1);
 
                     if (messageCount > 0 || timeGate.ElapsedMilliseconds > 1000)
                     {
