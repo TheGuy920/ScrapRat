@@ -192,7 +192,11 @@ namespace Crashbot
                 Task.Delay(500).Wait();
 
                 Console.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
-               
+
+                SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
+                SteamNetworkingSockets.ResetIdentity(ref remoteIdentity);
+                SteamAPI.RunCallbacks();
+
                 mega_victim.IsCrashing = false;
                 mega_victim.OnRichPresenceUpdate([]);
             }
