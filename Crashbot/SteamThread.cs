@@ -148,7 +148,7 @@ namespace Crashbot
             }
 
             while (this._running)
-                if (this._actionEvent.WaitOne(50))
+                if (this._actionEvent.WaitOne(50) || !this._actionQueue.IsEmpty)
                     while (this._actionQueue.TryDequeue(out SteamFunction? action))
                         SteamThread.RunAction(action);
                 else
