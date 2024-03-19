@@ -114,7 +114,11 @@ namespace Crashbot
             }, []);
 
             this.QueueAction(@new);
-            returnResultReady.WaitOne(timeout ?? new TimeSpan(Timeout.Infinite));
+            
+            if (timeout.HasValue)
+                returnResultReady.WaitOne(timeout.Value);
+            else
+                returnResultReady.WaitOne();
 
             return result.FirstOrDefault();
         }
