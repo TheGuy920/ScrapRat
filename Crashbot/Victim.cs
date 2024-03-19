@@ -200,7 +200,7 @@ namespace Crashbot
         }
 
         private const int DEFAULT_INTERVAL = 60 * 1000;
-        private const int FAST_INTERVAL = 2500;
+        private const int FAST_INTERVAL = 2000;
         private const int DEFAULT_RICH_PRESENCE_INTERVAL = 5000;
         private readonly System.Timers.Timer trackingTimer = new()
         {
@@ -258,6 +258,7 @@ namespace Crashbot
             if (!this.hasInitialized)
                 this.SetWebClientSettings();
 
+            this.session.CancelPendingRequests();
             string rand = GetThinUuid() + GetThinUuid() + GetThinUuid();
             string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=1&nothing={rand}";
             // Console.WriteLine($"Fetching profile at {url}", Verbosity.Debug);
