@@ -125,15 +125,15 @@ namespace Crashbot
                 }
                 else
                 {
+                    victim.GameStateChanged -= onGameChange;
                     interuptSource.Cancel();
                     interuptSource.Token.WaitHandle.WaitOne(1000);
                     this.ResetVictimTracking(interuptSource, victim);
                 }
             };
 
-            victim.GameStateChanged -= onGameChange;
+            
             victim.GameStateChanged += onGameChange;
-
             victim.FasterTracking(interuptSource.Token);
 
             onGameChange(victim.IsPlayingScrapMechanic);
