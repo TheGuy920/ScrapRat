@@ -152,10 +152,12 @@ namespace Crashbot
 
             if (richPresence.Count <= 0 || !probablyInGame)
             {
+                Console.WriteLine($"Rich presence for {this.Username} ({this.SteamId}) is not in game");
                 this.IsPlayingScrapMechanic = false;
                 return;
             }
 
+            Console.WriteLine($"Rich presence for {this.Username} ({this.SteamId}) is in game");
             this.IsPlayingScrapMechanic = true;
 
             if (richPresence.TryGetValue("connect", out string? connectUrl))
@@ -206,6 +208,8 @@ namespace Crashbot
             // now we look for <inGameInfo> and then <gameLink>
             XElement? inGameInfo = profile.Element("inGameInfo");
             string gameLink = inGameInfo?.Element("gameLink")?.Value.Trim() ?? string.Empty;
+
+            Console.WriteLine($"TrackingUpdate: ");
             this.IsPlayingScrapMechanic = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
         }
 
