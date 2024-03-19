@@ -93,45 +93,34 @@ namespace Crashbot
                 Console.WriteLine($"Targeting '{name}'", Verbosity.Normal);
 
                 Step.WaitOne();
+                CancellationTokenSource interuptSource = new();
 
                 victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
                 victim.StartCollectRichPresence();
 
                 Console.WriteLine($"Now watching {name} ({v.SteamId})...", Verbosity.Normal);
 
-                this.ResetVictimTracking(new(), victim, true);
-            }
-        }
-
-        private void ResetVictimTracking(CancellationTokenSource interuptSource, Victim victim, bool @new)
-        {
-            if (victim.PrivacySettings == PrivacyState.Private)
-            {
-                // Direct connection, ocasionaly check if the profile is public
-                return;
-            }
-
-            // wait for RP and fast track
-            void onGameChange(bool isPlaying)
-            {
-                if (isPlaying && !victim.IsCrashing)
+                if (victim.PrivacySettings == PrivacyState.Private)
                 {
-                    this.CrashClientAsync(victim, interuptSource);
+                    // Direct connection, ocasionaly check if the profile is public
+                    return;
                 }
-                else
+
+                bool previousState = victim.IsPlayingScrapMechanic;
+                // wait for RP and fast track
+                void onGameChange(bool isPlaying)
                 {
-                    victim.GameStateChanged -= onGameChange;
-                    interuptSource.Cancel();
-                    interuptSource.Token.WaitHandle.WaitOne(1000);
-                    this.ResetVictimTracking(new(), victim, false);
-                }
-            };
+                    if (isPlaying && isPlaying != previousState)
+                        this.CrashClientAsync(victim, interuptSource);
 
-            victim.GameStateChanged += onGameChange;
-            victim.FasterTracking(interuptSource.Token);
+                    previousState = isPlaying;
+                };
 
-            if (@new)
+
+                victim.GameStateChanged += onGameChange;
+                victim.FasterTracking(interuptSource.Token);
                 onGameChange(victim.IsPlayingScrapMechanic);
+            }
         }
 
         private void CrashClientAsync(Victim mega_victim, CancellationTokenSource interuptSource)
