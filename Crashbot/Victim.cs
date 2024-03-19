@@ -225,6 +225,9 @@ namespace Crashbot
             string gameLink = inGameInfo?.Element("gameLink")?.Value.Trim() ?? string.Empty;
 
             this.IsPlayingScrapMechanic = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
+
+            this.trackingTimer.Interval += 4000;
+            Task.Delay(5000).ContinueWith(_ => this.trackingTimer.Interval -= 4000);
         }
 
         private readonly HttpClient session = new();
