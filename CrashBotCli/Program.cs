@@ -49,6 +49,10 @@ namespace CrashBotCli
                 }
             }
 
+            #if DEBUG
+            Logger.LogVerbosity = Verbosity.Debug;
+            #endif
+
             SteamInterface Steam = SteamInterface.NewAsyncInterface();
             Steam.WaitUntilSteamReady();
             Logger.Write(Environment.NewLine, Verbosity.None);
