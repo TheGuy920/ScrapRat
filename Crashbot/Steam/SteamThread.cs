@@ -56,7 +56,7 @@ namespace Crashbot.Steam
             Start:
                 SteamNetworkingIdentity _ir = lir;
 
-                Logger.WriteLine($"Connecting to {_ir.GetIPAddr} ({_ir.GetSteamID64})", Verbosity.Debug);
+                Logger.WriteLine($"Connecting to {_ir.GetIPv4()} ({_ir.GetSteamID64()})", Verbosity.Debug);
                 var conn = SteamNetworkingSockets.ConnectP2P(ref _ir, p, no, op);
 
                 SteamAPI.RunCallbacks();
@@ -86,7 +86,7 @@ namespace Crashbot.Steam
 
                     if (sw.ElapsedMilliseconds > 2000)
                     {
-                        Logger.WriteLine($"Connection to {_ir.GetIPAddr} ({_ir.GetSteamID64}) timed out", Verbosity.Minimal);
+                        Logger.WriteLine($"Connection to {_ir.GetIPv4()} ({_ir.GetSteamID64()}) timed out", Verbosity.Minimal);
                         SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
                         SteamAPI.RunCallbacks();
                         goto Start;
