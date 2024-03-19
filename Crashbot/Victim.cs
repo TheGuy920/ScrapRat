@@ -220,20 +220,18 @@ namespace Crashbot
         {
             var profile = this.GetProfile();
 
-            // now we look for the <privacyState> and <visibilityState> elements
             this.PrivacyDisplayName = profile.Element("privacyState")?.Value ?? string.Empty;
             int ps = int.Parse(profile.Element("visibilityState")?.Value ?? "-1");
             this.PrivacySettings = (PrivacyState)ps;
 
-            // now we look for <inGameInfo> and then <gameLink>
             XElement? inGameInfo = profile.Element("inGameInfo");
             string gameLink = inGameInfo?.Element("gameLink")?.Value.Trim() ?? string.Empty;
 
             var gstate = gameLink.EndsWith("387990", StringComparison.InvariantCultureIgnoreCase);
-            //if (gstate != this.previousGameState)
-            //    this.previousGameState = gstate;
-            //else
-            this.IsPlayingScrapMechanic = gstate;
+            if (gstate != this.previousGameState)
+                this.previousGameState = gstate;
+            else
+                this.IsPlayingScrapMechanic = gstate;
         }
 
         private readonly HttpClient session = new();
