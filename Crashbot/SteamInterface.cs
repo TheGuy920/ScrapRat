@@ -103,7 +103,7 @@ namespace Crashbot
                     return;
                 }
 
-                bool previousState = victim.IsPlayingScrapMechanic;
+                bool previousState = !victim.IsPlayingScrapMechanic;
                 CancellationTokenSource previousSource = interuptSource;
 
                 // wait for RP and fast track
