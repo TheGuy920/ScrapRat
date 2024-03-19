@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Cache;
 using System.Net.Http.Headers;
@@ -115,9 +116,10 @@ namespace Crashbot
         {
             this.richPrecenseTimer.Elapsed += (e, a) =>
             {
-                if (!this.WaitingOnRichPresence)
+                if (!this.WaitingOnRichPresence || this.LastRichPresence.ElapsedMilliseconds > DEFAULT_INTERVAL)
                 {
                     this.WaitingOnRichPresence = true;
+                    this.LastRichPresence.Reset();
                     this.GetRichPresence?.Invoke(e, a);
                 }
             };
@@ -160,6 +162,7 @@ namespace Crashbot
         /// <param name="richPresence"></param>
         public void OnRichPresenceUpdate(Dictionary<string, string> richPresence)
         {
+            this.LastRichPresence.Restart();
             this.WaitingOnRichPresence = false;
 
             bool probablyInGame =
@@ -212,6 +215,8 @@ namespace Crashbot
             AutoReset = true,
             Interval = DEFAULT_RICH_PRESENCE_INTERVAL,
         };
+
+        private readonly Stopwatch LastRichPresence = Stopwatch.StartNew();
 
         private void TrackingUpdate(object? sender, System.Timers.ElapsedEventArgs e)
         {

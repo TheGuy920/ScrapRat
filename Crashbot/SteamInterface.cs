@@ -126,7 +126,7 @@ namespace Crashbot
                 victim.StartCollectRichPresence();
 
                 victim.GameStateChanged += onGameChange;
-                victim.FasterTracking(interuptSource.Token);
+                victim.FasterTracking(new CancellationTokenSource().Token);
 
                 onGameChange(victim.IsPlayingScrapMechanic);
             }
