@@ -252,10 +252,11 @@ namespace Crashbot
 
         private XElement GetProfile()
         {
-            this.SetWebClientSettings();
-            string rand = GetThinUuid() + GetThinUuid() + GetThinUuid();
+            if (!this.hasInitialized)
+                this.SetWebClientSettings();
 
-            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=1&{rand}";
+            string rand = GetThinUuid() + GetThinUuid() + GetThinUuid();
+            string url = $"https://steamcommunity.com/profiles/{steamid.m_SteamID}?xml=1&nothing={rand}";
             Console.WriteLine($"Fetching profile at {url}", Verbosity.Debug);
 
             var response = session.GetStringAsync(url).GetAwaiter().GetResult().Trim();
