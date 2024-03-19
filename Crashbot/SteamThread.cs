@@ -120,7 +120,6 @@ namespace Crashbot
                 case InterfaceMode.Asyncronous:
                     this._actionQueue.Enqueue(action);
                     this._actionEvent.Set();
-                    Console.WriteLine("Action queued and set");
                     break;
                 case InterfaceMode.Syncronous:
                     SteamThread.RunAction(action);

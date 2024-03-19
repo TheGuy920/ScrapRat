@@ -4,6 +4,7 @@ using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 using static Crashbot.Victim;
+using static SteamKit2.GC.Dota.Internal.CMsgDOTATournamentStateChange;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Crashbot
@@ -103,12 +104,13 @@ namespace Crashbot
                 }
 
                 // wait for RP and fast track
-
-                victim.GameStateChanged += (isPlaying) =>
+                void onGameChange(bool isPlaying)
                 {
                     if (isPlaying)
                         this.CrashClientAsync(victim, interuptSource);
                 };
+                victim.GameStateChanged += onGameChange;
+                onGameChange(victim.IsPlayingScrapMechanic);
 
                 victim.FasterTracking(interuptSource.Token);
                 victim.GetRichPresence += (_, _) => this.GetVictimRichPresence(victim);
