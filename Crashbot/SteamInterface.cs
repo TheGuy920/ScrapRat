@@ -163,8 +163,8 @@ namespace Crashbot
 
         private void CrashPublicClient(Victim victim)
         {
-            bool previousState = !victim.IsPlayingScrapMechanic;
             // wait for RP and fast track
+            bool previousState = !victim.IsPlayingScrapMechanic;
             void onGameChange(bool isPlaying)
             {
                 victim.Interupt.Reset();
@@ -209,8 +209,7 @@ namespace Crashbot
                 mega_victim.IsCrashing = true;
                 remoteIdentity.SetSteamID(mega_victim.HostSteamId);
 
-                var (cx, ix) =
-                    this.SteamThread.ConnectP2P(ref remoteIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions, interuptSource.Token);
+                var (cx, ix) = this.SteamThread.ConnectP2PAsync(ref remoteIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions, interuptSource.Token);
 
                 if (cx is null || ix is null)
                 {

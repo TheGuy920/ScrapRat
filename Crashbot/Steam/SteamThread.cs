@@ -24,16 +24,16 @@ namespace Crashbot.Steam
     }
 
     internal delegate bool SteamCallback<_>(_ result) where _ : struct;
-    internal delegate bool SteamCallback<_,T>(_ result, T p0) where _ : struct;
-    internal delegate bool SteamCallback<_,T,G>(_ result, T p0, G p1) where _ : struct;
-    internal delegate bool SteamCallback<_,T,G,O>(_ result, T p0, G p1, O p2) where _ : struct;
+    internal delegate bool SteamCallback<_, T>(_ result, T p0) where _ : struct;
+    internal delegate bool SteamCallback<_, T, G>(_ result, T p0, G p1) where _ : struct;
+    internal delegate bool SteamCallback<_, T, G, O>(_ result, T p0, G p1, O p2) where _ : struct;
 
     internal class SteamCallback(Delegate callback, object[] @params)
-    { 
+    {
         private readonly Delegate steamCallback = callback;
 
         public bool Invoke<T>(T result)
-            => this.steamCallback.DynamicInvoke([result, ..@params]) as bool? ?? false;
+            => this.steamCallback.DynamicInvoke([result, .. @params]) as bool? ?? false;
     }
 
     internal class CallbackId<_>(Guid id) where _ : struct
@@ -67,19 +67,19 @@ namespace Crashbot.Steam
         public CallbackId<T> RegisterCallbackOnce<T>(SteamCallback<T> callback) where T : struct
             => this.IRegisterCallbackOnce<T>(callback, []);
 
-        public CallbackId<T> RegisterCallbackOnce<T,G>(SteamCallback<T,G> callback, G @param0) where T : struct
+        public CallbackId<T> RegisterCallbackOnce<T, G>(SteamCallback<T, G> callback, G @param0) where T : struct
             => this.IRegisterCallbackOnce<T>(callback, [@param0]);
 
-        public CallbackId<T> RegisterCallbackOnce<T,G,O>(SteamCallback<T,G,O> callback, G @param0, O @param1) where T : struct
+        public CallbackId<T> RegisterCallbackOnce<T, G, O>(SteamCallback<T, G, O> callback, G @param0, O @param1) where T : struct
             => this.IRegisterCallbackOnce<T>(callback, [@param0, @param1]);
 
-        public CallbackId<T> RegisterCallbackOnce<T,G,O,X>(SteamCallback<T,G,O,X> callback, G @param0, O @param1, X @param2) where T : struct
+        public CallbackId<T> RegisterCallbackOnce<T, G, O, X>(SteamCallback<T, G, O, X> callback, G @param0, O @param1, X @param2) where T : struct
             => this.IRegisterCallbackOnce<T>(callback, [@param0, @param1, @param2]);
 
         private CallbackId<T> IRegisterCallbackOnce<T>(Delegate callback, params object[] @params) where T : struct
         {
             Guid id = Guid.NewGuid();
-            if (this.callbackQueue.TryGetValue(typeof(T), out var bag)) 
+            if (this.callbackQueue.TryGetValue(typeof(T), out var bag))
             {
                 bag.TryAdd(id, new SteamCallback(callback, @params));
             }
@@ -101,7 +101,7 @@ namespace Crashbot.Steam
             && bag.TryGetValue(cbid.Id, out var cllBk)
             && (cllBk.Invoke(result) || bag.TryRemove(cbid.Id, out _));
 
-        public (HSteamNetConnection? Connection, SteamNetConnectionInfo_t? Info) ConnectP2P
+        public (HSteamNetConnection? Connection, SteamNetConnectionInfo_t? Info) ConnectP2PAsync
             (ref SteamNetworkingIdentity ir, int p, int no, SteamNetworkingConfigValue_t[] op, CancellationToken? cancel = null)
         {
             ConcurrentBag<(SteamNetworkingIdentity, HSteamNetConnection, SteamNetConnectionInfo_t)> ret = [];
@@ -159,6 +159,50 @@ namespace Crashbot.Steam
                 ir = pack.Item1;
                 return (pack.Item2, pack.Item3);
             }
+            return (null, null);
+        }
+
+        public (HSteamNetConnection? Connection, SteamNetConnectionInfo_t? Info) ConnectP2P
+            (ref SteamNetworkingIdentity _ir, int p, int no, SteamNetworkingConfigValue_t[] op, CancellationToken? cancel = null)
+        {
+
+        Start:
+
+            Logger.WriteLine($"Connecting to {_ir.GetSteamID64()}", Verbosity.Debug);
+            var conn = SteamNetworkingSockets.ConnectP2P(ref _ir, p, no, op);
+
+            SteamAPI.RunCallbacks();
+            Logger.WriteLine($"Connection Loading...", Verbosity.Debug);
+            SteamNetworkingSockets.GetConnectionInfo(conn, out SteamNetConnectionInfo_t info);
+
+            Stopwatch sw = new();
+            while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected
+                && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
+                && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer)
+            {
+                SteamAPI.RunCallbacks();
+                SteamNetworkingSockets.GetConnectionInfo(conn, out info);
+
+                if (cancel?.CanBeCanceled == true && cancel?.IsCancellationRequested == true)
+                {
+                    SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
+                    SteamNetworkingSockets.ResetIdentity(ref _ir);
+                    SteamAPI.RunCallbacks();
+                    return (null, null);
+                }
+
+                if ((info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute)
+                    && !sw.IsRunning) sw.Start();
+
+                if (sw.ElapsedMilliseconds > 2000)
+                {
+                    Logger.WriteLine($"Connection to {_ir.GetSteamID64()} timed out", Verbosity.Minimal);
+                    SteamNetworkingSockets.CloseConnection(conn, 0, "Cancelled", false);
+                    SteamAPI.RunCallbacks();
+                    goto Start;
+                }
+            }
+
             return (null, null);
         }
 

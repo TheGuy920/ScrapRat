@@ -1,5 +1,4 @@
-﻿using Crashbot;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 
 namespace CrashWebApi.WebApi
@@ -9,12 +8,10 @@ namespace CrashWebApi.WebApi
     public class StreamController : ControllerBase
     {
         private readonly ConcurrentDictionary<ulong, string> LiveStreams = [];
-        private readonly SteamInterface Steam;
 
         public StreamController()
         {
-            this.Steam = SteamInterface.NewAsyncInterface();
-            this.Steam.WaitUntilSteamReady();
+            
         }
 
         // Handling different ID formats
@@ -33,9 +30,7 @@ namespace CrashWebApi.WebApi
 
             if (ulong.TryParse(id, out ulong steamId))
             {
-                var victim = this.Steam.AddNewVictim(steamId);
-                victim.VictimCrashed += this.Steam.RemoveVictim;
-
+                
                 return Ok($"Received ID: {steamId}");
             }
             else
