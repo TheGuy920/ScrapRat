@@ -21,14 +21,14 @@ namespace CrashWebApi
             foreach (var steamid in PeopleToTrack)
             {
                 var player = Game.Spy.TargetPlayer(steamid);
-                player.PlayerLoaded += (player) =>
+                player.PlayerLoaded += _ =>
                 {
                     Console.WriteLine($"Player '{player.Name}' ({player.SteamID}) is loaded.");
                 };
 
-                player.OnUpdate += (@event) =>
+                player.OnUpdate += @event =>
                 {
-                    Console.WriteLine($"Player {player.SteamID} is {@event}");
+                    Console.WriteLine($"Player '{player.Name}' ({player.SteamID}) is {@event}");
                 };
             }
 
