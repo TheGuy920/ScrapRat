@@ -268,7 +268,7 @@ namespace Crashbot
                 return false;
             });
 
-            this.SteamThread.Run(SteamFriends.RequestFriendRichPresence, steamid);
+            SteamFriends.RequestFriendRichPresence(steamid);
 
             Task.Delay(REQUEST_TIMEOUT * 15)
                 .ContinueWith(_ => this.SteamThread.ForceCallOnce(id, new() { m_steamIDFriend = steamid, m_nAppID = GAMEID }));
