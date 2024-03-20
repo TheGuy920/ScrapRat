@@ -256,6 +256,8 @@ namespace Crashbot
 
         private void GetVictimRichPresence(CSteamID steamid)
         {
+            Logger.WriteLine("GetVictimRichPresence", Verbosity.Debug);
+
             var id = this.SteamThread.RegisterCallbackOnce((FriendRichPresenceUpdate_t result) =>
             {
                 if (result.m_steamIDFriend.m_SteamID == steamid.m_SteamID && this.SteamUsers.TryGetValue(steamid, out var victim))
