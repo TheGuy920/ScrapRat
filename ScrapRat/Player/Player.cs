@@ -78,7 +78,7 @@ namespace ScrapRat
         {
             if (this.hSteamNetConnection.HasValue)
             {
-                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, "Closed by user", false);
+                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, "You have been spied on! You are safe, for now.", false);
                 this.hSteamNetConnection = null;
             }
         }
