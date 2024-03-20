@@ -260,7 +260,8 @@ namespace Crashbot
 
             var id = this.SteamThread.RegisterCallbackOnce((FriendRichPresenceUpdate_t result) =>
             {
-                Logger.WriteLine($"RegisterCallbackOnce, FriendRichPresenceUpdate_t", Verbosity.Debug);
+                Logger.WriteLine($"RegisterCallbackOnce, FriendRichPresenceUpdate_t, {result.m_steamIDFriend.m_SteamID}, {steamid.m_SteamID}" +
+                    $"{result.m_steamIDFriend.m_SteamID == steamid.m_SteamID}", Verbosity.Debug);
                 if (result.m_steamIDFriend.m_SteamID == steamid.m_SteamID && this.SteamUsers.TryGetValue(steamid, out var victim))
                 {
                     var currentRP = this.LoadUserRP(victim.SteamId);
