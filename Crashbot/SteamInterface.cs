@@ -264,6 +264,7 @@ namespace Crashbot
                     $"{result.m_steamIDFriend.m_SteamID == steamid.m_SteamID}, {this.SteamUsers.ContainsKey(steamid)}", Verbosity.Debug);
                 if (result.m_steamIDFriend.m_SteamID == steamid.m_SteamID && this.SteamUsers.TryGetValue(steamid, out var victim))
                 {
+                    Logger.WriteLine($"Rich Presence...", Verbosity.Debug);
                     var currentRP = this.LoadUserRP(victim.SteamId);
                     Logger.WriteLine($"Rich Presence Update: {currentRP.Count}", Verbosity.Debug);
                     victim.OnRichPresenceUpdate(currentRP);
@@ -285,12 +286,15 @@ namespace Crashbot
             Dictionary<string, string> richPresence = [];
 
             int keyCount = this.SteamThread.Get(SteamFriends.GetFriendRichPresenceKeyCount, user);
+            Logger.WriteLine($"Key Count: {keyCount}", Verbosity.Debug);
             if (keyCount > 0)
             {
                 for (int i = 0; i < keyCount; i++)
                 {
                     string key = this.SteamThread.Get(SteamFriends.GetFriendRichPresenceKeyByIndex, user, i)!;
+                    Logger.WriteLine($"Key: {key}", Verbosity.Debug);
                     string value = this.SteamThread.Get(SteamFriends.GetFriendRichPresence, user, key)!;
+                    Logger.WriteLine($"Value: {value}", Verbosity.Debug);
                     richPresence.Add(key, value);
                 }
             }
