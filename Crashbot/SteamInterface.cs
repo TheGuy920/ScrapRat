@@ -181,7 +181,7 @@ namespace Crashbot
             {
                 if (victim.PrivacySettings != PrivacyState.Public)
                 {
-                    victim.Interupt.Interupt(1000);
+                    victim.Interupt.Reset(1000);
                     this.CrashPublicClient(victim);
                 }
             };
@@ -258,7 +258,7 @@ namespace Crashbot
         {
             var id = this.SteamThread.RegisterCallbackOnce((FriendRichPresenceUpdate_t result) =>
             {
-                if (this.SteamUsers.TryGetValue(result.m_steamIDFriend, out var victim))
+                if (result.m_steamIDFriend.m_SteamID == steamid.m_SteamID && this.SteamUsers.TryGetValue(steamid, out var victim))
                 {
                     var currentRP = this.LoadUserRP(victim.SteamId);
                     victim.OnRichPresenceUpdate(currentRP);
