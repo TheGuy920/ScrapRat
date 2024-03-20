@@ -204,10 +204,10 @@ namespace Crashbot
             {
                 mega_victim.IsCrashing = true;
 
+                Logger.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}", Verbosity.Verbose);
                 SteamNetworkingIdentity remoteIdentity = new();
                 remoteIdentity.SetSteamID(mega_victim.HostSteamId);
 
-                Logger.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}", Verbosity.Verbose);
                 var (cx, ix) =
                     this.SteamThread.ConnectP2P(ref remoteIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions, interuptSource.Token);
 
