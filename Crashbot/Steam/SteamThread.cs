@@ -191,7 +191,8 @@ namespace Crashbot.Steam
                 returnResultReady.WaitOne();
 
             Logger.WriteLine($"Result for {original} ready", Verbosity.Debug);
-            return result.FirstOrDefault();
+            Logger.WriteLine(result.First().ToString(), Verbosity.Debug);
+            return result.First();
         }
 
         public void Run(Delegate action, params object[] @params)
