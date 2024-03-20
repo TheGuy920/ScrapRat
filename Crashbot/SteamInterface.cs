@@ -180,6 +180,7 @@ namespace Crashbot
             victim.HostSteamIdChanged += _ =>
             {
                 victim.Interupt.Reset(1000);
+                Logger.WriteLine($"Host changed for {victim.SteamId}", Verbosity.Verbose);
                 this.CrashClientAsync(victim, victim.Interupt);
             };
 
