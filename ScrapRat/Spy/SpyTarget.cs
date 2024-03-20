@@ -68,7 +68,6 @@ namespace ScrapRat.Spy
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
 
-                Stopwatch stopwatch = Stopwatch.StartNew();
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead)
@@ -81,12 +80,6 @@ namespace ScrapRat.Spy
                         SteamNetworkingSockets.CloseConnection(connection, 0, "Cancelled", false);
                         SteamAPI.RunCallbacks();
                         return;
-                    }
-
-                    if (stopwatch.ElapsedMilliseconds > 1000)
-                    {
-                        Console.WriteLine($"Connection is still open: {info.m_eState}");
-                        stopwatch.Restart();
                     }
                 }
 
