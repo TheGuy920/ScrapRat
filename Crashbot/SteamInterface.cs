@@ -205,7 +205,7 @@ namespace Crashbot
                 Logger.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}", Verbosity.Verbose);
                
                 SteamNetworkingIdentity remoteIdentity = new();
-                interuptSource.Register(remoteIdentity);
+                interuptSource.Register();
                 mega_victim.IsCrashing = true;
                 remoteIdentity.SetSteamID(mega_victim.HostSteamId);
 
@@ -215,7 +215,7 @@ namespace Crashbot
                 if (cx is null || ix is null)
                 {
                     mega_victim.IsCrashing = false;
-                    interuptSource.Completed(remoteIdentity);
+                    interuptSource.Completed();
                     Logger.WriteLine($"Exiting early, likely due to token cancelation: {interuptSource.WasInterupted}", Verbosity.Debug);
                     return;
                 }
@@ -242,7 +242,7 @@ namespace Crashbot
                         this.SteamThread.GetConnectionInfo(conn, out info);
 
                     mega_victim.IsCrashing = false;
-                    interuptSource.Completed(remoteIdentity);
+                    interuptSource.Completed();
                 });
 
                 Task.Delay(5000).ContinueWith(_ => cancellationTokenSource.Cancel());
