@@ -244,9 +244,12 @@ namespace Crashbot.Steam
                 SteamAPI.RunCallbacks();
                 if (!this.actionEvent.WaitOne(50) || this.actionQueue.IsEmpty)
                     continue;
-                
-                while (this.actionQueue.TryDequeue(out SteamFunction? action))
+
+                while (this.actionQueue.TryDequeue(out SteamFunction action))
+                {
                     SteamThread.RunAction(action);
+                    Logger.WriteLine($"Action {action} done.", Verbosity.Debug);
+                }
             }
         }
 
