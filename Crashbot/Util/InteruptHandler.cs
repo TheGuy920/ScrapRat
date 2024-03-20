@@ -43,7 +43,8 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
-            this.refsCompleted.WaitOne(timout);
+            if (!this.refs.IsEmpty)
+                this.refsCompleted.WaitOne(timout);
         }
 
         /// <summary>
@@ -53,7 +54,8 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne();
-            this.refsCompleted.WaitOne();
+            if (!this.refs.IsEmpty)
+                this.refsCompleted.WaitOne();
             this.source = new();
         }
 
@@ -72,7 +74,8 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
-            this.refsCompleted.WaitOne(timout);
+            if (!this.refs.IsEmpty)
+                this.refsCompleted.WaitOne(timout);
             this.source = new();
         }
 
