@@ -17,6 +17,19 @@ namespace CrashWebApi
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
 
+            foreach (var steamid in PeopleToTrack)
+            {
+                var player = Game.Spy.TargetPlayer(steamid);
+                player.PlayerLoaded += (player) =>
+                {
+                    Console.WriteLine($"Player '{player.Name}' ({player.SteamID}) is loaded.");
+                };
+                player.OnUpdate += (@event) =>
+                {
+                    Console.WriteLine($"Player {player.SteamID} is {@event}");
+                };
+            }
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -30,19 +43,6 @@ namespace CrashWebApi
             app.MapControllers();
 
             app.Run();
-
-            foreach (var steamid in PeopleToTrack)
-            {
-                var player = Game.Spy.TargetPlayer(steamid);
-                player.PlayerLoaded += (player) =>
-                {
-                    Console.WriteLine($"Player '{player.Name}' ({player.SteamID}) is loaded.");
-                };
-                player.OnUpdate += (@event) =>
-                {
-                    Console.WriteLine($"Player {player.SteamID} is {@event}");
-                };
-            }
         }
     }
 }
