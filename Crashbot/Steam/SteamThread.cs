@@ -179,15 +179,18 @@ namespace Crashbot.Steam
                 Logger.WriteLine($"Invoking {original}...", Verbosity.Debug);
                 result.Add(original.Invoke());
                 returnResultReady.Set();
+                Logger.WriteLine($"Result for {original} done", Verbosity.Debug);
             }, []);
 
             this.QueueAction(@new);
 
+            Logger.WriteLine($"Waiting for {original}...", Verbosity.Debug);
             if (timeout.HasValue)
                 returnResultReady.WaitOne(timeout.Value);
             else
                 returnResultReady.WaitOne();
 
+            Logger.WriteLine($"Result for {original} ready", Verbosity.Debug);
             return result.FirstOrDefault();
         }
 
