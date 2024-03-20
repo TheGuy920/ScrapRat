@@ -31,6 +31,7 @@ namespace CrashWebApi
                     Console.WriteLine($"[{DateTime.Now}] Player '{player.Name}' ({player.SteamID}) is {@event}");
                 };
             }
+
             /*
             var builder = WebApplication.CreateBuilder(args);
 
