@@ -8,7 +8,7 @@ namespace Crashbot.Steam
     internal class SteamFunction(Delegate action, object[] @params)
     {
         public object? Invoke()
-            => action.Method.Invoke(action.Target, @params);
+            => action.DynamicInvoke(@params);
 
         public static implicit operator SteamFunction(Delegate action)
             => new(action, []);
@@ -33,7 +33,7 @@ namespace Crashbot.Steam
         private readonly Delegate steamCallback = callback;
 
         public bool Invoke<T>(T result)
-            => steamCallback.DynamicInvoke([result, ..@params]) as bool? ?? false;
+            => this.steamCallback.DynamicInvoke([result, ..@params]) as bool? ?? false;
     }
 
     internal class CallbackId<_>(Guid id) where _ : struct
@@ -184,7 +184,7 @@ namespace Crashbot.Steam
 
             this.QueueAction(@new);
 
-            Logger.WriteLine($"Waiting for {original}...", Verbosity.Debug);
+            Logger.WriteLine($"Waiting for {original} with {this.actionQueue.Count} ahead.", Verbosity.Debug);
             if (timeout.HasValue)
                 returnResultReady.WaitOne(timeout.Value);
             else
