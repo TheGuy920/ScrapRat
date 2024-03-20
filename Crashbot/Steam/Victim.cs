@@ -199,21 +199,15 @@ namespace Crashbot.Steam
         {
             this.WaitingOnRichPresence = false;
 
-            bool probablyInGame =
+            bool isInAWorld =
                    richPresence.TryGetValue("connect", out var curl) && !string.IsNullOrWhiteSpace(curl)
                 && richPresence.TryGetValue("status", out var stat) && !string.IsNullOrWhiteSpace(stat)
                 && richPresence.TryGetValue("Passphrase", out var pphrase) && !string.IsNullOrWhiteSpace(pphrase);
 
-            if (richPresence.Count <= 0 || !probablyInGame)
-            {
-                Logger.WriteLine($"Rich presence for {this.Username} ({this.SteamId}) is not in game", Verbosity.Debug);
-                this.IsPlayingScrapMechanic = false;
+            if (richPresence.Count <= 0 || !isInAWorld)
                 return;
-            }
 
-            Logger.WriteLine($"Rich presence for {this.Username} ({this.SteamId}) is in game", Verbosity.Debug);
             this.IsPlayingScrapMechanic = true;
-
             if (richPresence.TryGetValue("connect", out string? connectUrl))
             {
                 ulong hostId = ulong.Parse(

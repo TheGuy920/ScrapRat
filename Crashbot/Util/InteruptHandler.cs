@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,6 +43,7 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
+            this.refsCompleted.WaitOne(timout);
         }
 
         /// <summary>
@@ -51,6 +53,7 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne();
+            this.refsCompleted.WaitOne();
             this.source = new();
         }
 
@@ -69,13 +72,41 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
+            this.refsCompleted.WaitOne(timout);
             this.source = new();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="delay"></param>
+        /// <param name="delegate"></param>
+        /// <param name="params"></param>
         public void ExecuteAfter(TimeSpan delay, Delegate @delegate, params object[] @params)
         {
             Task.Delay(delay).ContinueWith(_ => @delegate.DynamicInvoke(@params));
             this.Interupt();
+        }
+
+        private readonly AutoResetEvent refsCompleted = new(false);
+        private readonly ConcurrentDictionary<object, byte> refs = [];
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Register(object @ref) =>
+            this.refs.TryAdd(@ref, 0);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ref"></param>
+        public void Completed(object @ref)
+        {
+            this.refs.TryRemove(@ref, out _);
+            if (this.refs.IsEmpty)
+                this.refsCompleted.Set();
         }
     }
 }
