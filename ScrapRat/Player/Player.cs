@@ -2,6 +2,7 @@
 using Steamworks;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Threading.Channels;
 using System.Timers;
 using System.Xml.Linq;
 
@@ -79,6 +80,17 @@ namespace ScrapRat
             if (this.hSteamNetConnection.HasValue)
             {
                 SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, "You have been spied on! You are safe, for now.", false);
+
+                SteamNetworkingSockets.GetConnectionInfo(this.hSteamNetConnection.Value, out var info);
+                while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
+                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
+                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead
+                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
+                {
+                    SteamAPI.RunCallbacks();
+                    SteamNetworkingSockets.GetConnectionInfo(this.hSteamNetConnection.Value, out info);
+                }
+
                 this.hSteamNetConnection = null;
             }
         }
