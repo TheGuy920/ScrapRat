@@ -179,7 +179,7 @@ namespace Crashbot
 
             victim.HostSteamIdChanged += _ =>
             {
-                victim.Interupt.Reset(1000);
+                victim.Interupt.Reset();
                 Logger.WriteLine($"AAAAAAAAAAAA Host changed for {victim.SteamId}", Verbosity.Verbose);
                 Logger.WriteLine($"VBBBBBBBBBBBBBBBBBBBBBBB New host: {victim.HostSteamId}", Verbosity.Verbose);
                 this.CrashClientAsync(victim, victim.Interupt);
