@@ -30,7 +30,7 @@ namespace ScrapRat.Spy
 
         private void OnPlayerLoaded(Player player)
         {
-            this.OpenConnection();
+            Task.Run(this.OpenConnection);
         }
 
         private void OpenConnection()
