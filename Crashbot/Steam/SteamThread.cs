@@ -23,16 +23,35 @@ namespace Crashbot.Steam
             => mg.SetParams(@_params);
     }
 
+    internal delegate bool SteamCallback<_>(_ result) where _ : struct;
+    internal delegate bool SteamCallback<_,T>(_ result, T p0) where _ : struct;
+    internal delegate bool SteamCallback<_,T,G>(_ result, T p0, G p1) where _ : struct;
+    internal delegate bool SteamCallback<_,T,G,O>(_ result, T p0, G p1, O p2) where _ : struct;
+
+    internal class SteamCallback(Delegate callback, object[] @params)
+    { 
+        private readonly Delegate steamCallback = callback;
+
+        public bool Invoke<T>(T result)
+            => steamCallback.Method.Invoke(steamCallback.Target, new object[] { result, @params }) as bool? ?? false;
+    }
+
+    internal class CallbackId<_>(Guid id) where _ : struct
+    {
+        public Guid Id => id;
+    }
+
     internal class SteamThread : IDisposable
     {
         private readonly Thread? workerThread;
         private readonly ConcurrentQueue<SteamFunction> actionQueue = new();
+        private readonly ConcurrentDictionary<object, ConcurrentDictionary<Guid, SteamCallback>> callbackQueue = new();
         private readonly AutoResetEvent actionEvent = new(false);
         private readonly InterfaceMode mode;
         private bool running = true;
-        private bool _steamReady = false;
+        private bool steamReady = false;
 
-        public bool SteamIsReady => _steamReady;
+        public bool SteamIsReady => steamReady;
 
         public SteamThread(InterfaceMode mode)
         {
@@ -40,10 +59,47 @@ namespace Crashbot.Steam
 
             if (mode == InterfaceMode.Asyncronous)
             {
-                this.workerThread = new Thread(SteamSDKThread) { Priority = ThreadPriority.Highest };
+                this.workerThread = new Thread(this.SteamSDKThread) { Priority = ThreadPriority.Highest };
                 this.workerThread.Start();
             }
         }
+
+        public CallbackId<T> RegisterCallbackOnce<T>(SteamCallback<T> callback) where T : struct
+            => this.IRegisterCallbackOnce<T>(callback, []);
+
+        public CallbackId<T> RegisterCallbackOnce<T,G>(SteamCallback<T,G> callback, G @param0) where T : struct
+            => this.IRegisterCallbackOnce<T>(callback, [@param0]);
+
+        public CallbackId<T> RegisterCallbackOnce<T,G,O>(SteamCallback<T,G,O> callback, G @param0, O @param1) where T : struct
+            => this.IRegisterCallbackOnce<T>(callback, [@param0, @param1]);
+
+        public CallbackId<T> RegisterCallbackOnce<T,G,O,X>(SteamCallback<T,G,O,X> callback, G @param0, O @param1, X @param2) where T : struct
+            => this.IRegisterCallbackOnce<T>(callback, [@param0, @param1, @param2]);
+
+        private CallbackId<T> IRegisterCallbackOnce<T>(Delegate callback, params object[] @params) where T : struct
+        {
+            Guid id = Guid.NewGuid();
+            if (this.callbackQueue.TryGetValue(typeof(T), out var bag)) 
+            {
+                bag.TryAdd(id, new SteamCallback(callback, @params));
+            }
+            else
+            {
+                var dick = new ConcurrentDictionary<Guid, SteamCallback>();
+                dick.TryAdd(id, new SteamCallback(callback, @params));
+                this.callbackQueue.TryAdd(typeof(T), dick);
+            }
+
+            return new(id);
+        }
+
+        public bool UnregisterCallback<T>(CallbackId<T> cbid) where T : struct =>
+            this.callbackQueue.TryGetValue(typeof(T), out var bag) && bag.TryRemove(cbid.Id, out _);
+
+        public bool ForceCallOnce<T>(CallbackId<T> cbid, T result) where T : struct =>
+            this.callbackQueue.TryGetValue(typeof(T), out var bag)
+            && bag.TryGetValue(cbid.Id, out var cllBk)
+            && (cllBk.Invoke(result) || bag.TryRemove(cbid.Id, out _));
 
         public (HSteamNetConnection? Connection, SteamNetConnectionInfo_t? Info) ConnectP2P
             (ref SteamNetworkingIdentity ir, int p, int no, SteamNetworkingConfigValue_t[] op, CancellationToken? cancel = null)
@@ -166,19 +222,27 @@ namespace Crashbot.Steam
             {
                 Logger.Clear();
                 Logger.WriteLine($"BLoggedOn: [" + SteamUser.BLoggedOn() + "]", Verbosity.Minimal);
-                this._steamReady = true;
+                this.steamReady = true;
             }
+
+            Callback<FriendRichPresenceUpdate_t>.Create(result =>
+            {
+                if (!this.callbackQueue.TryGetValue(typeof(FriendRichPresenceUpdate_t), out var bag))
+                    return;
+
+                foreach (var kvp in bag.ToArray())
+                    if (kvp.Value.Invoke(result))
+                        bag.TryRemove(kvp);
+            });
 
             while (this.running)
             {
-                if (this.actionEvent.WaitOne(50) || !this.actionQueue.IsEmpty)
-                {
-                    while (this.actionQueue.TryDequeue(out SteamFunction? action))
-                        RunAction(action);
-
-                    continue;
-                }
                 SteamAPI.RunCallbacks();
+                if (!this.actionEvent.WaitOne(50) || this.actionQueue.IsEmpty)
+                    continue;
+                
+                while (this.actionQueue.TryDequeue(out SteamFunction? action))
+                    SteamThread.RunAction(action);
             }
         }
 

@@ -36,16 +36,17 @@ namespace Crashbot
 
         private const int FUN_TIME = 3;
         private const int REQUEST_TIMEOUT = 1000;
-        private readonly InterfaceMode OperationMode;
         private readonly SteamThread SteamThread;
+        private readonly InterfaceMode OperationMode;
+        private static readonly AppId_t GAMEID = new(387990);
+        private readonly ConcurrentDictionary<CSteamID, Victim> SteamUsers = [];
+        private static readonly ConcurrentBag<Task<SteamInterface>> steamInterfaceThreads = [];
+
         private SteamInterface(InterfaceMode operation)
         {
             this.OperationMode = operation;
             this.SteamThread = new SteamThread(operation);
         }
-
-        private static readonly ConcurrentBag<Task<SteamInterface>> steamInterfaceThreads = [];
-        private readonly ConcurrentDictionary<CSteamID, Victim> SteamUsers = [];
 
         /// <summary>
         /// Creates a new steam interface in a detached thread.
@@ -255,16 +256,21 @@ namespace Crashbot
 
         private void GetVictimRichPresence(CSteamID steamid)
         {
-            Callback<FriendRichPresenceUpdate_t>.Create(result =>
+            var id = this.SteamThread.RegisterCallbackOnce((FriendRichPresenceUpdate_t result) =>
             {
                 if (this.SteamUsers.TryGetValue(result.m_steamIDFriend, out var victim))
                 {
-                    var currentRP = LoadUserRP(victim.SteamId);
+                    var currentRP = this.LoadUserRP(victim.SteamId);
                     victim.OnRichPresenceUpdate(currentRP);
+                    return true;
                 }
+
+                return false;
             });
 
             this.SteamThread.Run(SteamFriends.RequestFriendRichPresence, steamid);
+
+            Task.Delay(REQUEST_TIMEOUT * 15).ContinueWith(_ => this.SteamThread.ForceCallOnce(id, new() { m_steamIDFriend = steamid, m_nAppID = GAMEID }));
         }
 
         private Dictionary<string, string> LoadUserRP(CSteamID user)

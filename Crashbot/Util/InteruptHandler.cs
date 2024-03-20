@@ -71,5 +71,11 @@ namespace Crashbot.Util
             this.source.Token.WaitHandle.WaitOne(timout);
             this.source = new();
         }
+
+        public void ExecuteAfter(TimeSpan delay, Delegate @delegate, params object[] @params)
+        {
+            Task.Delay(delay).ContinueWith(_ => @delegate.DynamicInvoke(@params));
+            this.Interupt();
+        }
     }
 }
