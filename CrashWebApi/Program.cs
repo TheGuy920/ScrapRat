@@ -23,12 +23,12 @@ namespace CrashWebApi
                 var player = Game.Spy.TargetPlayer(steamid);
                 player.PlayerLoaded += _ =>
                 {
-                    Console.WriteLine($"Player '{player.Name}' ({player.SteamID}) is loaded.");
+                    Console.WriteLine($"[{DateTime.Now}] Player '{player.Name}' ({player.SteamID}) is loaded.");
                 };
 
                 player.OnUpdate += @event =>
                 {
-                    Console.WriteLine($"Player '{player.Name}' ({player.SteamID}) is {@event}");
+                    Console.WriteLine($"[{DateTime.Now}] Player '{player.Name}' ({player.SteamID}) is {@event}");
                 };
             }
 
