@@ -70,8 +70,8 @@ namespace ScrapRat.Spy
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
-                    || info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
-                    || info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead)
+                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
+                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead)
                 {
                     SteamAPI.RunCallbacks();
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);
