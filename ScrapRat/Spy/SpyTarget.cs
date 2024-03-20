@@ -59,13 +59,11 @@ namespace ScrapRat.Spy
 
             this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
 
-            this.ListenForConnectionClose();
+            this.ListenForConnectionClose(connection);
         }
 
-        private void ListenForConnectionClose()
+        private void ListenForConnectionClose(HSteamNetConnection connection)
         {
-            var connection = this.BasePlayer.GetConnection();
-
             this.Interupt.RunCancelableAsync((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
@@ -86,6 +84,8 @@ namespace ScrapRat.Spy
                 }
 
                 this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
+                this.BasePlayer.CloseConnection();
+
                 Task.Run(this.OpenConnection);
             }, this.Interupt.Token);
         }
