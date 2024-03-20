@@ -10,6 +10,10 @@ namespace CrashBotCli
         private static ulong[] steamids = [
             // 76561198359772034
             76561198299556567,
+            76561198000662213, // scrap man
+            76561198004277014, // kan
+            76561198079775050, // kosmo
+            // 76561197965646622, // moonbo
             // 76561198422873503,
         ];
 
@@ -19,6 +23,10 @@ namespace CrashBotCli
         {
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
+
+#if DEBUG
+            Logger.LogVerbosity = Verbosity.Debug;
+#endif
 
             while (args.Length > 0)
             {
@@ -49,10 +57,6 @@ namespace CrashBotCli
                         return;
                 }
             }
-
-            #if DEBUG
-            Logger.LogVerbosity = Verbosity.Debug;
-            #endif
 
             SteamInterface Steam = SteamInterface.NewAsyncInterface();
             Steam.WaitUntilSteamReady();
