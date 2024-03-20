@@ -220,7 +220,7 @@ namespace Crashbot.Steam
                     connectUrl.Split('-', StringSplitOptions.RemoveEmptyEntries)
                     .First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last());
 
-                Logger.WriteLine($"Host SteamID for {this.Username} ({this.SteamId}) is {hostId}", Verbosity.Debug);
+                Logger.WriteLine($"Host SteamID for {this.Username} ({this.SteamId}) is {hostId} at {connectUrl}", Verbosity.Debug);
 
                 this.HostSteamId = new CSteamID(hostId);
             }
