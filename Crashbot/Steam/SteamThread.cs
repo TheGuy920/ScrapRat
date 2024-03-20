@@ -174,9 +174,9 @@ namespace Crashbot.Steam
 
             AutoResetEvent returnResultReady = new(false);
             SteamFunction original = action + @params;
-            SteamFunction @new = new(async () =>
+            SteamFunction @new = new(() =>
             {
-                await Task.Delay(15);
+                Logger.WriteLine($"Invoking {original}...", Verbosity.Debug);
                 result.Add(original.Invoke());
                 returnResultReady.Set();
             }, []);
