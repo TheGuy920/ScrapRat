@@ -179,7 +179,7 @@ namespace Crashbot
 
             victim.HostSteamIdChanged += _ =>
             {
-                victim.Interupt.Reset();
+                victim.Interupt.Reset(1000);
                 this.CrashClientAsync(victim, victim.Interupt);
             };
 
