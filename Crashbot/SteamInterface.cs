@@ -177,6 +177,12 @@ namespace Crashbot
             victim.GameStateChanged += onGameChange;
             victim.FasterTracking(new CancellationTokenSource().Token);
 
+            victim.HostSteamIdChanged += _ =>
+            {
+                victim.Interupt.Reset();
+                this.CrashClientAsync(victim, victim.Interupt);
+            };
+
             victim.PrivacySettingsChanged += _ =>
             {
                 if (victim.PrivacySettings != PrivacyState.Public)
