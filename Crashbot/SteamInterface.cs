@@ -285,6 +285,7 @@ namespace Crashbot
         {
             Dictionary<string, string> richPresence = [];
 
+            Logger.WriteLine($"LoadUserRP: {user}", Verbosity.Debug);
             int keyCount = this.SteamThread.Get(SteamFriends.GetFriendRichPresenceKeyCount, user);
             Logger.WriteLine($"Key Count: {keyCount}", Verbosity.Debug);
             if (keyCount > 0)

@@ -163,10 +163,10 @@ namespace Crashbot.Steam
         }
 
         public dynamic? Get(TimeSpan timeout, Delegate action, params object[] @params)
-            => GetResult(action, @params, timeout);
+            => this.GetResult(action, @params, timeout);
 
         public dynamic? Get(Delegate action, params object[] @params)
-            => GetResult(action, @params);
+            => this.GetResult(action, @params);
 
         public object? GetResult(SteamFunction action, object[] @params, TimeSpan? timeout = null)
         {
@@ -179,7 +179,7 @@ namespace Crashbot.Steam
                 Logger.WriteLine($"Invoking {original}...", Verbosity.Debug);
                 result.Add(original.Invoke());
                 returnResultReady.Set();
-                Logger.WriteLine($"Result for {original} done", Verbosity.Debug);
+                Logger.WriteLine($"Result for {original} done: {result.First()}", Verbosity.Debug);
             }, []);
 
             this.QueueAction(@new);
@@ -190,8 +190,7 @@ namespace Crashbot.Steam
             else
                 returnResultReady.WaitOne();
 
-            Logger.WriteLine($"Result for {original} ready", Verbosity.Debug);
-            Logger.WriteLine(result.First().ToString(), Verbosity.Debug);
+            Logger.WriteLine($"Result for {original} ready: {result.First()}", Verbosity.Debug);
             return result.First();
         }
 
