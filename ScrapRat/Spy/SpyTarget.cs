@@ -92,7 +92,7 @@ namespace ScrapRat.Spy
 
         private void ProcessCommands(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         public event ObservableEventHandler? OnUpdate;
