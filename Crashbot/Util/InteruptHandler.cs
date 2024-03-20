@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
-            if (!this.refs.IsEmpty)
+            if (Interlocked.Read(ref this.refs) > 0)
                 this.refsCompleted.WaitOne(timout);
         }
 
@@ -54,7 +55,7 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne();
-            if (!this.refs.IsEmpty)
+            if (Interlocked.Read(ref this.refs) > 0)
                 this.refsCompleted.WaitOne();
             this.source = new();
         }
@@ -74,7 +75,7 @@ namespace Crashbot.Util
         {
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
-            if (!this.refs.IsEmpty)
+            if (Interlocked.Read(ref this.refs) > 0)
                 this.refsCompleted.WaitOne(timout);
             this.source = new();
         }
@@ -92,23 +93,20 @@ namespace Crashbot.Util
         }
 
         private readonly AutoResetEvent refsCompleted = new(false);
-        private readonly ConcurrentDictionary<object, byte> refs = [];
+        private long refs = 0;
 
         /// <summary>
         /// 
         /// </summary>
-        public void Register(object @ref) =>
-            this.refs.TryAdd(@ref, 0);
+        public void Register() => Interlocked.Increment(ref this.refs);
 
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ref"></param>
-        public void Completed(object @ref)
+        public void Completed()
         {
-            this.refs.TryRemove(@ref, out _);
-            if (this.refs.IsEmpty)
+            if (Interlocked.Decrement(ref this.refs) <= 0)
                 this.refsCompleted.Set();
         }
     }
