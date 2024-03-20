@@ -34,6 +34,10 @@ namespace CrashWebApi
             foreach (var steamid in PeopleToTrack)
             {
                 var player = Game.Spy.TargetPlayer(steamid);
+                player.PlayerLoaded += (player) =>
+                {
+                    Console.WriteLine($"Player '{player.Name}' ({player.SteamID}) is loaded.");
+                };
                 player.OnUpdate += (@event) =>
                 {
                     Console.WriteLine($"Player {player.SteamID} is {@event}");
