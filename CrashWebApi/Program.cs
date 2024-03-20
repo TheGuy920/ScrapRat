@@ -17,6 +17,7 @@ namespace CrashWebApi
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
 
+            Game.Initialize();
             foreach (var steamid in PeopleToTrack)
             {
                 var player = Game.Spy.TargetPlayer(steamid);

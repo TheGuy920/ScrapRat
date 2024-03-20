@@ -1,4 +1,5 @@
 ﻿using ScrapRat.Spy;
+using Steamworks;
 using System.Collections.Concurrent;
 
 namespace ScrapRat
@@ -9,6 +10,18 @@ namespace ScrapRat
 
         private static Player GetOrAddPlayer(ulong steamid) =>
             Game.PlayerDictionary.GetOrAdd(steamid, id => new Player(id));
+
+        public static void Initialize()
+        {
+            if (SteamAPI.Init())
+            {
+                Console.WriteLine("Steam API initialized.");
+            }
+            else
+            {
+                Console.WriteLine("Steam API failed to initialize.");
+            }
+        }
 
         public static class Spy
         {
