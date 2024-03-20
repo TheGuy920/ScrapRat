@@ -260,6 +260,7 @@ namespace Crashbot
 
             var id = this.SteamThread.RegisterCallbackOnce((FriendRichPresenceUpdate_t result) =>
             {
+                Logger.WriteLine($"RegisterCallbackOnce, FriendRichPresenceUpdate_t", Verbosity.Debug);
                 if (result.m_steamIDFriend.m_SteamID == steamid.m_SteamID && this.SteamUsers.TryGetValue(steamid, out var victim))
                 {
                     var currentRP = this.LoadUserRP(victim.SteamId);
@@ -273,6 +274,7 @@ namespace Crashbot
             this.SteamThread.Run(SteamFriends.RequestFriendRichPresence, steamid);
 
             Task.Delay(REQUEST_TIMEOUT * 15)
+                .ContinueWith(_ => Logger.WriteLine($"Force calling Rich Presence...", Verbosity.Debug))
                 .ContinueWith(_ => this.SteamThread.ForceCallOnce(id, new() { m_steamIDFriend = steamid, m_nAppID = GAMEID }))
                 .ContinueWith(_ => Logger.WriteLine($"Force called Rich Presence with completion status: {_.Result}", Verbosity.Debug));
         }
