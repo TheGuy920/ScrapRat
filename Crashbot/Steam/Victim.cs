@@ -151,9 +151,9 @@ namespace Crashbot.Steam
         {
             this.richPrecenseTimer.Elapsed += (e, a) =>
             {
-                if (!this.WaitingOnRichPresence)
+                if (!this.WaitingOnRichPresence || true)
                 {
-                    // this.WaitingOnRichPresence = true;
+                    this.WaitingOnRichPresence = true;
                     this.GetRichPresence?.Invoke(e, a);
                 }
             };
