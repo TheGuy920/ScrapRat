@@ -1,4 +1,5 @@
 using ScrapRat;
+using ScrapRat.Spy;
 
 namespace CrashWebApi
 {
@@ -18,6 +19,8 @@ namespace CrashWebApi
             File.WriteAllText("steam_appid.txt", "387990");
 
             Game.Initialize();
+            List<SpyTarget> targets = [];
+
             foreach (var steamid in PeopleToTrack)
             {
                 var player = Game.Spy.TargetPlayer(steamid);
@@ -30,8 +33,19 @@ namespace CrashWebApi
                 {
                     Console.WriteLine($"[{DateTime.Now}] Player '{player.Name}' ({player.SteamID}) is {@event}");
                 };
+
+                targets.Add(player);
             }
 
+            AppDomain.CurrentDomain.ProcessExit += (object? sender, EventArgs e) =>
+            {
+                foreach (var target in targets)
+                {
+                    Game.Spy.SafeUntargetPlayer(target.SteamID);
+                }
+            };
+
+            Task.Delay(Timeout.Infinite).Wait();
             /*
             var builder = WebApplication.CreateBuilder(args);
 

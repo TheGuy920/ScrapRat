@@ -43,11 +43,13 @@ namespace ScrapRat
                 }
             }
 
+            public static void SafeUntargetPlayer(CSteamID steamid) => SafeUntargetPlayer(steamid.m_SteamID);
+
             public static void SafeUntargetPlayer(ulong steamid)
             {
                 if (SpyDictionary.TryRemove(steamid, out SpyTarget target))
                 {
-                    target.DisposeAsync();
+                    Task.Run(target.DisposeAsync).Wait();
                 }
             }
         }
