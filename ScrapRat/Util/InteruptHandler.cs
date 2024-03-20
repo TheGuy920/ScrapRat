@@ -122,10 +122,17 @@ namespace ScrapRat.Util
         {
             this.refs.TryAdd(@delegate, 0);
 
-            return Task.Run(() => @delegate.DynamicInvoke(@params), this.Token)
-                .ContinueWith(t => { this.refs.TryRemove(@delegate, out _); return t.Result; })
-                .ContinueWith(t => { this.ExecutionCompleted(@delegate); return t.Result; })
-                .GetAwaiter().GetResult();
+            return Task.Run(() =>
+            {
+                try
+                {
+                    return @delegate.DynamicInvoke(@params);
+                }
+                catch (Exception e) { Console.WriteLine(e); return null; }
+            }, this.Token)
+            .ContinueWith(t => { this.refs.TryRemove(@delegate, out _); return t.Result; })
+            .ContinueWith(t => { this.ExecutionCompleted(@delegate); return t.Result; })
+            .GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -146,14 +153,14 @@ namespace ScrapRat.Util
         /// Async runs an action (async) with the ability to cancel it
         /// </summary>
         /// <param name="function"></param>
-        public void RunCancelableAsync<T,G>(Action<T,G> function, T p0, G p1) where T : notnull where G : notnull =>
+        public void RunCancelableAsync<T, G>(Action<T, G> function, T p0, G p1) where T : notnull where G : notnull =>
             this.RunCancelableAsync(function, [p0, p1]);
 
         /// <summary>
         /// Async runs an action (async) with the ability to cancel it
         /// </summary>
         /// <param name="function"></param>
-        public void RunCancelableAsync<T,G,O>(Action<T,G,O> function, T p0, G p1, O p2) where T : notnull where G : notnull where O : notnull =>
+        public void RunCancelableAsync<T, G, O>(Action<T, G, O> function, T p0, G p1, O p2) where T : notnull where G : notnull where O : notnull =>
             this.RunCancelableAsync(function, [p0, p1, p2]);
 
         /// <summary>
@@ -165,9 +172,16 @@ namespace ScrapRat.Util
         {
             this.refs.TryAdd(@delegate, 0);
 
-            Task.Run(() => @delegate.DynamicInvoke(@params))
-                .ContinueWith(__ => this.refs.TryRemove(@delegate, out _))
-                .ContinueWith(_ => this.ExecutionCompleted(@delegate));
+            Task.Run(() =>
+            {
+                try
+                {
+                    @delegate.DynamicInvoke(@params);
+                }
+                catch (Exception e) { Console.WriteLine(e); }
+            })
+            .ContinueWith(__ => this.refs.TryRemove(@delegate, out _))
+            .ContinueWith(_ => this.ExecutionCompleted(@delegate));
         }
 
         private void ExecutionCompleted(Task<Delegate> completedTask) =>
@@ -214,7 +228,7 @@ namespace ScrapRat.Util
             this.refsCompleted.WaitOne();
             this.refs.Clear();
             this.Dispose();
-            return ValueTask.CompletedTask; 
+            return ValueTask.CompletedTask;
         }
     }
 }
