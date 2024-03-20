@@ -176,21 +176,17 @@ namespace Crashbot.Steam
             SteamFunction original = action + @params;
             SteamFunction @new = new(() =>
             {
-                Logger.WriteLine($"Invoking {original}...", Verbosity.Debug);
                 result.Add(original.Invoke());
                 returnResultReady.Set();
-                Logger.WriteLine($"Result for {original} done: {result.First()}", Verbosity.Debug);
             }, []);
 
             this.QueueAction(@new);
 
-            Logger.WriteLine($"Waiting for {original} with {this.actionQueue.Count} ahead.", Verbosity.Debug);
             if (timeout.HasValue)
                 returnResultReady.WaitOne(timeout.Value);
             else
                 returnResultReady.WaitOne();
 
-            Logger.WriteLine($"Result for {original} ready: {result.First()}", Verbosity.Debug);
             return result.First();
         }
 
@@ -245,11 +241,8 @@ namespace Crashbot.Steam
                 if (!this.actionEvent.WaitOne(50) || this.actionQueue.IsEmpty)
                     continue;
 
-                while (this.actionQueue.TryDequeue(out SteamFunction action))
-                {
+                while (this.actionQueue.TryDequeue(out SteamFunction? action))
                     SteamThread.RunAction(action);
-                    Logger.WriteLine($"Action {action} done.", Verbosity.Debug);
-                }
             }
         }
 

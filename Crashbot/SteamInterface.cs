@@ -256,17 +256,11 @@ namespace Crashbot
 
         private void GetVictimRichPresence(CSteamID steamid)
         {
-            Logger.WriteLine("GetVictimRichPresence", Verbosity.Debug);
-
             var id = this.SteamThread.RegisterCallbackOnce((FriendRichPresenceUpdate_t result) =>
             {
-                Logger.WriteLine($"RegisterCallbackOnce, FriendRichPresenceUpdate_t, {result.m_steamIDFriend.m_SteamID}, {steamid.m_SteamID}, " +
-                    $"{result.m_steamIDFriend.m_SteamID == steamid.m_SteamID}, {this.SteamUsers.ContainsKey(steamid)}", Verbosity.Debug);
                 if (result.m_steamIDFriend.m_SteamID == steamid.m_SteamID && this.SteamUsers.TryGetValue(steamid, out var victim))
                 {
-                    Logger.WriteLine($"Rich Presence...", Verbosity.Debug);
                     var currentRP = this.LoadUserRP(victim.SteamId);
-                    Logger.WriteLine($"Rich Presence Update: {currentRP.Count}", Verbosity.Debug);
                     victim.OnRichPresenceUpdate(currentRP);
                     return true;
                 }
@@ -277,25 +271,21 @@ namespace Crashbot
             this.SteamThread.Run(SteamFriends.RequestFriendRichPresence, steamid);
 
             Task.Delay(REQUEST_TIMEOUT * 15)
-                .ContinueWith(_ => Logger.WriteLine($"Force called Rich Presence with completion status: {this.SteamThread.ForceCallOnce(id, new() { m_steamIDFriend = steamid, m_nAppID = GAMEID })}", Verbosity.Debug));
-                //.ContinueWith(_ => Logger.WriteLine($"Force called Rich Presence with completion status: {_.Result}", Verbosity.Debug));
+                .ContinueWith(_ => this.SteamThread.ForceCallOnce(id, new() { m_steamIDFriend = steamid, m_nAppID = GAMEID }));
         }
 
         private Dictionary<string, string> LoadUserRP(CSteamID user)
         {
             Dictionary<string, string> richPresence = [];
 
-            Logger.WriteLine($"LoadUserRP: {user}", Verbosity.Debug);
-            int keyCount = this.SteamThread.Get(SteamFriends.GetFriendRichPresenceKeyCount, user);
-            Logger.WriteLine($"Key Count: {keyCount}", Verbosity.Debug);
+            int keyCount = SteamFriends.GetFriendRichPresenceKeyCount(user);
+
             if (keyCount > 0)
             {
                 for (int i = 0; i < keyCount; i++)
                 {
-                    string key = this.SteamThread.Get(SteamFriends.GetFriendRichPresenceKeyByIndex, user, i)!;
-                    Logger.WriteLine($"Key: {key}", Verbosity.Debug);
-                    string value = this.SteamThread.Get(SteamFriends.GetFriendRichPresence, user, key)!;
-                    Logger.WriteLine($"Value: {value}", Verbosity.Debug);
+                    string key = SteamFriends.GetFriendRichPresenceKeyByIndex(user, i)!;
+                    string value = SteamFriends.GetFriendRichPresence(user, key)!;
                     richPresence.Add(key, value);
                 }
             }
