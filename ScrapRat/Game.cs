@@ -15,6 +15,7 @@ namespace ScrapRat
         {
             if (SteamAPI.Init())
             {
+                Console.Clear();
                 Console.WriteLine("Steam API initialized.");
             }
             else

@@ -74,6 +74,15 @@ namespace ScrapRat
             this.hSteamNetConnection ??= (HSteamNetConnection)this.Interupt.RunCancelable(() => 
                 SteamNetworkingSockets.ConnectP2P(ref this.NetworkingIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions));
 
+        internal void CloseConnection()
+        {
+            if (this.hSteamNetConnection.HasValue)
+            {
+                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, "Closed by user", false);
+                this.hSteamNetConnection = null;
+            }
+        }
+
         private void LoadPlayerInfo()
         {
             var profile = this.GetProfile();
