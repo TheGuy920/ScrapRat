@@ -121,18 +121,21 @@ namespace ScrapRat.Util
         public dynamic? RunCancelable(Delegate @delegate, params object[] @params)
         {
             this.refs.TryAdd(@delegate, 0);
+            object? result = null;
 
-            return Task.Run(() =>
+            Task.Run(() =>
             {
                 try
                 {
-                    return @delegate.DynamicInvoke(@params);
+                    result = @delegate.DynamicInvoke(@params);
                 }
-                catch (Exception e) { Console.WriteLine(e); return null; }
+                catch (Exception e) { Console.WriteLine(e); }
             }, this.Token)
-            .ContinueWith(t => { this.refs.TryRemove(@delegate, out _); return t.Result; })
-            .ContinueWith(t => { this.ExecutionCompleted(@delegate); return t.Result; })
-            .GetAwaiter().GetResult();
+            .ContinueWith(t => this.refs.TryRemove(@delegate, out _))
+            .ContinueWith(t => this.ExecutionCompleted(@delegate))
+            .Wait();
+
+            return result;
         }
 
         /// <summary>
