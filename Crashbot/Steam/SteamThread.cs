@@ -33,7 +33,7 @@ namespace Crashbot.Steam
         private readonly Delegate steamCallback = callback;
 
         public bool Invoke<T>(T result)
-            => steamCallback.Method.Invoke(steamCallback.Target, new object[] { result, @params }) as bool? ?? false;
+            => steamCallback.DynamicInvoke([result, ..@params]) as bool? ?? false;
     }
 
     internal class CallbackId<_>(Guid id) where _ : struct

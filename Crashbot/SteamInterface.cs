@@ -274,9 +274,8 @@ namespace Crashbot
             this.SteamThread.Run(SteamFriends.RequestFriendRichPresence, steamid);
 
             Task.Delay(REQUEST_TIMEOUT * 15)
-                .ContinueWith(_ => Logger.WriteLine($"Force calling Rich Presence...", Verbosity.Debug))
-                .ContinueWith(_ => this.SteamThread.ForceCallOnce(id, new() { m_steamIDFriend = steamid, m_nAppID = GAMEID }))
-                .ContinueWith(_ => Logger.WriteLine($"Force called Rich Presence with completion status: {_.Result}", Verbosity.Debug));
+                .ContinueWith(_ => Logger.WriteLine($"Force called Rich Presence with completion status: {this.SteamThread.ForceCallOnce(id, new() { m_steamIDFriend = steamid, m_nAppID = GAMEID })}", Verbosity.Debug));
+                //.ContinueWith(_ => Logger.WriteLine($"Force called Rich Presence with completion status: {_.Result}", Verbosity.Debug));
         }
 
         private Dictionary<string, string> LoadUserRP(CSteamID user)
