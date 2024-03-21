@@ -184,7 +184,7 @@ namespace ScrapRat.PlayerModels
                     this.previous_game_states.RemoveAt(0);
                 this.previous_game_states.Add(true);
 
-                if (this.previous_game_states.All(b => b))
+                if (this.previous_game_states.All(b => b) && !this.IsInGame)
                 { 
                     Console.WriteLine("Player is in game, scanning fast!");
                     this.ScanningTimer.Interval = FAST_SCAN;
