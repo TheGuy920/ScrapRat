@@ -1,4 +1,4 @@
-# Welcome to the CrashBot repo!
+# Welcome to the ScrapRat repo!
 
 This repository implements the follow CWE's:
 
