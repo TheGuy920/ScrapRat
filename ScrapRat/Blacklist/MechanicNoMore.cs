@@ -218,7 +218,7 @@ namespace ScrapRat.PlayerModels
 
             var richPresence = this.LoadUserRP(this.SteamID);
 
-            Console.WriteLine(string.Join(", ", richPresence.SelectMany(s => $"{s.Key}: {s.Value}")));
+            Console.WriteLine(string.Join(", ", richPresence.Select(s => $"{s.Key}: {s.Value}")));
 
             bool isInAWorld =
                    richPresence.TryGetValue("connect", out var curl) && !string.IsNullOrWhiteSpace(curl)
