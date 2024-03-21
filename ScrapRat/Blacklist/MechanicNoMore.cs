@@ -208,10 +208,14 @@ namespace ScrapRat.PlayerModels
             bool isInAWorld =
                    richPresence.TryGetValue("connect", out var curl) && !string.IsNullOrWhiteSpace(curl)
                 && richPresence.TryGetValue("status", out var stat) && !string.IsNullOrWhiteSpace(stat);
-                // && richPresence.TryGetValue("Passphrase", out var pphrase) && !string.IsNullOrWhiteSpace(pphrase);
+            // && richPresence.TryGetValue("Passphrase", out var pphrase) && !string.IsNullOrWhiteSpace(pphrase);
 
             if (richPresence.Count <= 0 || !isInAWorld)
+            {
+                if (this.Host.SteamID.m_SteamID != this.BasePlayer.SteamID.m_SteamID)
+                    this.Host = this.BasePlayer;
                 return;
+            }
 
             if (richPresence.TryGetValue("connect", out string? connectUrl))
             {
