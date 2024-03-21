@@ -222,8 +222,8 @@ namespace ScrapRat.PlayerModels
 
             bool isInAWorld =
                    richPresence.TryGetValue("connect", out var curl) && !string.IsNullOrWhiteSpace(curl)
-                && richPresence.TryGetValue("status", out var stat) && !string.IsNullOrWhiteSpace(stat)
-                && richPresence.TryGetValue("Passphrase", out var pphrase) && !string.IsNullOrWhiteSpace(pphrase);
+                && richPresence.TryGetValue("status", out var stat) && !string.IsNullOrWhiteSpace(stat);
+                // && richPresence.TryGetValue("Passphrase", out var pphrase) && !string.IsNullOrWhiteSpace(pphrase);
 
             if (richPresence.Count <= 0 || !isInAWorld)
                 return;
