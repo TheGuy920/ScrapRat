@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Crashbot\Crashbot.csproj" />
+    <ProjectReference Include="..\ScrapRat\ScrapRat.csproj" />
   </ItemGroup>
 
   <ItemGroup>
