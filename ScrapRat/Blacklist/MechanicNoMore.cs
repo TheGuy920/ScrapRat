@@ -62,7 +62,7 @@ namespace ScrapRat.PlayerModels
         private readonly Timer RichPresenceTimer = new()
         {
             AutoReset = true,
-            Interval = SUPER_SLOW_SCAN,
+            Interval = QUICK_SCAN,
             Enabled = false,
         };
 
@@ -90,13 +90,8 @@ namespace ScrapRat.PlayerModels
             if (this.Privacy >= PrivacySettings.Public && this.AnyHostBlacklisted)
             {
                 this.ScanningTimer.Interval = SLOW_SCAN;
-                this.RichPresenceTimer.Interval = SUPER_SLOW_SCAN;
-
                 this.ScanningTimer.Start();
-                this.RichPresenceTimer.Start();
-
                 this.Interupt.RunOnCancel(this.ScanningTimer.Stop);
-                this.Interupt.RunOnCancel(this.RichPresenceTimer.Stop);
 
                 Task.Run(() => this.ProfileScanning(null, null));
             }
@@ -106,7 +101,6 @@ namespace ScrapRat.PlayerModels
         {
             var connection = this.Host.GetConnection();
 
-            Console.WriteLine("Opening connection...");
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
@@ -177,8 +171,10 @@ namespace ScrapRat.PlayerModels
                 if (this.previous_game_states.All(b => b) && !this.IsInGame)
                 { 
                     this.ScanningTimer.Interval = FAST_SCAN;
-                    this.RichPresenceTimer.Interval = QUICK_SCAN;
                     this.IsInGame = true;
+
+                    this.RichPresenceTimer.Start();
+                    this.Interupt.RunOnCancel(this.RichPresenceTimer.Stop);
                 }
 
                 return;
@@ -191,7 +187,7 @@ namespace ScrapRat.PlayerModels
             if (this.IsInGame)
             {
                 this.ScanningTimer.Interval = SLOW_SCAN;
-                this.RichPresenceTimer.Interval = SUPER_SLOW_SCAN;
+                this.RichPresenceTimer.Stop();
                 this.IsInGame = false;
             }
         }
@@ -202,8 +198,6 @@ namespace ScrapRat.PlayerModels
             SteamAPI.RunCallbacks();
 
             var richPresence = this.LoadUserRP(this.SteamID);
-
-            Console.WriteLine(string.Join(", ", richPresence.Select(s => $"{s.Key}: {s.Value}")));
 
             bool isInAWorld =
                    richPresence.TryGetValue("connect", out var curl) && !string.IsNullOrWhiteSpace(curl)
@@ -231,6 +225,9 @@ namespace ScrapRat.PlayerModels
 
                     this.RichPresenceTimer.Start();
                     this.ScanningTimer.Start();
+
+                    this.Interupt.RunOnCancel(this.ScanningTimer.Stop);
+                    this.Interupt.RunOnCancel(this.RichPresenceTimer.Stop);
                 }
             }
         }
