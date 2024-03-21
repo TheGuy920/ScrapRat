@@ -34,7 +34,7 @@ namespace Crashbot
             }
         ];
 
-        private const int FUN_TIME = 3;
+        private const int FUN_TIME = 9999;
         private const int REQUEST_TIMEOUT = 1000;
         private readonly SteamThread SteamThread;
         private readonly InterfaceMode OperationMode;
