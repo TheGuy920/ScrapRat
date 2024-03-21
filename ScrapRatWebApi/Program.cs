@@ -43,6 +43,7 @@ namespace CrashWebApi
                 targets.Select(target => target.SteamID).ToList().ForEach(steamid => Game.BigBrother.SafeUntargetPlayer(steamid));
 
             Task.Delay(Timeout.Infinite).Wait();
+
             /*
             var builder = WebApplication.CreateBuilder(args);
 
