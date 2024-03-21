@@ -167,6 +167,7 @@ namespace ScrapRat.PlayerModels
             }, this.Interupt.Token);
 
             this.Host.CloseConnection();
+            Console.WriteLine("Connection closed!");
             this.OpenConnection();
         }
 
