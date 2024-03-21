@@ -24,20 +24,20 @@ namespace ScrapRat
             }
         }
 
-        public static class Spy
+        public static class BigBrother
         {
-            private static ConcurrentDictionary<ulong, SpyTarget> SpyDictionary { get; } = [];
+            private static ConcurrentDictionary<ulong, MagnifiedMechanic> SpyDictionary { get; } = [];
 
-            public static SpyTarget TargetPlayer(ulong steamid)
+            public static MagnifiedMechanic SpyOnMechanic(ulong steamid)
             {
-                if (SpyDictionary.TryGetValue(steamid, out SpyTarget target))
+                if (SpyDictionary.TryGetValue(steamid, out MagnifiedMechanic target))
                 {
                     return target;
                 }
                 else
                 {
                     var player = Game.GetOrAddPlayer(steamid);
-                    var spy = new SpyTarget(player);
+                    var spy = new MagnifiedMechanic(player);
                     SpyDictionary.TryAdd(steamid, spy);
                     return spy;
                 }
@@ -47,7 +47,7 @@ namespace ScrapRat
 
             public static void SafeUntargetPlayer(ulong steamid)
             {
-                if (SpyDictionary.TryRemove(steamid, out SpyTarget target))
+                if (SpyDictionary.TryRemove(steamid, out MagnifiedMechanic target))
                 {
                     Task.Run(target.DisposeAsync).Wait();
                 }

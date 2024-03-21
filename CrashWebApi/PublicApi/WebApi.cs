@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 
-namespace CrashWebApi.WebApi
+namespace CrashbotWebApi.PublicApi
 {
     [ApiController]
     [Route("[controller]")]
@@ -11,7 +11,7 @@ namespace CrashWebApi.WebApi
 
         public StreamController()
         {
-            
+
         }
 
         // Handling different ID formats
@@ -30,7 +30,7 @@ namespace CrashWebApi.WebApi
 
             if (ulong.TryParse(id, out ulong steamId))
             {
-                
+
                 return Ok($"Received ID: {steamId}");
             }
             else
@@ -44,7 +44,7 @@ namespace CrashWebApi.WebApi
         {
             if (ulong.TryParse(id, out ulong steamId))
             {
-                if (!this.LiveStreams.ContainsKey(steamId))
+                if (!LiveStreams.ContainsKey(steamId))
                 {
                     StartLiveStream(steamId);
                 }
@@ -63,7 +63,7 @@ namespace CrashWebApi.WebApi
             // Logic to start streaming
             // ...
 
-            this.LiveStreams[id] = $"Stream for {id} started";
+            LiveStreams[id] = $"Stream for {id} started";
         }
     }
 }

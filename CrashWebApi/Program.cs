@@ -19,31 +19,26 @@ namespace CrashWebApi
             File.WriteAllText("steam_appid.txt", "387990");
 
             Game.Initialize();
-            List<SpyTarget> targets = [];
+            List<MagnifiedMechanic> targets = [];
 
             foreach (var steamid in PeopleToTrack)
             {
-                var player = Game.Spy.TargetPlayer(steamid);
-                player.PlayerLoaded += _ =>
+                MagnifiedMechanic mechanic = Game.BigBrother.SpyOnMechanic(steamid);
+                targets.Add(mechanic);
+
+                mechanic.PlayerLoaded += _ =>
                 {
-                    Console.WriteLine($"[{DateTime.Now}] Player '{player.Name}' ({player.SteamID}) is loaded.");
+                    Console.WriteLine($"[{DateTime.Now}] Player '{mechanic.Name}' ({mechanic.SteamID}) is loaded.");
                 };
 
-                player.OnUpdate += @event =>
+                mechanic.OnUpdate += @event =>
                 {
-                    Console.WriteLine($"[{DateTime.Now}] Player '{player.Name}' ({player.SteamID}) is {@event}");
+                    Console.WriteLine($"[{DateTime.Now}] Player '{mechanic.Name}' ({mechanic.SteamID}) is {@event}");
                 };
-
-                targets.Add(player);
             }
 
             AppDomain.CurrentDomain.ProcessExit += (object? sender, EventArgs e) =>
-            {
-                foreach (var target in targets)
-                {
-                    Game.Spy.SafeUntargetPlayer(target.SteamID);
-                }
-            };
+                targets.Select(target => target.SteamID).ToList().ForEach(steamid => Game.BigBrother.SafeUntargetPlayer(steamid));
 
             Task.Delay(Timeout.Infinite).Wait();
             /*

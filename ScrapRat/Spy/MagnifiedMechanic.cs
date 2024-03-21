@@ -6,7 +6,7 @@ using System.Threading.Channels;
 
 namespace ScrapRat.Spy
 {
-    public class SpyTarget : IPlayer
+    public class MagnifiedMechanic : IPlayer
     {
         public string Name => this.BasePlayer.Name;
         public InteruptHandler Interupt => this.BasePlayer.Interupt;
@@ -21,7 +21,7 @@ namespace ScrapRat.Spy
 
         private Player BasePlayer { get; }
 
-        internal SpyTarget(Player player)
+        internal MagnifiedMechanic(Player player)
         {
             this.BasePlayer = player;
             this.BasePlayer.OnProcessCommands += this.ProcessCommands;
