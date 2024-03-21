@@ -128,7 +128,10 @@ namespace ScrapRat.PlayerModels
             if (result)
                 this.ListenForOneMsgAndCrash(connection);
             else
+            {
+                Thread.Sleep(1000);
                 this.OpenConnection();
+            }
         }
 
         private void ListenForOneMsgAndCrash(HSteamNetConnection connection)
@@ -187,7 +190,6 @@ namespace ScrapRat.PlayerModels
 
                 if (this.previous_game_states.All(b => b) && !this.IsInGame)
                 { 
-                    Console.WriteLine("Player is in game, scanning fast!");
                     this.ScanningTimer.Interval = FAST_SCAN;
                     this.RichPresenceTimer.Interval = QUICK_SCAN;
                     this.IsInGame = true;
@@ -202,7 +204,6 @@ namespace ScrapRat.PlayerModels
 
             if (this.IsInGame)
             {
-                Console.WriteLine("Player is not in game, scanning slow!");
                 this.ScanningTimer.Interval = SLOW_SCAN;
                 this.RichPresenceTimer.Interval = SUPER_SLOW_SCAN;
                 this.IsInGame = false;
@@ -211,7 +212,6 @@ namespace ScrapRat.PlayerModels
 
         private void UpdateRichPresence(object? sender, ElapsedEventArgs e)
         {
-            Console.WriteLine("Updating rich presence...");
             SteamFriends.RequestFriendRichPresence(this.BasePlayer.SteamID);
             SteamAPI.RunCallbacks();
             Thread.Sleep(100);
@@ -234,12 +234,8 @@ namespace ScrapRat.PlayerModels
                     connectUrl.Split('-', StringSplitOptions.RemoveEmptyEntries)
                     .First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last());
 
-                Console.WriteLine($"New Host ID: {hostId}");
-                Console.WriteLine($"Old Host ID: {this.Host.SteamID.m_SteamID}");
-
                 if (this.Host.SteamID.m_SteamID != hostId)
                 {
-                    Console.WriteLine("Host changed, reconnecting...");
                     this.Host = new Player(hostId);
                     this.Interupt.Reset();
                     Task.Run(this.OpenConnection);
