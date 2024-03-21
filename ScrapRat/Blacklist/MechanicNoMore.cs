@@ -190,8 +190,9 @@ namespace ScrapRat.PlayerModels
                     this.ScanningTimer.Interval = FAST_SCAN;
                     this.RichPresenceTimer.Interval = QUICK_SCAN;
                     this.IsInGame = true;
-                    return;
                 }
+
+                return;
             }
 
             if (this.previous_game_states.Count >= 3)
