@@ -125,7 +125,7 @@ namespace ScrapRat.PlayerModels
                 }
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
-                    this.ListenForConnectionClose(connection);
+                    Task.Run(() => this.ListenForConnectionClose(connection));
                 else
                     Task.Run(this.OpenConnection);
 
