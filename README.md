@@ -69,10 +69,10 @@ A sample WebApi has been created showcasing the cyber stalking capabilities
 ```csharp
 foreach (var steamid in PeopleToTrack)
 {
-    MagnifiedMechanic mechanic = Game.BigBrother.SpyOnMechanic(steamid);
+    MagnifiedMechanic mech = Game.BigBrother.SpyOnMechanic(steamid);
     mechanic.PlayerLoaded += _ =>
-        Console.WriteLine($"[{DateTime.Now}] Player '{mechanic.Name}' ({mechanic.SteamID}) is loaded.");
+        Console.WriteLine($"[{DateTime.Now}] Player '{mech.Name}' ({mech.SteamID}) is loaded.");
     mechanic.OnUpdate += evnt =>
-        Console.WriteLine($"[{DateTime.Now}] Player '{mechanic.Name}' ({mechanic.SteamID}) is {evnt}");
+        Console.WriteLine($"[{DateTime.Now}] Player '{mech.Name}' ({mech.SteamID}) is {evnt}");
 }
 ```
