@@ -229,7 +229,7 @@ namespace Crashbot
                 {
                     for (int i = 0; i < FUN_TIME; i++)
                     {
-                        this.SteamThread.SendMessageToConnection(conn, [0], 0, 0);
+                        this.SteamThread.SendMessageToConnection(conn, [], 0, 0);
                         this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
                         Task.Delay(20).Wait();
                     }
