@@ -234,6 +234,9 @@ namespace ScrapRat.PlayerModels
                     connectUrl.Split('-', StringSplitOptions.RemoveEmptyEntries)
                     .First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last());
 
+                Console.WriteLine($"New Host ID: {hostId}");
+                Console.WriteLine($"Old Host ID: {this.Host.SteamID.m_SteamID}");
+
                 if (this.Host.SteamID.m_SteamID != hostId)
                 {
                     Console.WriteLine("Host changed, reconnecting...");
