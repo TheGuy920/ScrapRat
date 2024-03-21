@@ -106,7 +106,7 @@ namespace ScrapRat.PlayerModels
             var connection = this.Host.GetConnection();
 
             Console.WriteLine("Opening connection...");
-            var result = this.Interupt.RunCancelable((CancellationToken cancel) =>
+            this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
 
@@ -120,22 +120,21 @@ namespace ScrapRat.PlayerModels
                     if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
                     {
                         this.Host.CloseConnection();
-                        return false;
+                        return;
                     }
                 }
 
-                return info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
-            }, this.Interupt.Token);
+                if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
+                    this.ListenForOneMsgAndCrash(connection);
+                else
+                    Task.Run(this.OpenConnection);
 
-            if (result)
-                this.ListenForOneMsgAndCrash(connection);
-            else
-                this.OpenConnection();
+            }, this.Interupt.Token);
         }
 
         private void ListenForOneMsgAndCrash(HSteamNetConnection connection)
         {
-            this.Interupt.RunCancelable((CancellationToken cancel) =>
+            this.Interupt.RunCancelableAsync((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new IntPtr[1], 1);
 
@@ -143,9 +142,8 @@ namespace ScrapRat.PlayerModels
                     SteamNetworkingSockets.SendMessageToConnection(connection, 0, 0, 0, out long _);
                 SteamAPI.RunCallbacks();
 
+                this.ListenForConnectionClose(connection);
             }, this.Interupt.Token);
-
-            this.ListenForConnectionClose(connection);
         }
 
         private void ListenForConnectionClose(HSteamNetConnection connection)
@@ -168,7 +166,7 @@ namespace ScrapRat.PlayerModels
 
             this.Host.CloseConnection();
             
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
             this.OpenConnection();
         }
 
