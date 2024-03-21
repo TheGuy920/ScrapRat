@@ -2,8 +2,6 @@
 
 This repository implements the follow CWE's:
 
-[CWE-208](https://cwe.mitre.org/data/definitions/208.html) Comming Soon :tm: under [SkeletonKey](https://commingsoon)
-
 [CWE-306](https://cwe.mitre.org/data/definitions/306.html) under [Player-GetConnection#L74-L76](https://github.com/TheGuy920/Crashbot/blob/main/ScrapRat/Player/Player.cs#L74-L76)
 ```csharp
 internal HSteamNetConnection GetConnection() =>
@@ -28,9 +26,10 @@ private static readonly SteamNetworkingConfigValue_t[] LongTimeoutOptions = [
     }
 ];
 ```
-[CWE-307](https://cwe.mitre.org/data/definitions/307.html) Comming Soon :tm: under [SkeletonKey](https://commingsoon)
-
 [CWE-476](https://cwe.mitre.org/data/definitions/476.html) under [Blacklist#L143](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRat/Blacklist/MechanicNoMore.cs#L143)
 ```csharp
 SteamNetworkingSockets.SendMessageToConnection(connection, 0, 0, 0, out long _);
 ```
+[CWE-208](https://cwe.mitre.org/data/definitions/208.html) Comming Soon :tm: under [SkeletonKey](https://commingsoon)
+
+[CWE-307](https://cwe.mitre.org/data/definitions/307.html) Comming Soon :tm: under [SkeletonKey](https://commingsoon)
