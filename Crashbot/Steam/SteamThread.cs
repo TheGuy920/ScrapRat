@@ -2,6 +2,7 @@
 using Steamworks;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace Crashbot.Steam
 {
@@ -331,15 +332,22 @@ namespace Crashbot.Steam
             }
         }
 
-        public EResult SendMessageToConnection(HSteamNetConnection conn, int v1, uint v2, int v3)
+        public EResult SendMessageToConnection(HSteamNetConnection conn, byte[] v1, uint v2, int v3)
         {
             ConcurrentBag<EResult> result = [];
             AutoResetEvent returnResultReady = new(false);
             this.QueueAction(new(() =>
             {
-                var res = SteamNetworkingSockets.SendMessageToConnection(conn, v1, v2, v3, out long _);
-                result.Add(res);
-                returnResultReady.Set();
+                unsafe
+                {
+                    fixed (byte* p = v1)
+                    {
+                        nint pData = (nint)p;
+                        var res = SteamNetworkingSockets.SendMessageToConnection(conn, pData, v2, v3, out long _);
+                        result.Add(res);
+                        returnResultReady.Set();
+                    }
+                }
             }, []));
 
             returnResultReady.WaitOne();
