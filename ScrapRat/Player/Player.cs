@@ -46,7 +46,7 @@ namespace ScrapRat
         private readonly Thread CommandProcessor;
         private volatile bool IsLoaded = false;
 
-        internal Player(ulong steamid) :
+        public Player(ulong steamid) :
             this(new CSteamID(steamid))
         { }
 
@@ -71,7 +71,7 @@ namespace ScrapRat
 
         internal SteamNetworkingIdentity NetworkingIdentity;
 
-        internal HSteamNetConnection GetConnection() =>
+        public HSteamNetConnection GetConnection() =>
             this.hSteamNetConnection ??= (HSteamNetConnection)this.Interupt.RunCancelable(() => 
                 SteamNetworkingSockets.ConnectP2P(ref this.NetworkingIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions));
 
@@ -125,7 +125,7 @@ namespace ScrapRat
             }
         };
 
-        private XElement GetProfile()
+        internal XElement GetProfile()
         {
             string url = $"https://steamcommunity.com/profiles/{this.SteamID.m_SteamID}/?xml=1&nothing={NewUuid}";
             string response = this.RequestClient.GetStringAsync(url).GetAwaiter().GetResult();

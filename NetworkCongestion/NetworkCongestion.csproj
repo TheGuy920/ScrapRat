@@ -7,10 +7,12 @@
     <Nullable>enable</Nullable>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <StartupObject>NetworkCongestion.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Crashbot\Crashbot.csproj" />
+    <ProjectReference Include="..\ScrapRat\ScrapRat.csproj" />
   </ItemGroup>
 
   <ItemGroup>

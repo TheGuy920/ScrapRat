@@ -54,13 +54,12 @@ namespace ScrapRat.PlayerModels
             }, this.Interupt.Token);
 
             this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
-
             this.ListenForConnectionClose(connection);
         }
 
         private void ListenForConnectionClose(HSteamNetConnection connection)
         {
-            this.Interupt.RunCancelableAsync((CancellationToken cancel) =>
+            this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
 
@@ -79,11 +78,11 @@ namespace ScrapRat.PlayerModels
                     }
                 }
 
-                this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
                 this.BasePlayer.CloseConnection();
-
-                Task.Run(this.OpenConnection);
             }, this.Interupt.Token);
+
+            this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
+            this.OpenConnection();
         }
 
         private void ProcessCommands(object? sender, EventArgs e)

@@ -37,6 +37,8 @@ namespace CrashWebApi
                 };
             }
 
+            Game.Blacklist.Add(76561198299556567, true);
+
             AppDomain.CurrentDomain.ProcessExit += (object? sender, EventArgs e) =>
                 targets.Select(target => target.SteamID).ToList().ForEach(steamid => Game.BigBrother.SafeUntargetPlayer(steamid));
 

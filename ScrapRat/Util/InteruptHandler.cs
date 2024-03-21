@@ -15,7 +15,7 @@ namespace ScrapRat.Util
 
         public InteruptHandler()
         {
-            this.source.Token.Register();
+            this.source.Token.Register(this.Interupt);
         }
 
         /// <summary>
@@ -48,6 +48,8 @@ namespace ScrapRat.Util
         /// <param name="timout"></param>
         public void Interupt(TimeSpan timout)
         {
+            if (this.source.IsCancellationRequested)
+                return;
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
             this.refsCompleted.WaitOne(timout);
