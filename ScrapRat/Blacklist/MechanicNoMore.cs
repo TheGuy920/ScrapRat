@@ -48,7 +48,8 @@ namespace ScrapRat.PlayerModels
 
         private const int SUPER_SLOW_SCAN = 60000; // 60 seconds
         private const int SLOW_SCAN = 10000; // 10 seconds
-        private const int QUICK_SCAN = 2000; // 2 seconds
+        private const int QUICK_SCAN = 5000; // 5
+                                             // seconds
         private const int FAST_SCAN = 1000; // 1 second
 
         private readonly Timer ScanningTimer = new()
@@ -199,7 +200,6 @@ namespace ScrapRat.PlayerModels
         {
             SteamFriends.RequestFriendRichPresence(this.BasePlayer.SteamID);
             SteamAPI.RunCallbacks();
-            Thread.Sleep(300);
 
             var richPresence = this.LoadUserRP(this.SteamID);
 
@@ -224,6 +224,9 @@ namespace ScrapRat.PlayerModels
                     this.Host = new Player(hostId);
                     this.Interupt.Reset();
                     Task.Run(this.OpenConnection);
+
+                    this.RichPresenceTimer.Start();
+                    this.ScanningTimer.Start();
                 }
             }
         }
