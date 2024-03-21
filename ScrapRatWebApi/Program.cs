@@ -1,5 +1,6 @@
 using ScrapRat;
 using ScrapRat.PlayerModels;
+using ScrapRatWebApi.Discord;
 
 namespace CrashWebApi
 {
@@ -10,8 +11,17 @@ namespace CrashWebApi
             76561198004277014, // kan
             76561198079775050, // kosmo
             76561197965646622, // moonbo
-            // 76561198299556567, // theguy920
         ];
+
+        private static readonly Dictionary<ulong, ulong> SteamidToDiscordid = new()
+        {
+            {76561198000662213, 185907632769466368},
+            {76561198004277014, 162679241857564673},
+            {76561198079775050, 239167036205301761},
+            {76561197965646622, 143945560368480256},
+        };
+
+        private static readonly DiscordWebhook _webhook = new(File.ReadAllText("webhook.url"));
 
         public static void Main(string[] args)
         {
@@ -34,10 +44,19 @@ namespace CrashWebApi
                 mechanic.OnUpdate += @event =>
                 {
                     Console.WriteLine($"[{DateTime.Now}] Player '{mechanic.Name}' ({mechanic.SteamID}) is {@event}");
+                    
+                    string discordid = SteamidToDiscordid.TryGetValue(steamid, out ulong id) ? $"<@{id}>" : mechanic.Name;
+                    switch (@event)
+                    {
+                        case ObservableEvent.NowPlaying:
+                            _webhook.SendMessage($"@everyone {discordid} is now playing Scrap Mechanic!");
+                            break;
+                        case ObservableEvent.StoppedPlaying:
+                            _webhook.SendMessage($"@everyone {discordid} stopped playing Scrap Mechanic :(");
+                            break;
+                    }
                 };
             }
-
-            Game.Blacklist.Add(76561198299556567, true);
 
             AppDomain.CurrentDomain.ProcessExit += (object? sender, EventArgs e) =>
                 targets.Select(target => target.SteamID).ToList().ForEach(steamid => Game.BigBrother.SafeUntargetPlayer(steamid));
