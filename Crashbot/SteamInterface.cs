@@ -227,7 +227,7 @@ namespace Crashbot
 
                 Task.Run(() => SteamNetworkingSockets.ReceiveMessagesOnConnection(conn, new nint[1], 1), cancellationTokenSource.Token).ContinueWith(_ =>
                 {
-                    byte[] ary = new byte[int.MaxValue];
+                    byte[] ary = [];//new byte[int.MaxValue];
                     Parallel.For(0, FUN_TIME, (_) =>
                     {
                         this.SteamThread.SendMessageToConnection(conn, ary, 0, 0);
