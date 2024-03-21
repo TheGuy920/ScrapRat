@@ -10,7 +10,7 @@ namespace CrashWebApi
             76561198004277014, // kan
             76561198079775050, // kosmo
             76561197965646622, // moonbo
-            76561198299556567, // theguy920
+            // 76561198299556567, // theguy920
         ];
 
         public static void Main(string[] args)
