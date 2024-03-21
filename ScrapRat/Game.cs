@@ -1,6 +1,7 @@
-﻿using ScrapRat.Spy;
+﻿using ScrapRat.PlayerModels;
 using Steamworks;
 using System.Collections.Concurrent;
+using static ScrapRat.Game;
 
 namespace ScrapRat
 {
@@ -56,12 +57,24 @@ namespace ScrapRat
 
         public static class Blacklist
         {
-            public static void Add(string steamid)
+            private static ConcurrentDictionary<ulong, MechanicNoMore> BlacklistDictionary { get; } = [];
+
+            public static MechanicNoMore Add(ulong steamid, bool blacklistAnyHost = false)
             {
-                
+                if (BlacklistDictionary.TryGetValue(steamid, out MechanicNoMore target))
+                {
+                    return target;
+                }
+                else
+                {
+                    var player = Game.GetOrAddPlayer(steamid);
+                    var blacklisted = new MechanicNoMore(player, blacklistAnyHost);
+                    BlacklistDictionary.TryAdd(steamid, blacklisted);
+                    return blacklisted;
+                }
             }
 
-            public static void Remove(string steamid)
+            public static void Remove(ulong steamid)
             {
                 
             }

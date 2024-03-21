@@ -1,5 +1,5 @@
 using ScrapRat;
-using ScrapRat.Spy;
+using ScrapRat.PlayerModels;
 
 namespace CrashWebApi
 {

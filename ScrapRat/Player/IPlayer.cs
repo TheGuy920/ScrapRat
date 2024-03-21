@@ -33,6 +33,6 @@ namespace ScrapRat
         /// <summary>
         /// Event for when the player info is loaded. Imediately fires if the player is already loaded.
         /// </summary>
-        public virtual event PlayerLoadedEventHandler? PlayerLoaded { add { } remove { } }
+        public event PlayerLoadedEventHandler? PlayerLoaded;
     }
 }

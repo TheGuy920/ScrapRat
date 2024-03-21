@@ -1,33 +1,62 @@
 ﻿using ScrapRat.Util;
 using Steamworks;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace ScrapRat.PlayerModels
 {
-    public class MagnifiedMechanic : IPlayer
+    public class MechanicNoMore : IPlayer
     {
-        public string Name => this.BasePlayer.Name;
-        public InteruptHandler Interupt => this.BasePlayer.Interupt;
-        public CSteamID SteamID => this.BasePlayer.SteamID;
-        public PrivacySettings Privacy => this.BasePlayer.Privacy;
-        public event PlayerLoadedEventHandler? PlayerLoaded
-        {
-            add => this.BasePlayer.PlayerLoaded += value;
-            remove => this.BasePlayer.PlayerLoaded -= value;
-        }
-        public ValueTask DisposeAsync() => this.BasePlayer.DisposeAsync();
-
         private Player BasePlayer { get; }
 
-        internal MagnifiedMechanic(Player player)
+        public string Name => this.BasePlayer.Name;
+
+        public InteruptHandler Interupt => this.BasePlayer.Interupt;
+
+        public CSteamID SteamID => this.BasePlayer.SteamID;
+
+        public PrivacySettings Privacy => this.BasePlayer.Privacy;
+
+        public ValueTask DisposeAsync() => this.BasePlayer.DisposeAsync();
+
+        public bool AnyHostBlacklisted { get; }
+
+        public event PlayerLoadedEventHandler? PlayerLoaded
         {
-            this.BasePlayer = player;
+            add { this.BasePlayer.PlayerLoaded += value; }
+            remove { this.BasePlayer.PlayerLoaded -= value; }
+        }
+
+        private readonly Timer LightProfileScanningThread = new()
+        {
+            AutoReset = true,
+            Interval = 10000, // 10 seconds
+            Enabled = true,
+        };
+
+        internal MechanicNoMore(Player bplayer, bool blacklistAnyHost)
+        { 
+            this.BasePlayer = bplayer;
+            this.AnyHostBlacklisted = blacklistAnyHost;
             this.BasePlayer.OnProcessCommands += this.ProcessCommands;
             this.BasePlayer.PlayerLoaded += this.OnPlayerLoaded;
+            this.LightProfileScanningThread.Elapsed += this.LightProfileScanning;
+        }
+
+        private void ProcessCommands(object? sender, EventArgs e)
+        {
+            // throw new NotImplementedException();
         }
 
         private void OnPlayerLoaded(Player player)
         {
             Task.Run(this.OpenConnection);
+
+            if (this.Privacy >= PrivacySettings.Public)
+            {
+                this.LightProfileScanningThread.Start();
+                this.Interupt.RunOnCancel(this.LightProfileScanningThread.Stop);
+            }
         }
 
         private void OpenConnection()
@@ -53,8 +82,6 @@ namespace ScrapRat.PlayerModels
                 }
             }, this.Interupt.Token);
 
-            this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
-
             this.ListenForConnectionClose(connection);
         }
 
@@ -79,18 +106,19 @@ namespace ScrapRat.PlayerModels
                     }
                 }
 
-                this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
                 this.BasePlayer.CloseConnection();
-
                 Task.Run(this.OpenConnection);
             }, this.Interupt.Token);
         }
 
-        private void ProcessCommands(object? sender, EventArgs e)
+        private void LightProfileScanning(object? sender, EventArgs e)
         {
-            // throw new NotImplementedException();
+
         }
 
-        public event ObservableEventHandler? OnUpdate;
+        private void HeavyProfileScanning(object? sender, EventArgs e)
+        {
+
+        }
     }
 }

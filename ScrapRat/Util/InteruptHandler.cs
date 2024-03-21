@@ -13,6 +13,11 @@ namespace ScrapRat.Util
         private readonly ManualResetEvent refsCompleted = new(false);
         private CancellationTokenSource source = new();
 
+        public InteruptHandler()
+        {
+
+        }
+
         /// <summary>
         /// Cancelation token
         /// </summary>
@@ -183,6 +188,12 @@ namespace ScrapRat.Util
             .ContinueWith(__ => this.refs.TryRemove(@delegate, out _))
             .ContinueWith(_ => this.ExecutionCompleted(@delegate));
         }
+
+        public void RunOnCancel(Action action) =>
+            this.Token.Register(action);
+
+        public void RunOnCancel(Delegate @delegate, params object[] @params) =>
+            this.Token.Register(() => @delegate.DynamicInvoke(@params));
 
         private void ExecutionCompleted(Task<Delegate> completedTask) =>
             this.ExecutionCompleted(completedTask.Result);

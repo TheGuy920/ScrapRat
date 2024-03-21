@@ -79,7 +79,7 @@ namespace ScrapRat
         {
             if (this.hSteamNetConnection.HasValue)
             {
-                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, "You have been spied on! You are safe, for now.", false);
+                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, "You have been spied on! But don't worry, you are safe! For now...", false);
 
                 SteamNetworkingSockets.GetConnectionInfo(this.hSteamNetConnection.Value, out var info);
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
