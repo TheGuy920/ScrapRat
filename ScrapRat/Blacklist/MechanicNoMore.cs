@@ -46,9 +46,9 @@ namespace ScrapRat.PlayerModels
             remove { this.BasePlayer.PlayerLoaded -= value; }
         }
 
-        private const int SUPER_SLOW_SCAN = 60000; // 30 seconds
+        private const int SUPER_SLOW_SCAN = 60000; // 60 seconds
         private const int SLOW_SCAN = 10000; // 10 seconds
-        private const int QUICK_SCAN = 2000; // 5 seconds
+        private const int QUICK_SCAN = 2000; // 2 seconds
         private const int FAST_SCAN = 1000; // 1 second
 
         private readonly Timer ScanningTimer = new()
@@ -61,7 +61,7 @@ namespace ScrapRat.PlayerModels
         private readonly Timer RichPresenceTimer = new()
         {
             AutoReset = true,
-            Interval = SLOW_SCAN,
+            Interval = SUPER_SLOW_SCAN,
             Enabled = false,
         };
 
@@ -211,9 +211,10 @@ namespace ScrapRat.PlayerModels
 
         private void UpdateRichPresence(object? sender, ElapsedEventArgs e)
         {
+            Console.WriteLine("Updating rich presence...");
             SteamFriends.RequestFriendRichPresence(this.BasePlayer.SteamID);
-            Thread.Sleep(100);
             SteamAPI.RunCallbacks();
+            Thread.Sleep(100);
 
             var richPresence = this.LoadUserRP(this.SteamID);
 
