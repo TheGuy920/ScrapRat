@@ -125,24 +125,10 @@ namespace ScrapRat.PlayerModels
                 }
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
-                    this.ListenForOneMsgAndCrash(connection);
+                    this.ListenForConnectionClose(connection);
                 else
                     Task.Run(this.OpenConnection);
 
-            }, this.Interupt.Token);
-        }
-
-        private void ListenForOneMsgAndCrash(HSteamNetConnection connection)
-        {
-            this.Interupt.RunCancelableAsync((CancellationToken cancel) =>
-            {
-                SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new IntPtr[1], 1);
-
-                if (this.IsBlacklisted)
-                    SteamNetworkingSockets.SendMessageToConnection(connection, 0, 0, 0, out long _);
-                SteamAPI.RunCallbacks();
-
-                this.ListenForConnectionClose(connection);
             }, this.Interupt.Token);
         }
 
@@ -150,12 +136,17 @@ namespace ScrapRat.PlayerModels
         {
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
+                SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new IntPtr[1], 1);
+
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
                 {
+                    if (this.IsBlacklisted)
+                        SteamNetworkingSockets.SendMessageToConnection(connection, 0, 0, 0, out long _);
+
                     SteamAPI.RunCallbacks();
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);
 
