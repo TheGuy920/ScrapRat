@@ -231,7 +231,7 @@ namespace Crashbot
                     {
                         this.SteamThread.SendMessageToConnection(conn, [], 0, 3);
                         this.SteamThread.Get(SteamNetworkingSockets.FlushMessagesOnConnection, conn);
-                        Task.Delay(20).Wait();
+                        // Task.Delay(20).Wait();
                     }
 
                     mega_victim.OnVictimCrashed();
