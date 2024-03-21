@@ -103,6 +103,7 @@ namespace ScrapRat.PlayerModels
         {
             var connection = this.Host.GetConnection();
 
+            Console.WriteLine("Opening connection...");
             var result = this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
@@ -232,6 +233,7 @@ namespace ScrapRat.PlayerModels
 
                 if (this.Host.SteamID.m_SteamID != hostId)
                 {
+                    Console.WriteLine("Host changed, reconnecting...");
                     this.Host = new Player(hostId);
                     this.Interupt.Reset();
                     Task.Run(this.OpenConnection);
