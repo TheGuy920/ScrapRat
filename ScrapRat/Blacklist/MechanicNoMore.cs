@@ -199,7 +199,7 @@ namespace ScrapRat.PlayerModels
         {
             SteamFriends.RequestFriendRichPresence(this.BasePlayer.SteamID);
             SteamAPI.RunCallbacks();
-            Thread.Sleep(100);
+            Thread.Sleep(300);
 
             var richPresence = this.LoadUserRP(this.SteamID);
 
