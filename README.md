@@ -7,8 +7,9 @@ This repository implements the follow CWE's:
 [CWE-306](https://cwe.mitre.org/data/definitions/306.html) under [Player-GetConnection](https://github.com/TheGuy920/Crashbot/blob/main/ScrapRat/Player/Player.cs#L74-L76)
 ```csharp
 internal HSteamNetConnection GetConnection() =>
-    this.hSteamNetConnection ??= (HSteamNetConnection)this.Interupt.RunCancelable(() => 
-    SteamNetworkingSockets.ConnectP2P(ref this.NetworkingIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions));
+this.hSteamNetConnection ??= (HSteamNetConnection)this.Interupt.RunCancelable(() => 
+SteamNetworkingSockets.ConnectP2P
+    (ref this.NetworkingIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions));
 ```
 With additional parameters under [LongTimeoutOptions](https://github.com/TheGuy920/Crashbot/blob/main/ScrapRat/Player/Player.cs#L137-L150)
 ```csharp
