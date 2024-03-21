@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crashbot", "Crashbot\Crashbot.csproj", "{35EB7F55-50F2-40A0-BEE1-42464DE59F2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapRatWebApi", "ScrapRatWebApi\ScrapRatWebApi.csproj", "{4769E0D1-7485-4057-BE7B-5FF5970FAAF8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrashbotWebApi", "CrashWebApi\CrashbotWebApi.csproj", "{4769E0D1-7485-4057-BE7B-5FF5970FAAF8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrashbotCli", "CrashbotCli\CrashbotCli.csproj", "{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapRatCli", "ScrapRatCli\ScrapRatCli.csproj", "{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapRat", "ScrapRat\ScrapRat.csproj", "{CF9848CD-D008-417A-B038-91E3FADB69D8}"
 EndProject
@@ -19,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{35EB7F55-50F2-40A0-BEE1-42464DE59F2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{35EB7F55-50F2-40A0-BEE1-42464DE59F2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{35EB7F55-50F2-40A0-BEE1-42464DE59F2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{35EB7F55-50F2-40A0-BEE1-42464DE59F2E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4769E0D1-7485-4057-BE7B-5FF5970FAAF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4769E0D1-7485-4057-BE7B-5FF5970FAAF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4769E0D1-7485-4057-BE7B-5FF5970FAAF8}.Release|Any CPU.ActiveCfg = Release|Any CPU

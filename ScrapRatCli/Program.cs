@@ -1,10 +1,37 @@
-﻿using Crashbot;
-using Crashbot.Steam;
-using Crashbot.Util;
+﻿using ScrapRat;
 using Steamworks;
 
 namespace CrashBotCli
 {
+    public class Logger
+    {
+        public static Verbosity LogVerbosity { get; set; } = Verbosity.Normal;
+
+        public static void CheckVerbosity(bool allowed, string msg)
+            => Console.Write(allowed ? msg : string.Empty);
+
+        public static void WriteLine(string message, Verbosity level)
+            => CheckVerbosity((int)LogVerbosity >= (int)level, $"[{DateTime.Now}] {message}{Environment.NewLine}");
+
+        public static void Write(string message, Verbosity level)
+            => CheckVerbosity((int)LogVerbosity >= (int)level, message);
+
+        public static void Clear()
+            => Console.Clear();
+
+        public static string? ReadLine()
+            => Console.ReadLine();
+    }
+
+    public enum Verbosity
+    {
+        None = 0,
+        Minimal = 1,
+        Normal = 2,
+        Verbose = 3,
+        Debug = 4
+    }
+
     internal class Program
     {
         private static ulong[] steamids = [
@@ -54,23 +81,21 @@ namespace CrashBotCli
                 }
             }
 
-            SteamInterface Steam = SteamInterface.NewAsyncInterface();
-            Steam.WaitUntilSteamReady();
+            Game.Initialize();
             Logger.Write(Environment.NewLine, Verbosity.None);
 
+            foreach (ulong sid in steamids)
+                Game.Blacklist.Add(sid, true);
+            
             while (true)
             {
-                AutoResetEvent Step = new(false);
-
-                foreach (ulong sid in steamids)
+                Logger.WriteLine("Press 'q' to quit", Verbosity.None);
+                string? input = Logger.ReadLine();
+                if (input?.ToLower() == "q")
                 {
-                    CSteamID originalUserSteamid = new(sid);
-                    Victim A = new(originalUserSteamid);
-
-                    Steam.AddNewVictim(A);
+                    Logger.WriteLine("Quitting...", Verbosity.None);
+                    break;
                 }
-
-                Step.WaitOne();
             }
         }
     }
