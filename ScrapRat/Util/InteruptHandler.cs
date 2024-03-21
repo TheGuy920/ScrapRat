@@ -15,7 +15,7 @@ namespace ScrapRat.Util
 
         public InteruptHandler()
         {
-
+            this.source.Token.Register();
         }
 
         /// <summary>

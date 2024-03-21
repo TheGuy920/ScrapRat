@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="3.14.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ScrapRat\ScrapRat.csproj" />
   </ItemGroup>
 
