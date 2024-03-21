@@ -21,7 +21,7 @@ namespace ScrapRatWebApi
             {76561197965646622, 143945560368480256},
         };
 
-        private static readonly DiscordWebhook _webhook = new(File.ReadAllText("webhook.url"));
+        private static readonly DiscordWebhook _webhook = new(File.ReadAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "webhook.url"));
 
         public static void Main(string[] args)
         {
