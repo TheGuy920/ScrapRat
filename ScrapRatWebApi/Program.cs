@@ -2,7 +2,7 @@ using ScrapRat;
 using ScrapRat.PlayerModels;
 using ScrapRatWebApi.Discord;
 
-namespace CrashWebApi
+namespace ScrapRatWebApi
 {
     public class Program
     {
@@ -28,12 +28,12 @@ namespace CrashWebApi
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
 
-            Game.Initialize();
+            ScrapMechanic.Initialize();
             List<MagnifiedMechanic> targets = [];
 
             foreach (var steamid in PeopleToTrack)
             {
-                MagnifiedMechanic mechanic = Game.BigBrother.SpyOnMechanic(steamid);
+                MagnifiedMechanic mechanic = ScrapMechanic.BigBrother.SpyOnMechanic(steamid);
                 targets.Add(mechanic);
 
                 mechanic.PlayerLoaded += _ =>
@@ -59,7 +59,7 @@ namespace CrashWebApi
             }
 
             AppDomain.CurrentDomain.ProcessExit += (object? sender, EventArgs e) =>
-                targets.Select(target => target.SteamID).ToList().ForEach(steamid => Game.BigBrother.SafeUntargetPlayer(steamid));
+                targets.Select(target => target.SteamID).ToList().ForEach(steamid => ScrapMechanic.BigBrother.SafeUntargetPlayer(steamid));
 
             Task.Delay(Timeout.Infinite).Wait();
 

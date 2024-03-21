@@ -1,16 +1,16 @@
 ﻿using ScrapRat.PlayerModels;
 using Steamworks;
 using System.Collections.Concurrent;
-using static ScrapRat.Game;
+using static ScrapRat.ScrapMechanic;
 
 namespace ScrapRat
 {
-    public static class Game
+    public static class ScrapMechanic
     {
         private static ConcurrentDictionary<ulong, Player> PlayerDictionary { get; } = []; 
 
         private static Player GetOrAddPlayer(ulong steamid) =>
-            Game.PlayerDictionary.GetOrAdd(steamid, id => new Player(id));
+            ScrapMechanic.PlayerDictionary.GetOrAdd(steamid, id => new Player(id));
 
         public static void Initialize()
         {
@@ -37,7 +37,7 @@ namespace ScrapRat
                 }
                 else
                 {
-                    var player = Game.GetOrAddPlayer(steamid);
+                    var player = ScrapMechanic.GetOrAddPlayer(steamid);
                     var spy = new MagnifiedMechanic(player);
                     SpyDictionary.TryAdd(steamid, spy);
                     return spy;
@@ -67,7 +67,7 @@ namespace ScrapRat
                 }
                 else
                 {
-                    var player = Game.GetOrAddPlayer(steamid);
+                    var player = ScrapMechanic.GetOrAddPlayer(steamid);
                     var blacklisted = new MechanicNoMore(player, blacklistAnyHost);
                     BlacklistDictionary.TryAdd(steamid, blacklisted);
                     return blacklisted;

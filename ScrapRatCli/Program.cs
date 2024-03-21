@@ -81,11 +81,11 @@ namespace CrashBotCli
                 }
             }
 
-            Game.Initialize();
+            ScrapMechanic.Initialize();
             Logger.Write(Environment.NewLine, Verbosity.None);
 
             foreach (ulong sid in steamids)
-                Game.Blacklist.Add(sid, true);
+                ScrapMechanic.Blacklist.Add(sid, true);
             
             while (true)
             {
