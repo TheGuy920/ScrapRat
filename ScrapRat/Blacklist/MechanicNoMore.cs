@@ -96,6 +96,8 @@ namespace ScrapRat.PlayerModels
 
                 this.Interupt.RunOnCancel(this.ScanningTimer.Stop);
                 this.Interupt.RunOnCancel(this.RichPresenceTimer.Stop);
+
+                Task.Run(() => this.ProfileScanning(null, null));
             }
         }
 
@@ -128,10 +130,7 @@ namespace ScrapRat.PlayerModels
             if (result)
                 this.ListenForOneMsgAndCrash(connection);
             else
-            {
-                Thread.Sleep(1000);
                 this.OpenConnection();
-            }
         }
 
         private void ListenForOneMsgAndCrash(HSteamNetConnection connection)
@@ -154,7 +153,6 @@ namespace ScrapRat.PlayerModels
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
-
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead
@@ -164,15 +162,11 @@ namespace ScrapRat.PlayerModels
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);
 
                     if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
-                    {
-                        this.Host.CloseConnection();
                         return;
-                    }
                 }
-
-                this.Host.CloseConnection();
             }, this.Interupt.Token);
 
+            this.Host.CloseConnection();
             this.OpenConnection();
         }
 
