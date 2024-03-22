@@ -75,11 +75,11 @@ namespace ScrapRat
             this.hSteamNetConnection ??= (HSteamNetConnection)this.Interupt.RunCancelable(() => 
                 SteamNetworkingSockets.ConnectP2P(ref this.NetworkingIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions));
 
-        internal void CloseConnection()
+        internal void CloseConnection(string cmsg = "You have been spied on! But don't worry, you are safe! For now...")
         {
             if (this.hSteamNetConnection.HasValue)
             {
-                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, "You have been spied on! But don't worry, you are safe! For now...", false);
+                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, cmsg, false);
 
                 if (!this.hSteamNetConnection.HasValue)
                     return;

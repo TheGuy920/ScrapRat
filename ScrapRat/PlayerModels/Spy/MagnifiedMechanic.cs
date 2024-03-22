@@ -16,6 +16,8 @@ namespace ScrapRat.PlayerModels
         }
         public ValueTask DisposeAsync() => this.BasePlayer.DisposeAsync();
 
+        public bool IsWordPublic { get; private set; }
+
         private Player BasePlayer { get; }
 
         internal MagnifiedMechanic(Player player)
@@ -52,6 +54,8 @@ namespace ScrapRat.PlayerModels
                     }
                 }
             }, this.Interupt.Token);
+
+            // this.IsWordPublic
 
             this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
             this.ListenForConnectionClose(connection);

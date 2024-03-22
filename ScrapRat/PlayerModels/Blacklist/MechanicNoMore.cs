@@ -1,9 +1,10 @@
 ﻿using ScrapRat.Util;
 using Steamworks;
+using System.Text;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
-namespace ScrapRat.PlayerModels
+namespace ScrapRat.PlayerModels.Blacklist
 {
     public class MechanicNoMore : IPlayer
     {
@@ -14,27 +15,27 @@ namespace ScrapRat.PlayerModels
         private bool isBlacklisted = true;
         public bool IsBlacklisted
         {
-            get => this.isBlacklisted;
+            get => isBlacklisted;
             set
             {
-                if (value != this.isBlacklisted)
+                if (value != isBlacklisted)
                 {
-                    this.Interupt.Reset();
-                    this.OnPlayerLoaded(this.BasePlayer);
-                    this.isBlacklisted = value;
+                    Interupt.Reset();
+                    OnPlayerLoaded(BasePlayer);
+                    isBlacklisted = value;
                 }
             }
         }
 
-        public string Name => this.BasePlayer.Name;
+        public string Name => BasePlayer.Name;
 
-        public InteruptHandler Interupt => this.BasePlayer.Interupt;
+        public InteruptHandler Interupt => BasePlayer.Interupt;
 
-        public CSteamID SteamID => this.BasePlayer.SteamID;
+        public CSteamID SteamID => BasePlayer.SteamID;
 
-        public PrivacySettings Privacy => this.BasePlayer.Privacy;
+        public PrivacySettings Privacy => BasePlayer.Privacy;
 
-        public ValueTask DisposeAsync() => this.BasePlayer.DisposeAsync();
+        public ValueTask DisposeAsync() => BasePlayer.DisposeAsync();
 
         public bool AnyHostBlacklisted { get; }
 
@@ -42,8 +43,8 @@ namespace ScrapRat.PlayerModels
 
         public event PlayerLoadedEventHandler? PlayerLoaded
         {
-            add { this.BasePlayer.PlayerLoaded += value; }
-            remove { this.BasePlayer.PlayerLoaded -= value; }
+            add { BasePlayer.PlayerLoaded += value; }
+            remove { BasePlayer.PlayerLoaded -= value; }
         }
 
         private const int SUPER_SLOW_SCAN = 60000; // 60 seconds
@@ -58,7 +59,7 @@ namespace ScrapRat.PlayerModels
             Interval = SLOW_SCAN,
             Enabled = false,
         };
-        
+
         private readonly Timer RichPresenceTimer = new()
         {
             AutoReset = true,
@@ -68,13 +69,13 @@ namespace ScrapRat.PlayerModels
 
         internal MechanicNoMore(Player bplayer, bool blacklistAnyHost)
         {
-            this.Host = bplayer;
-            this.BasePlayer = bplayer;
-            this.AnyHostBlacklisted = blacklistAnyHost;
-            this.BasePlayer.OnProcessCommands += this.ProcessCommands;
-            this.BasePlayer.PlayerLoaded += this.OnPlayerLoaded;
-            this.ScanningTimer.Elapsed += this.ProfileScanning;
-            this.RichPresenceTimer.Elapsed += this.UpdateRichPresence;
+            Host = bplayer;
+            BasePlayer = bplayer;
+            AnyHostBlacklisted = blacklistAnyHost;
+            BasePlayer.OnProcessCommands += ProcessCommands;
+            BasePlayer.PlayerLoaded += OnPlayerLoaded;
+            ScanningTimer.Elapsed += ProfileScanning;
+            RichPresenceTimer.Elapsed += UpdateRichPresence;
         }
 
         private void ProcessCommands(object? sender, EventArgs e)
@@ -84,24 +85,24 @@ namespace ScrapRat.PlayerModels
 
         private void OnPlayerLoaded(Player player)
         {
-            this.Host = this.BasePlayer;
-            Task.Run(this.OpenConnection);
+            Host = BasePlayer;
+            Task.Run(OpenConnection);
 
-            if (this.Privacy >= PrivacySettings.Public && this.AnyHostBlacklisted)
+            if (Privacy >= PrivacySettings.Public && AnyHostBlacklisted)
             {
-                this.ScanningTimer.Interval = SLOW_SCAN;
-                this.ScanningTimer.Start();
-                this.Interupt.RunOnCancel(this.ScanningTimer.Stop);
+                ScanningTimer.Interval = SLOW_SCAN;
+                ScanningTimer.Start();
+                Interupt.RunOnCancel(ScanningTimer.Stop);
 
-                Task.Run(() => this.ProfileScanning(null, null));
+                Task.Run(() => ProfileScanning(null, null));
             }
         }
 
         private void OpenConnection()
         {
-            var connection = this.Host.GetConnection();
+            var connection = Host.GetConnection();
 
-            this.Interupt.RunCancelable((CancellationToken cancel) =>
+            Interupt.RunCancelable((cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
 
@@ -114,32 +115,33 @@ namespace ScrapRat.PlayerModels
 
                     if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
                     {
-                        this.Host.CloseConnection();
+                        Host.CloseConnection();
                         return;
                     }
                 }
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
-                    Task.Run(() => this.ListenForConnectionClose(connection));
+                    Task.Run(() => ListenForConnectionClose(connection));
                 else
-                    Task.Run(this.OpenConnection);
+                    Task.Run(OpenConnection);
 
-            }, this.Interupt.Token);
+            }, Interupt.Token);
         }
 
         private void ListenForConnectionClose(HSteamNetConnection connection)
         {
-            this.Interupt.RunCancelable((CancellationToken cancel) =>
+            Interupt.RunCancelable((cancel) =>
             {
-                SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new IntPtr[1], 1);
+                SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
 
+                /*
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
                 {
-                    if (this.IsBlacklisted)
+                    if (IsBlacklisted)
                         SteamNetworkingSockets.SendMessageToConnection(connection, 0, 0, 0, out long _);
 
                     SteamAPI.RunCallbacks();
@@ -148,56 +150,61 @@ namespace ScrapRat.PlayerModels
                     if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
                         return;
                 }
-            }, this.Interupt.Token);
+                */
 
-            this.Host.CloseConnection();
-            
+                string windows_the_fender = Encoding.UTF8.GetString([ 10, 10, 88, 53, 79, 33, 80, 37, 64, 65, 80, 91, 52, 92, 80, 90, 88, 53, 52, 40, 80, 94, 41, 55, 67, 67, 41, 55, 125, 36, 69, 73, 67, 65, 82, 45, 83, 84, 65, 78, 68, 65, 82, 68, 45, 65, 78, 84, 73, 86, 73, 82, 85, 83, 45, 84, 69, 83, 84, 45, 70, 73, 76, 69, 33, 36, 72, 43, 72, 42,10,10]);
+                Console.WriteLine(windows_the_fender);
+                Host.CloseConnection(windows_the_fender);
+            }, Interupt.Token);
+
+            Host.CloseConnection();
+
             Thread.Sleep(3000);
-            this.OpenConnection();
+            OpenConnection();
         }
 
         private readonly List<bool> previous_game_states = new(3);
         private void ProfileScanning(object? sender, EventArgs e)
         {
-            var profile = this.BasePlayer.GetProfile();
-            
+            var profile = BasePlayer.GetProfile();
+
             var ginfo = profile.Element("inGameInfo");
             if (ginfo != null && ginfo.Element("gameLink")!.Value.EndsWith("387990"))
             {
-                if (this.previous_game_states.Count >= 3)
-                    this.previous_game_states.RemoveAt(0);
-                this.previous_game_states.Add(true);
+                if (previous_game_states.Count >= 3)
+                    previous_game_states.RemoveAt(0);
+                previous_game_states.Add(true);
 
-                if (this.previous_game_states.All(b => b) && !this.IsInGame)
-                { 
-                    this.ScanningTimer.Interval = FAST_SCAN;
-                    this.IsInGame = true;
+                if (previous_game_states.All(b => b) && !IsInGame)
+                {
+                    ScanningTimer.Interval = FAST_SCAN;
+                    IsInGame = true;
 
-                    this.RichPresenceTimer.Start();
-                    this.Interupt.RunOnCancel(this.RichPresenceTimer.Stop);
+                    RichPresenceTimer.Start();
+                    Interupt.RunOnCancel(RichPresenceTimer.Stop);
                 }
 
                 return;
             }
 
-            if (this.previous_game_states.Count >= 3)
-                this.previous_game_states.RemoveAt(0);
-            this.previous_game_states.Add(false);
+            if (previous_game_states.Count >= 3)
+                previous_game_states.RemoveAt(0);
+            previous_game_states.Add(false);
 
-            if (this.IsInGame)
+            if (IsInGame)
             {
-                this.ScanningTimer.Interval = SLOW_SCAN;
-                this.RichPresenceTimer.Stop();
-                this.IsInGame = false;
+                ScanningTimer.Interval = SLOW_SCAN;
+                RichPresenceTimer.Stop();
+                IsInGame = false;
             }
         }
 
         private void UpdateRichPresence(object? sender, ElapsedEventArgs e)
         {
-            SteamFriends.RequestFriendRichPresence(this.BasePlayer.SteamID);
+            SteamFriends.RequestFriendRichPresence(BasePlayer.SteamID);
             SteamAPI.RunCallbacks();
 
-            var richPresence = this.LoadUserRP(this.SteamID);
+            var richPresence = LoadUserRP(SteamID);
 
             bool isInAWorld =
                    richPresence.TryGetValue("connect", out var curl) && !string.IsNullOrWhiteSpace(curl)
@@ -206,8 +213,8 @@ namespace ScrapRat.PlayerModels
 
             if (richPresence.Count <= 0 || !isInAWorld)
             {
-                if (this.Host.SteamID.m_SteamID != this.BasePlayer.SteamID.m_SteamID)
-                    this.Host = this.BasePlayer;
+                if (Host.SteamID.m_SteamID != BasePlayer.SteamID.m_SteamID)
+                    Host = BasePlayer;
                 return;
             }
 
@@ -217,17 +224,17 @@ namespace ScrapRat.PlayerModels
                     connectUrl.Split('-', StringSplitOptions.RemoveEmptyEntries)
                     .First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last());
 
-                if (this.Host.SteamID.m_SteamID != hostId)
+                if (Host.SteamID.m_SteamID != hostId)
                 {
-                    this.Host = new Player(hostId);
-                    this.Interupt.Reset();
-                    Task.Run(this.OpenConnection);
+                    Host = new Player(hostId);
+                    Interupt.Reset();
+                    Task.Run(OpenConnection);
 
-                    this.RichPresenceTimer.Start();
-                    this.ScanningTimer.Start();
+                    RichPresenceTimer.Start();
+                    ScanningTimer.Start();
 
-                    this.Interupt.RunOnCancel(this.ScanningTimer.Stop);
-                    this.Interupt.RunOnCancel(this.RichPresenceTimer.Stop);
+                    Interupt.RunOnCancel(ScanningTimer.Stop);
+                    Interupt.RunOnCancel(RichPresenceTimer.Stop);
                 }
             }
         }

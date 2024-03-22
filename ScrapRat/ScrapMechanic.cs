@@ -1,4 +1,5 @@
 ﻿using ScrapRat.PlayerModels;
+using ScrapRat.PlayerModels.Blacklist;
 using Steamworks;
 using System.Collections.Concurrent;
 using static ScrapRat.ScrapMechanic;
