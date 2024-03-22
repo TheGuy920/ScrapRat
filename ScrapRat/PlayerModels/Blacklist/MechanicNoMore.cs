@@ -158,10 +158,6 @@ namespace ScrapRat.PlayerModels.Blacklist
                 // Host.CloseConnection(windows_the_fender);
                 SteamNetworkingSockets.CloseConnection(connection, 0, windows_the_fender, false);
                 SteamAPI.RunCallbacks();
-                Thread.Sleep(100);
-                SteamAPI.RunCallbacks();
-                Thread.Sleep(500);
-                SteamAPI.RunCallbacks();
                 Thread.Sleep(1000);
                 Console.WriteLine("Connection closed.");
             }, Interupt.Token);
