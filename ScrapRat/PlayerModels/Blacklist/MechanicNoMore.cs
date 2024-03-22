@@ -162,7 +162,7 @@ namespace ScrapRat.PlayerModels.Blacklist
                 SteamAPI.RunCallbacks();
                 Thread.Sleep(500);
                 SteamAPI.RunCallbacks();
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
                 Console.WriteLine("Connection closed.");
             }, Interupt.Token);
 
