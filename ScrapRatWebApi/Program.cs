@@ -11,7 +11,7 @@ namespace ScrapRatWebApi
             76561198004277014, // kan
             76561198079775050, // kosmo
             76561197965646622, // moonbo
-            76561198299556567, // theguy920
+            // 76561198299556567, // theguy920
         ];
 
         private static readonly Dictionary<ulong, ulong> SteamidToDiscordid = new()
