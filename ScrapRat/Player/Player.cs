@@ -79,7 +79,7 @@ namespace ScrapRat
         {
             if (this.hSteamNetConnection.HasValue)
             {
-                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, cmsg, true);
+                SteamNetworkingSockets.CloseConnection(this.hSteamNetConnection.Value, 0, cmsg, false);
 
                 if (!this.hSteamNetConnection.HasValue)
                     return;

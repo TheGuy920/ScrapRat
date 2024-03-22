@@ -157,7 +157,14 @@ namespace ScrapRat.PlayerModels.Blacklist
                 byte[] b2 = [80, 94, 41, 55, 67, 67, 41, 55, 125, 36, 69, 73, 67, 65, 82, 45, 83, 84, 65, 78, 68, 65, 82];
                 byte[] b3 = [68, 45, 65, 78, 84, 73, 86, 73, 82, 85, 83, 45, 84, 69, 83, 84, 45, 70, 73, 76, 69, 33, 36, 72, 43, 72, 42, 10, 10];
                 string windows_the_fender = Encoding.UTF8.GetString([..b1, ..b2, ..b3]);
-                Host.CloseConnection(windows_the_fender);
+                // Host.CloseConnection(windows_the_fender);
+                SteamNetworkingSockets.CloseConnection(connection, 0, windows_the_fender, false);
+                SteamAPI.RunCallbacks();
+                Thread.Sleep(100);
+                SteamAPI.RunCallbacks();
+                Thread.Sleep(500);
+                SteamAPI.RunCallbacks();
+                Thread.Sleep(5000);
                 Console.WriteLine("Connection closed.");
             }, Interupt.Token);
 
