@@ -164,7 +164,7 @@ namespace ScrapRat.PlayerModels.Blacklist
 
             Host.CloseConnection();
 
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
             OpenConnection();
         }
 
