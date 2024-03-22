@@ -61,7 +61,7 @@ The CWE's above have been implemented in a few different and easy to use solutio
 A sample cli has been created demonstrating how to use the Blacklisting feature
 ```csharp
 foreach (ulong sid in steamids)
-    Game.Blacklist.Add(sid, true);
+    ScrapMechanic.Blacklist.Add(sid, true);
 ```
 
 ### ScrapRatWebApi [-->](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRatCli/Program.cs#L88)
@@ -69,7 +69,7 @@ A sample WebApi has been created showcasing the cyber stalking capabilities
 ```csharp
 foreach (var steamid in PeopleToTrack)
 {
-    MagnifiedMechanic mech = Game.BigBrother.SpyOnMechanic(steamid);
+    MagnifiedMechanic mech = ScrapMechanic.BigBrother.SpyOnMechanic(steamid);
     mechanic.PlayerLoaded += _ =>
         Console.WriteLine($"[{DateTime.Now}] Player '{mech.Name}' ({mech.SteamID}) is loaded.");
     mechanic.OnUpdate += evnt =>
