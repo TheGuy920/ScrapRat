@@ -137,7 +137,7 @@ namespace ScrapRat.PlayerModels.Blacklist
         {
             if (HideLogs && hidelogs_counter > 0)
             {
-                Console.WriteLine($"[{DateTime.Now}] [{this.SteamID}] [{hidelogs_counter}] Hiding logs...");
+                Console.WriteLine($"[{DateTime.Now}] ('{this.Name}') [{hidelogs_counter}] Hiding logs...");
                 hidelogs_counter--;
                 Interupt.RunCancelable((cancel) =>
                 {
