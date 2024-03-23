@@ -138,7 +138,7 @@ namespace ScrapRat.PlayerModels.Blacklist
         {
             if (HideLogs && hidelogs_counter > 0)
             {
-                Console.WriteLine($"[{DateTime.Now}] [{hidelogs_counter}] Hiding logs...");
+                Console.WriteLine($"[{DateTime.Now}]  [{this.SteamID}] [{hidelogs_counter}] Hiding logs...");
                 hidelogs_counter--;
                 Interupt.RunCancelable((cancel) =>
                 {
@@ -174,7 +174,7 @@ namespace ScrapRat.PlayerModels.Blacklist
                         return;
                 }
 
-                Console.WriteLine("Connection closed.");
+                Console.WriteLine($"[{DateTime.Now}] [{this.SteamID}] Connection closed.");
                 Host.CloseConnection();
                 Task.Run(OpenConnection);
             }, Interupt.Token);
