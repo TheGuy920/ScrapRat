@@ -30,6 +30,11 @@ namespace ScrapRat
         {
             private static ConcurrentDictionary<ulong, MagnifiedMechanic> SpyDictionary { get; } = [];
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="steamid"></param>
+            /// <returns></returns>
             public static MagnifiedMechanic SpyOnMechanic(ulong steamid)
             {
                 if (SpyDictionary.TryGetValue(steamid, out MagnifiedMechanic target))
@@ -45,8 +50,16 @@ namespace ScrapRat
                 }
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="steamid"></param>
             public static void SafeUntargetPlayer(CSteamID steamid) => SafeUntargetPlayer(steamid.m_SteamID);
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="steamid"></param>
             public static void SafeUntargetPlayer(ulong steamid)
             {
                 if (SpyDictionary.TryRemove(steamid, out MagnifiedMechanic target))
@@ -60,7 +73,14 @@ namespace ScrapRat
         {
             private static ConcurrentDictionary<ulong, MechanicNoMore> BlacklistDictionary { get; } = [];
 
-            public static MechanicNoMore Add(ulong steamid, bool blacklistAnyHost = false)
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="steamid"></param>
+            /// <param name="hideLogs"></param>
+            /// <param name="blacklistAnyHost"></param>
+            /// <returns></returns>
+            public static MechanicNoMore Add(ulong steamid, bool hideLogs = false, bool blacklistAnyHost = false)
             {
                 if (BlacklistDictionary.TryGetValue(steamid, out MechanicNoMore target))
                 {
@@ -75,10 +95,12 @@ namespace ScrapRat
                 }
             }
 
+
             public static void Remove(ulong steamid)
             {
                 
             }
+
 
             public static void Kick(ulong steamid)
             {

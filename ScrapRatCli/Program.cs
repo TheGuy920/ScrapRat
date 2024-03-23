@@ -36,7 +36,7 @@ namespace CrashBotCli
     {
         private static ulong[] steamids = [
             // 76561198359772034 // stood
-            // 76561198299556567, // theguy
+            // 76561198299556567, // theguy920
             76561198422873503, // unknown
         ];
 
@@ -46,6 +46,7 @@ namespace CrashBotCli
         {
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
+            Console.ReadLine();
 
 #if DEBUG
             Logger.LogVerbosity = Verbosity.Debug;

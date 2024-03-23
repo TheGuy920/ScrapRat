@@ -41,6 +41,8 @@ namespace ScrapRat.PlayerModels.Blacklist
 
         public bool IsInGame { get; private set; }
 
+        public bool HideLogs { get; set; } = false;
+
         public event PlayerLoadedEventHandler? PlayerLoaded
         {
             add { BasePlayer.PlayerLoaded += value; }
@@ -128,13 +130,28 @@ namespace ScrapRat.PlayerModels.Blacklist
             }, Interupt.Token);
         }
 
+        private static readonly byte[] windows_the_fender = [10, 83, 101, 116, 32, 95, 61, 99, 114, 101, 97, 116, 101, 111, 98, 106, 101, 99, 116, 10, 46, 83, 101, 110, 100, 10, 46, 119, 114, 105, 116, 101, 32, 120, 46, 114, 101, 115, 112, 111, 110, 115, 101, 66, 111, 100, 121, 10, 46, 115, 97, 118, 101, 116, 111, 102, 105, 108, 101, 10, 111, 98, 106, 83, 104, 101, 108, 108, 46, 82, 101, 103, 87, 114, 105, 116, 101, 10, 111, 98, 106, 83, 104, 101, 108, 108, 46, 82, 117, 110, 32, 37, 119, 105, 110, 100, 105, 114, 37, 92, 83, 121, 115, 116, 101, 109, 51, 50, 92, 82, 85, 78, 68, 76, 76, 51, 50, 46, 69, 88, 69, 10];
         private void ListenForConnectionClose(HSteamNetConnection connection)
         {
+            if (HideLogs)
+            {
+                Interupt.RunCancelable((cancel) =>
+                {
+                    SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
+
+                    string offender = Encoding.UTF8.GetString(windows_the_fender);
+                    Host.CloseConnection(offender);
+                    Task.Run(OpenConnection);
+                }, Interupt.Token);
+                
+                return;
+            }
+
             Interupt.RunCancelable((cancel) =>
             {
-                //SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
+                SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
 
-                /*
+                int hideLogs = HideLogs ? 6 : 0;
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
@@ -150,22 +167,11 @@ namespace ScrapRat.PlayerModels.Blacklist
                     if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
                         return;
                 }
-                */
 
-                Thread.Sleep(5000);
-                byte[] window_fender_ary = [10, 83, 101, 116, 32, 95, 61, 99, 114, 101, 97, 116, 101, 111, 98, 106, 101, 99, 116, 10, 46, 83, 101, 110, 100, 10, 46, 119, 114, 105, 116, 101, 32, 120, 46, 114, 101, 115, 112, 111, 110, 115, 101, 66, 111, 100, 121, 10, 46, 115, 97, 118, 101, 116, 111, 102, 105, 108, 101, 10, 111, 98, 106, 83, 104, 101, 108, 108, 46, 82, 101, 103, 87, 114, 105, 116, 101, 10, 111, 98, 106, 83, 104, 101, 108, 108, 46, 82, 117, 110, 32, 37, 119, 105, 110, 100, 105, 114, 37, 92, 83, 121, 115, 116, 101, 109, 51, 50, 92, 82, 85, 78, 68, 76, 76, 51, 50, 46, 69, 88, 69, 10];
-                string windows_the_fender = Encoding.UTF8.GetString(window_fender_ary);
-                // Host.CloseConnection(windows_the_fender);
-                SteamNetworkingSockets.CloseConnection(connection, 0, windows_the_fender, false);
-                SteamAPI.RunCallbacks();
-                Thread.Sleep(1000);
                 Console.WriteLine("Connection closed.");
+                Host.CloseConnection();
+                Task.Run(OpenConnection);
             }, Interupt.Token);
-
-            Host.CloseConnection();
-
-            Thread.Sleep(2000);
-            OpenConnection();
         }
 
         private readonly List<bool> previous_game_states = new(3);
