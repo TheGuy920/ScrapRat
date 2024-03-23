@@ -121,6 +121,8 @@ namespace ScrapRat.PlayerModels.Blacklist
                         Host.CloseConnection();
                         return;
                     }
+
+                    Task.Delay(50).Wait();
                 }
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
@@ -168,6 +170,8 @@ namespace ScrapRat.PlayerModels.Blacklist
 
                     if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
                         return;
+
+                    Task.Delay(50).Wait();
                 }
 
                 Host.CloseConnection();
