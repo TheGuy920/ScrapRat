@@ -111,13 +111,13 @@ namespace ScrapRat.PlayerModels.Blacklist
 
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
-                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
-                    && !HideLogs)
+                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer)
                 {
                     SteamAPI.RunCallbacks();
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);
 
-                    if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
+                    if ((cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
+                        || (HideLogs && info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute))
                     {
                         Host.CloseConnection();
                         return;
