@@ -69,10 +69,11 @@ namespace ScrapRat.PlayerModels.Blacklist
             Enabled = false,
         };
 
-        internal MechanicNoMore(Player bplayer, bool blacklistAnyHost)
+        internal MechanicNoMore(Player bplayer, bool hidelogs, bool blacklistAnyHost)
         {
             Host = bplayer;
             BasePlayer = bplayer;
+            HideLogs = hidelogs;
             AnyHostBlacklisted = blacklistAnyHost;
             BasePlayer.OnProcessCommands += ProcessCommands;
             BasePlayer.PlayerLoaded += OnPlayerLoaded;

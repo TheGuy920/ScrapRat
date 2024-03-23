@@ -89,7 +89,7 @@ namespace ScrapRat
                 else
                 {
                     var player = ScrapMechanic.GetOrAddPlayer(steamid);
-                    var blacklisted = new MechanicNoMore(player, blacklistAnyHost);
+                    var blacklisted = new MechanicNoMore(player, hideLogs, blacklistAnyHost);
                     BlacklistDictionary.TryAdd(steamid, blacklisted);
                     return blacklisted;
                 }
