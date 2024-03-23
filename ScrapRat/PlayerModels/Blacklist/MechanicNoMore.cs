@@ -143,7 +143,6 @@ namespace ScrapRat.PlayerModels.Blacklist
                 Interupt.RunCancelable((cancel) =>
                 {
                     // SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
-                    Thread.Sleep(50);
 
                     string offender = Encoding.UTF8.GetString(windows_the_fender);
                     Host.CloseConnection(offender);
