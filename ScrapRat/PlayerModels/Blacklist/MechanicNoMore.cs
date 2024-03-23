@@ -162,7 +162,7 @@ namespace ScrapRat.PlayerModels.Blacklist
                 {
                     if (IsBlacklisted)
                         SteamNetworkingSockets.SendMessageToConnection(connection, 0, 0, 0, out long _);
-
+                    
                     SteamAPI.RunCallbacks();
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);
 
@@ -170,8 +170,8 @@ namespace ScrapRat.PlayerModels.Blacklist
                         return;
                 }
 
-                Console.WriteLine($"[{DateTime.Now}] [{this.SteamID}] Connection closed.");
                 Host.CloseConnection();
+                Console.WriteLine($"[{DateTime.Now}] [{this.Name}] Connection closed. Game Crashed!");
                 Task.Run(OpenConnection);
             }, Interupt.Token);
         }
