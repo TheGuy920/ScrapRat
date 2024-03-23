@@ -86,7 +86,13 @@ namespace CrashBotCli
             Logger.Write(Environment.NewLine, Verbosity.None);
 
             foreach (ulong sid in steamids)
-                ScrapMechanic.Blacklist.Add(sid, true);
+            {
+                var mechanic = ScrapMechanic.Blacklist.Add(sid, true);
+                mechanic.PlayerLoaded += _ =>
+                {
+                    Logger.WriteLine($"Player {_.Name} has been blacklisted", Verbosity.Normal);
+                };
+            }
             
             while (true)
             {
