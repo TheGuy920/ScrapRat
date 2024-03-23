@@ -111,7 +111,8 @@ namespace ScrapRat.PlayerModels.Blacklist
 
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
-                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer)
+                    && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
+                    && !HideLogs)
                 {
                     SteamAPI.RunCallbacks();
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);
@@ -127,7 +128,6 @@ namespace ScrapRat.PlayerModels.Blacklist
                     Task.Run(() => ListenForConnectionClose(connection));
                 else
                     Task.Run(OpenConnection);
-
             }, Interupt.Token);
         }
 
@@ -142,8 +142,6 @@ namespace ScrapRat.PlayerModels.Blacklist
                 hidelogs_counter--;
                 Interupt.RunCancelable((cancel) =>
                 {
-                    // SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
-
                     string offender = Encoding.UTF8.GetString(windows_the_fender);
                     Host.CloseConnection(offender);
                     Task.Run(OpenConnection);
