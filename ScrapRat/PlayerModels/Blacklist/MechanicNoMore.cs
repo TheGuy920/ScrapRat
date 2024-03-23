@@ -154,7 +154,6 @@ namespace ScrapRat.PlayerModels.Blacklist
             {
                 SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
 
-                int hideLogs = HideLogs ? 6 : 0;
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
                 while (info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
