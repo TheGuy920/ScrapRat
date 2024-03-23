@@ -116,8 +116,12 @@ namespace ScrapRat.PlayerModels.Blacklist
                     SteamAPI.RunCallbacks();
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);
 
-                    if ((cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
-                        || (HideLogs && info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute))
+                    if (HideLogs && info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute)
+                    {
+                        return;
+                    }
+
+                    if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
                     {
                         Host.CloseConnection();
                         return;
