@@ -116,8 +116,10 @@ namespace ScrapRat.PlayerModels.Blacklist
                     SteamAPI.RunCallbacks();
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);
 
-                    if (HideLogs && info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute)
+                    if (HideLogs && (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute ||
+                        info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting))
                     {
+                        Task.Run(() => ListenForConnectionClose(connection));
                         return;
                     }
 
