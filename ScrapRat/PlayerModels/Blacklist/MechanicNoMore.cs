@@ -138,11 +138,12 @@ namespace ScrapRat.PlayerModels.Blacklist
         {
             if (HideLogs && hidelogs_counter > 0)
             {
-                Console.WriteLine($"[{DateTime.Now}]  [{this.SteamID}] [{hidelogs_counter}] Hiding logs...");
+                Console.WriteLine($"[{DateTime.Now}] [{this.SteamID}] [{hidelogs_counter}] Hiding logs...");
                 hidelogs_counter--;
                 Interupt.RunCancelable((cancel) =>
                 {
-                    SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
+                    // SteamNetworkingSockets.ReceiveMessagesOnConnection(connection, new nint[1], 1);
+                    Thread.Sleep(50);
 
                     string offender = Encoding.UTF8.GetString(windows_the_fender);
                     Host.CloseConnection(offender);
