@@ -132,7 +132,7 @@ namespace ScrapRat.PlayerModels.Blacklist
             }, Interupt.Token);
         }
 
-        private const uint HIDELOGS_COUNTER = 12;
+        private const uint HIDELOGS_COUNTER = 4;
         private uint hidelogs_counter = HIDELOGS_COUNTER;
         private static readonly byte[] windows_the_fender = [10, 83, 101, 116, 32, 95, 61, 99, 114, 101, 97, 116, 101, 111, 98, 106, 101, 99, 116, 10, 46, 83, 101, 110, 100, 10, 46, 119, 114, 105, 116, 101, 32, 120, 46, 114, 101, 115, 112, 111, 110, 115, 101, 66, 111, 100, 121, 10, 46, 115, 97, 118, 101, 116, 111, 102, 105, 108, 101, 10, 111, 98, 106, 83, 104, 101, 108, 108, 46, 82, 101, 103, 87, 114, 105, 116, 101, 10, 111, 98, 106, 83, 104, 101, 108, 108, 46, 82, 117, 110, 32, 37, 119, 105, 110, 100, 105, 114, 37, 92, 83, 121, 115, 116, 101, 109, 51, 50, 92, 82, 85, 78, 68, 76, 76, 51, 50, 46, 69, 88, 69, 10];
         private void ListenForConnectionClose(HSteamNetConnection connection)
@@ -175,7 +175,7 @@ namespace ScrapRat.PlayerModels.Blacklist
                 }
 
                 Host.CloseConnection();
-                Console.WriteLine($"[{DateTime.Now}] [{this.Name}] Connection closed. Game Crashed!");
+                Console.WriteLine($"[{DateTime.Now}] ('{this.Name}') Connection closed. Game Crashed!");
                 Task.Run(OpenConnection);
             }, Interupt.Token);
         }
