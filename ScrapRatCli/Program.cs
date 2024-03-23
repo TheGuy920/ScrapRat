@@ -46,7 +46,6 @@ namespace CrashBotCli
         {
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
             File.WriteAllText("steam_appid.txt", "387990");
-            Console.ReadLine();
 
 #if DEBUG
             Logger.LogVerbosity = Verbosity.Debug;
