@@ -51,7 +51,7 @@ namespace ScrapRatWebApi
                 {
                     Console.WriteLine($"[{DateTime.Now}] Player '{mechanic.Name}' ({mechanic.SteamID}) is {@event}");
                     
-                    string discordid = SteamidToDiscordid.TryGetValue(steamid, out ulong id) ? $"<@{id}> ('{mechanic.Name}')" : mechanic.Name;
+                    string discordid = SteamidToDiscordid.TryGetValue(steamid, out ulong id) ? $"'{mechanic.Name}': <@{id}>" : mechanic.Name;
                     switch (@event)
                     {
                         case ObservableEvent.NowPlaying:
