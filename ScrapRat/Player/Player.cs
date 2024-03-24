@@ -144,7 +144,7 @@ namespace ScrapRat
             {
                 m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutConnected,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 500 }
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 1500 }
             },
             new SteamNetworkingConfigValue_t
             {
