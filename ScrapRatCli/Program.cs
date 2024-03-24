@@ -37,7 +37,8 @@ namespace CrashBotCli
         private static ulong[] steamids = [
             // 76561198359772034 // stood
             76561198299556567, // theguy920
-            76561198422873503, // unknown
+            // 76561198422873503, // unknown
+            // 76561198004277014
         ];
 
         private static readonly int MaxVerbosity = Enum.GetValues<Verbosity>().Cast<int>().Max();
@@ -86,8 +87,9 @@ namespace CrashBotCli
 
             foreach (ulong sid in steamids)
             {
-                var mechanic = ScrapMechanic.Blacklist.Add(sid, true);
-                mechanic.PlayerLoaded += _ => Logger.WriteLine($"Player {_.Name} has been blacklisted", Verbosity.Normal);
+                var mechanic = ScrapMechanic.BigBrother.SpyOnMechanic(sid);
+                mechanic.PlayerLoaded += _ => Logger.WriteLine($"Player {_.Name} has been loaded", Verbosity.Normal);
+                mechanic.OnUpdate += _ => Logger.WriteLine($"Player {mechanic.Name} is now {_}", Verbosity.Normal);
             }
             
             while (true)
