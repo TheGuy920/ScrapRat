@@ -1,4 +1,5 @@
 ﻿using ScrapRat.Util;
+using SteamKit2.Internal;
 using Steamworks;
 using System.Diagnostics;
 using System.Net.Http.Headers;
@@ -151,6 +152,17 @@ namespace ScrapRat
                 m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial,
                 m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = int.MaxValue }
+            },
+            new SteamNetworkingConfigValue_t
+            {
+                m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
+                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable,
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 4 } // 4 is public
+            },
+            new SteamNetworkingConfigValue_t
+            {
+                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_ICE_Penalty,
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 0 } // Lower penalty to promote ICE
             }
         ];
     }
