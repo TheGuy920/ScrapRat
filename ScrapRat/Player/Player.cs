@@ -159,11 +159,12 @@ namespace ScrapRat
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable,
                 m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 4 } // 4 is public
             },
+            /*
             new SteamNetworkingConfigValue_t
             {
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_ICE_Penalty,
                 m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 0 } // Lower penalty to promote ICE
-            }
+            }*/
         ];
     }
 }
