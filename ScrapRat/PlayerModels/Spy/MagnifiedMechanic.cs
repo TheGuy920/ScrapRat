@@ -67,7 +67,7 @@ namespace ScrapRat.PlayerModels
         private void ListenForConnectionClose(HSteamNetConnection connection)
         {
             Stopwatch connectionDuration = Stopwatch.StartNew();
-            int exit = 40;
+            int exit = 700;
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
