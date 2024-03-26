@@ -48,7 +48,7 @@ namespace ScrapRat.Util
         /// <param name="timout"></param>
         public void Interupt(TimeSpan timout)
         {
-            if (this.source.IsCancellationRequested || this.refs.IsEmpty)
+            if (this.source.IsCancellationRequested)
                 return;
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
@@ -60,13 +60,10 @@ namespace ScrapRat.Util
         /// </summary>
         public void Reset()
         {
-            if (!this.refs.IsEmpty)
-            {
-                this.source.Cancel();
-                this.source.Token.WaitHandle.WaitOne();
-                this.refsCompleted.WaitOne();
-                this.NewToken();
-            }
+            this.source.Cancel();
+            this.source.Token.WaitHandle.WaitOne();
+            this.refsCompleted.WaitOne();
+            this.NewToken();
         }
 
         /// <summary>
@@ -82,13 +79,10 @@ namespace ScrapRat.Util
         /// <param name="timout"></param>
         public void Reset(TimeSpan timout)
         {
-            if (!this.refs.IsEmpty)
-            {
-                this.source.Cancel();
-                this.source.Token.WaitHandle.WaitOne(timout);
-                this.refsCompleted.WaitOne(timout);
-                this.NewToken();
-            }
+            this.source.Cancel();
+            this.source.Token.WaitHandle.WaitOne(timout);
+            this.refsCompleted.WaitOne(timout);
+            this.NewToken();
         }
 
         /// <summary>
