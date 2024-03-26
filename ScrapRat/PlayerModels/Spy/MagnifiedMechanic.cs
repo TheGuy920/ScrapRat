@@ -61,7 +61,7 @@ namespace ScrapRat.PlayerModels
 
             this.ConnectionDuration.Reset(TimeSpan.FromSeconds(1));
             this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
-            this.ListenForConnectionClose(connection);
+            // this.ListenForConnectionClose(connection);
         }
 
         private void ListenForConnectionClose(HSteamNetConnection connection)
