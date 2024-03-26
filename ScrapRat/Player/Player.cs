@@ -175,7 +175,7 @@ namespace ScrapRat
             {
                 m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_ICE_Implementation,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 0 }
+                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 1 }
             }
         ];
     }
