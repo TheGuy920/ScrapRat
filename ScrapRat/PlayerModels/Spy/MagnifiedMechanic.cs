@@ -59,7 +59,7 @@ namespace ScrapRat.PlayerModels
                 }
             }, this.Interupt.Token);
 
-            this.ConnectionDuration.Reset(TimeSpan.FromSeconds(1));
+            this.ConnectionDuration.Reset();
             this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
             this.ListenForConnectionClose(connection);
         }
