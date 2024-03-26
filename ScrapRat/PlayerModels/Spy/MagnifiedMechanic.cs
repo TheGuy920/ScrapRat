@@ -38,7 +38,11 @@ namespace ScrapRat.PlayerModels
             var connection = this.BasePlayer.GetConnection();
 
             if (!hasStoppedPlaying)
-                this.ConnectionDuration.RunCancelableAsync(() => Task.Delay(5000).ContinueWith(_ => this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying)));
+                this.ConnectionDuration.RunCancelableAsync(() => Task.Delay(5000).ContinueWith(_ =>
+                {
+                    this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
+                    hasStoppedPlaying = true;
+                }));
 
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
@@ -60,7 +64,8 @@ namespace ScrapRat.PlayerModels
             }, this.Interupt.Token);
 
             this.ConnectionDuration.Reset();
-            this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
+            if (hasStoppedPlaying)
+                this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
             this.ListenForConnectionClose(connection);
         }
 
