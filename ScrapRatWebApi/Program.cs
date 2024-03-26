@@ -43,10 +43,7 @@ namespace ScrapRatWebApi
                 MagnifiedMechanic mechanic = ScrapMechanic.BigBrother.SpyOnMechanic(steamid);
                 targets.Add(mechanic);
 
-                mechanic.PlayerLoaded += _ =>
-                {
-                    Console.WriteLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(mechanic.Name)}' ({mechanic.SteamID}) is loaded.");
-                };
+                mechanic.PlayerLoaded += _ => Console.WriteLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(mechanic.Name)}' ({mechanic.SteamID}) is loaded.");
 
                 mechanic.OnUpdate += @event =>
                 {
