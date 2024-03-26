@@ -1,5 +1,6 @@
 ﻿using ScrapRat.Util;
 using Steamworks;
+using System.Diagnostics;
 
 namespace ScrapRat.PlayerModels
 {
@@ -15,10 +16,10 @@ namespace ScrapRat.PlayerModels
             remove => this.BasePlayer.PlayerLoaded -= value;
         }
         public ValueTask DisposeAsync() => this.BasePlayer.DisposeAsync();
-
         public bool IsWordPublic { get; private set; }
 
         private Player BasePlayer { get; }
+        private readonly InteruptHandler ConnectionDuration = new();
 
         internal MagnifiedMechanic(Player player)
         {
@@ -29,12 +30,15 @@ namespace ScrapRat.PlayerModels
 
         private void OnPlayerLoaded(Player player)
         {
-            Task.Run(this.OpenConnection);
+            Task.Run(() => this.OpenConnection());
         }
 
-        private void OpenConnection()
+        private void OpenConnection(bool hasStoppedPlaying = true)
         {
             var connection = this.BasePlayer.GetConnection();
+
+            if (!hasStoppedPlaying)
+                this.ConnectionDuration.RunCancelableAsync(() => Task.Delay(5000).ContinueWith(_ => this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying)));
 
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
@@ -55,14 +59,14 @@ namespace ScrapRat.PlayerModels
                 }
             }, this.Interupt.Token);
 
-            // this.IsWordPublic
-
+            this.ConnectionDuration.Reset();
             this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
             this.ListenForConnectionClose(connection);
         }
 
         private void ListenForConnectionClose(HSteamNetConnection connection)
         {
+            Stopwatch connectionDuration = Stopwatch.StartNew();
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
@@ -85,8 +89,14 @@ namespace ScrapRat.PlayerModels
                 this.BasePlayer.CloseConnection();
             }, this.Interupt.Token);
 
-            this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
-            this.OpenConnection();
+            if (connectionDuration.Elapsed.TotalSeconds > 5)
+            {
+                this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
+                this.OpenConnection(true);
+                return;
+            }
+
+            this.OpenConnection(false);
         }
 
         private void ProcessCommands(object? sender, EventArgs e)
