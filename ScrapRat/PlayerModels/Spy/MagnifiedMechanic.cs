@@ -67,7 +67,6 @@ namespace ScrapRat.PlayerModels
         private void ListenForConnectionClose(HSteamNetConnection connection)
         {
             Stopwatch connectionDuration = Stopwatch.StartNew();
-            //int exit = 700;
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
@@ -77,12 +76,6 @@ namespace ScrapRat.PlayerModels
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
                 {
-                    //if (exit <= 0)
-                    //    return;
-
-                    //if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
-                    //    exit--;
-
                     SteamAPI.RunCallbacks();
                     SteamNetworkingSockets.GetConnectionInfo(connection, out info);                    
 
@@ -96,7 +89,7 @@ namespace ScrapRat.PlayerModels
                 this.BasePlayer.CloseConnection();
             }, this.Interupt.Token);
 
-            /*
+            
             if (connectionDuration.Elapsed.TotalSeconds > 5)
             {
                 this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
@@ -105,7 +98,7 @@ namespace ScrapRat.PlayerModels
             }
 
             this.OpenConnection(false);
-            */
+            
         }
 
         private void ProcessCommands(object? sender, EventArgs e)
