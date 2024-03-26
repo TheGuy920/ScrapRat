@@ -1,6 +1,7 @@
 using ScrapRat;
 using ScrapRat.PlayerModels;
 using ScrapRatWebApi.Discord;
+using System.Net;
 
 namespace ScrapRatWebApi
 {
@@ -44,14 +45,15 @@ namespace ScrapRatWebApi
 
                 mechanic.PlayerLoaded += _ =>
                 {
-                    Console.WriteLine($"[{DateTime.Now}] Player '{mechanic.Name}' ({mechanic.SteamID}) is loaded.");
+                    Console.WriteLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(mechanic.Name)}' ({mechanic.SteamID}) is loaded.");
                 };
 
                 mechanic.OnUpdate += @event =>
                 {
-                    Console.WriteLine($"[{DateTime.Now}] Player '{mechanic.Name}' ({mechanic.SteamID}) is {@event}");
+                    Console.WriteLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(mechanic.Name)}' ({mechanic.SteamID}) is {@event}");
                     
-                    string discordid = SteamidToDiscordid.TryGetValue(steamid, out ulong id) ? $"'{mechanic.Name}': <@{id}>" : mechanic.Name;
+                    string discordid = SteamidToDiscordid.TryGetValue(steamid, out ulong id)
+                        ? $"'{WebUtility.HtmlDecode(mechanic.Name)}': <@{id}>" : WebUtility.HtmlDecode(mechanic.Name);
                     switch (@event)
                     {
                         case ObservableEvent.NowPlaying:
