@@ -98,7 +98,7 @@ namespace ScrapRat.PlayerModels
                 this.BasePlayer.CloseConnection();
             }, this.Interupt.Token);
 
-            
+            Console.WriteLine($"[{DateTime.Now}] Time: {connectionDuration.Elapsed}");
             if (connectionDuration.Elapsed.TotalSeconds > 5 && hasConnected)
             {
                 this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
