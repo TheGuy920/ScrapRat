@@ -39,11 +39,11 @@ namespace ScrapRat.PlayerModels
 
             if (!hasStoppedPlaying)
             {
-                this.ConnectionDuration.RunCancelableAsync(() => Task.Delay(5000).ContinueWith(_ =>
+                this.ConnectionDuration.RunCancelableAsync(Task.Delay(5000).ContinueWith(_ =>
                 {
                     this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
                     hasStoppedPlaying = true;
-                }));
+                }).Wait);
             }
 
             Stopwatch connectionDuration = Stopwatch.StartNew();
