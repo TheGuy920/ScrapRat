@@ -68,7 +68,6 @@ namespace ScrapRat.PlayerModels
                 }
             }, this.Interupt.Token);
 
-            Console.WriteLine($"[{DateTime.Now}] Connect Time: {connectionDuration.Elapsed} | {hasStoppedPlaying}");
             if (hasStoppedPlaying)
                 this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
             else
