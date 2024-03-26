@@ -88,8 +88,8 @@ namespace CrashBotCli
             foreach (ulong sid in steamids)
             {
                 var mechanic = ScrapMechanic.BigBrother.SpyOnMechanic(sid);
-                mechanic.PlayerLoaded += _ => Logger.WriteLine($"Player {_.Name} has been loaded", Verbosity.Normal);
-                mechanic.OnUpdate += _ => Logger.WriteLine($"Player {mechanic.Name} is now {_}", Verbosity.Normal);
+                mechanic.PlayerLoaded += _ => Logger.WriteLine($"Player {_.Name} has been loaded", Verbosity.None);
+                mechanic.OnUpdate += _ => Logger.WriteLine($"Player {mechanic.Name} is now {_}", Verbosity.None);
             }
             
             while (true)
