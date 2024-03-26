@@ -76,11 +76,11 @@ namespace ScrapRat.PlayerModels
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Dead
                     && info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
                 {
-                    SteamAPI.RunCallbacks();
-                    SteamNetworkingSockets.GetConnectionInfo(connection, out info);
-
                     if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                         return;
+
+                    SteamAPI.RunCallbacks();
+                    SteamNetworkingSockets.GetConnectionInfo(connection, out info);                    
 
                     if (cancel.CanBeCanceled == true && cancel.IsCancellationRequested == true)
                     {
