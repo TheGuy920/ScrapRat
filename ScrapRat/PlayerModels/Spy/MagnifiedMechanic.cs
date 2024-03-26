@@ -44,6 +44,7 @@ namespace ScrapRat.PlayerModels
                     hasStoppedPlaying = true;
                 }));
 
+            Stopwatch connectionDuration = Stopwatch.StartNew();
             this.Interupt.RunCancelable((CancellationToken cancel) =>
             {
                 SteamNetworkingSockets.GetConnectionInfo(connection, out var info);
@@ -63,6 +64,7 @@ namespace ScrapRat.PlayerModels
                 }
             }, this.Interupt.Token);
 
+            Console.WriteLine($"[{DateTime.Now}] Connect Time: {connectionDuration.Elapsed}");
             this.ConnectionDuration.Reset();
             if (hasStoppedPlaying)
                 this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
