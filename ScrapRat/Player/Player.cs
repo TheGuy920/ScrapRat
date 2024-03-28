@@ -153,45 +153,6 @@ namespace ScrapRat
                 m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_TimeoutInitial,
                 m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = int.MaxValue }
             },
-            new SteamNetworkingConfigValue_t
-            {
-                m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
-                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 4 } // 4 is public
-            },
-            new SteamNetworkingConfigValue_t
-            {
-                m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
-                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_ICE_Penalty,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = 0 }
-            },
-            new SteamNetworkingConfigValue_t
-            {
-                m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
-                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_SDR_Penalty,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = int.MaxValue }
-            },
-            new SteamNetworkingConfigValue_t
-            {
-                m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32,
-                m_eValue = ESteamNetworkingConfigValue.k_ESteamNetworkingConfig_P2P_Transport_ICE_Implementation,
-                m_val = new SteamNetworkingConfigValue_t.OptionValue { m_int32 = (int)(EICECandidateType.k_EICECandidate_IPv4_HostPublic | EICECandidateType.k_EICECandidate_IPv6_HostPublic) }
-            }
         ];
     }
-
-    enum EICECandidateType : int
-    {
-        k_EICECandidate_Invalid = 0,
-
-        k_EICECandidate_IPv4_Relay = 0x01,
-        k_EICECandidate_IPv4_HostPrivate = 0x02,
-        k_EICECandidate_IPv4_HostPublic = 0x04,
-        k_EICECandidate_IPv4_Reflexive = 0x08,
-
-        k_EICECandidate_IPv6_Relay = 0x100,
-        k_EICECandidate_IPv6_HostPrivate_Unsupported = 0x200, // NOTE: Not currently used.  All IPv6 addresses (even fc00::/7) are considered "public"
-        k_EICECandidate_IPv6_HostPublic = 0x400,
-        k_EICECandidate_IPv6_Reflexive = 0x800,
-    };
 }

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Platforms>AnyCPU;x64</Platforms>
+		<PublishAot>true</PublishAot>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Native.WinDivert" Version="2.2.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="F:\GithubRepos\SharpDivert\SharpDivert\SharpDivert.csproj" />
+	</ItemGroup>
+
+</Project>
