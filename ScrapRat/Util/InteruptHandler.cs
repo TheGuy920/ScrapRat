@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -135,7 +136,14 @@ namespace ScrapRat.Util
                 {
                     return @delegate.DynamicInvoke(@params);
                 }
-                catch (Exception e) { Console.WriteLine(e); return null; }
+                catch (OperationCanceledException _) { return null; }
+                catch (Exception e) 
+                { 
+                    if (e is TargetInvocationException te && te.InnerException is OperationCanceledException)
+                        return null;
+                    Console.WriteLine(e);
+                    return null;
+                }
             }, this.Token)
             .ContinueWith(t => { this.refs.TryRemove(@delegate, out _); return t.Result; })
             .ContinueWith(t => { this.ExecutionCompleted(@delegate); return t.Result; })
@@ -185,8 +193,13 @@ namespace ScrapRat.Util
                 {
                     @delegate.DynamicInvoke(@params);
                 }
-                catch (Exception e) { Console.WriteLine(e); }
-            })
+                catch (Exception e)
+                {
+                    if (e is TargetInvocationException te && te.InnerException is OperationCanceledException)
+                        return;
+                    Console.WriteLine(e); 
+                }
+            }, this.Token)
             .ContinueWith(__ => this.refs.TryRemove(@delegate, out _))
             .ContinueWith(_ => this.ExecutionCompleted(@delegate));
         }
@@ -215,6 +228,8 @@ namespace ScrapRat.Util
             this.source = new();
             this.refs.Clear();
             this.refsCompleted.Reset();
+
+            this.source.Token.Register(this.Interupt);
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using Steamworks;
 using System.Text;
 using System.Timers;
+using Console = ScrapRat.Util.Console;
 using Timer = System.Timers.Timer;
 
 namespace ScrapRat.PlayerModels.Blacklist

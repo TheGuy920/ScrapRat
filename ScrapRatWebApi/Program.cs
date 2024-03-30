@@ -1,3 +1,4 @@
+using Discord;
 using ScrapRat;
 using ScrapRat.PlayerModels;
 using ScrapRatWebApi.Discord;
@@ -23,13 +24,13 @@ namespace ScrapRatWebApi
             {76561197965646622, 143945560368480256},
             {76561198299556567, 333609235579404288},
         };
-
+        /*
         private static readonly DiscordWebhook _webhook = new(
             File.ReadAllText(
                 Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "webhook.url")
                 ));
-
+        */
         public static void Main(string[] args)
         {
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
@@ -47,19 +48,19 @@ namespace ScrapRatWebApi
 
                 mechanic.OnUpdate += @event =>
                 {
-                    Console.WriteLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(mechanic.Name)}' ({mechanic.SteamID}) is {@event}");
+                    string ename = @event switch
+                    {
+                        ObservableEvent.NowPlaying => "is now playing",
+                        ObservableEvent.StoppedPlaying => "stopped playing",
+                        _ => "error: unknown state @event"
+                    };
+
+                    Console.WriteLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(mechanic.Name)}' ({mechanic.SteamID}) {ename}");
                     
                     string discordid = SteamidToDiscordid.TryGetValue(steamid, out ulong id)
                         ? $"'{WebUtility.HtmlDecode(mechanic.Name)}': <@{id}>" : WebUtility.HtmlDecode(mechanic.Name);
-                    switch (@event)
-                    {
-                        case ObservableEvent.NowPlaying:
-                            _webhook.SendMessage($"@everyone {discordid} is now playing Scrap Mechanic!");
-                            break;
-                        case ObservableEvent.StoppedPlaying:
-                            _webhook.SendMessage($"@everyone {discordid} stopped playing Scrap Mechanic :(");
-                            break;
-                    }
+
+                    //_webhook.SendMessage($"@everyone {discordid} {ename} Scrap Mechanic!");
                 };
             }
 

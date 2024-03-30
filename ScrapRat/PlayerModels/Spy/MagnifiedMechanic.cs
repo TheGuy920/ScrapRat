@@ -1,11 +1,20 @@
 ﻿using ScrapRat.Util;
 using Steamworks;
 using System.Diagnostics;
+using System.Net;
+using Console = ScrapRat.Util.Console;
 
 namespace ScrapRat.PlayerModels
 {
     public class MagnifiedMechanic : IPlayer
     {
+        // 5 seconds
+        private const int RECONNECT_TIMEOUT = 5000;
+        // 25 seconds
+        private const int RECONNECT_DELAY = 25000;
+        // 5 seconds
+        private const int CONNECTION_THRESHOLD = 5000;
+
         public string Name => this.BasePlayer.Name;
         public InteruptHandler Interupt => this.BasePlayer.Interupt;
         public CSteamID SteamID => this.BasePlayer.SteamID;
@@ -39,13 +48,15 @@ namespace ScrapRat.PlayerModels
 
             if (!hasStoppedPlaying)
             {
-                this.ConnectionDuration.RunCancelableAsync((CancellationToken tok) => Task.Delay(5000, tok).ContinueWith(_ =>
+                Console.WarnLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(this.Name)}' ({this.SteamID}) was disconnected. " +
+                    $"Waiting for {RECONNECT_TIMEOUT/1000} seconds to see if they stopped playing.");
+                this.ConnectionDuration.RunCancelableAsync((CancellationToken tok) => Task.Delay(RECONNECT_TIMEOUT, tok).ContinueWith(_ =>
                 {
                     if (tok.IsCancellationRequested)
                         return;
                     this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
                     hasStoppedPlaying = true;
-                }).Wait(), this.ConnectionDuration.Token);
+                }, tok).Wait(tok), this.ConnectionDuration.Token);
             }
 
             Stopwatch connectionDuration = Stopwatch.StartNew();
@@ -65,8 +76,12 @@ namespace ScrapRat.PlayerModels
                         this.BasePlayer.CloseConnection();
                         return;
                     }
+
+                    Task.Delay(1, cancel).Wait(cancel);
                 }
             }, this.Interupt.Token);
+
+            Console.InfoLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(this.Name)}' ({this.SteamID}) connected in {connectionDuration.Elapsed.TotalSeconds} seconds.");
 
             if (hasStoppedPlaying)
                 this.OnUpdate?.Invoke(ObservableEvent.NowPlaying);
@@ -96,18 +111,29 @@ namespace ScrapRat.PlayerModels
                         this.BasePlayer.CloseConnection();
                         return;
                     }
+
+                    Task.Delay(1, cancel).Wait(cancel);
                 }
 
                 this.BasePlayer.CloseConnection();
             }, this.Interupt.Token);
 
-            if (connectionDuration.Elapsed.TotalSeconds > 5)
+            Console.InfoLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(this.Name)}' ({this.SteamID}) disconnected. " +
+                $"Connection lasted {connectionDuration.Elapsed.TotalSeconds} seconds.");
+
+            // longer than X seconds connected, followed by a disconnected is treated as stopped playing
+            if (connectionDuration.Elapsed.TotalMilliseconds > CONNECTION_THRESHOLD)
             {
                 this.OnUpdate?.Invoke(ObservableEvent.StoppedPlaying);
                 this.OpenConnection(true);
                 return;
             }
 
+            // Else, the game mode IS private, so we try to connect again
+            Console.WarnLine($"[{DateTime.Now}] Player '{WebUtility.HtmlDecode(this.Name)}' ({this.SteamID}) has a private game mode. " +
+                $"Trying to reconnect in {RECONNECT_DELAY/1000} seconds.");
+
+            Task.Delay(RECONNECT_DELAY).Wait();
             this.OpenConnection(false);
             
         }
