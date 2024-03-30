@@ -24,13 +24,13 @@ namespace ScrapRatWebApi
             {76561197965646622, 143945560368480256},
             {76561198299556567, 333609235579404288},
         };
-        /*
+        
         private static readonly DiscordWebhook _webhook = new(
             File.ReadAllText(
                 Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "webhook.url")
                 ));
-        */
+        
         public static void Main(string[] args)
         {
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
@@ -60,7 +60,7 @@ namespace ScrapRatWebApi
                     string discordid = SteamidToDiscordid.TryGetValue(steamid, out ulong id)
                         ? $"'{WebUtility.HtmlDecode(mechanic.Name)}': <@{id}>" : WebUtility.HtmlDecode(mechanic.Name);
 
-                    //_webhook.SendMessage($"@everyone {discordid} {ename} Scrap Mechanic!");
+                    _webhook.SendMessage($"@everyone {discordid} {ename} Scrap Mechanic!");
                 };
             }
 
