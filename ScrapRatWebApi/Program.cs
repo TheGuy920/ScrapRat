@@ -24,11 +24,11 @@ namespace ScrapRatWebApi
             {76561198299556567, 333609235579404288},
         };
 
-        /*private static readonly DiscordWebhook _webhook = new(
+        private static readonly DiscordWebhook _webhook = new(
             File.ReadAllText(
                 Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "webhook.url")
-                ));*/
+                ));
 
         public static void Main(string[] args)
         {
@@ -54,10 +54,10 @@ namespace ScrapRatWebApi
                     switch (@event)
                     {
                         case ObservableEvent.NowPlaying:
-                            //_webhook.SendMessage($"@everyone {discordid} is now playing Scrap Mechanic!");
+                            _webhook.SendMessage($"@everyone {discordid} is now playing Scrap Mechanic!");
                             break;
                         case ObservableEvent.StoppedPlaying:
-                            //_webhook.SendMessage($"@everyone {discordid} stopped playing Scrap Mechanic :(");
+                            _webhook.SendMessage($"@everyone {discordid} stopped playing Scrap Mechanic :(");
                             break;
                     }
                 };
