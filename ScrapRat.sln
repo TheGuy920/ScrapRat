@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProxyService", "ProxyServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PacketMon", "TcpProxy\PacketMon.csproj", "{A06AFE69-255A-4655-BA9D-AABE1D6C5869}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDivert", "F:\GithubRepos\SharpDivert\SharpDivert\SharpDivert.csproj", "{AE5DF133-D219-4782-B294-46FA15E0B244}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDivert", "SharpDivert\SharpDivert\SharpDivert.csproj", "{93516104-AEA9-4F47-8F02-C38D1E2675EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,14 +63,14 @@ Global
 		{A06AFE69-255A-4655-BA9D-AABE1D6C5869}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A06AFE69-255A-4655-BA9D-AABE1D6C5869}.Release|x64.ActiveCfg = Release|x64
 		{A06AFE69-255A-4655-BA9D-AABE1D6C5869}.Release|x64.Build.0 = Release|x64
-		{AE5DF133-D219-4782-B294-46FA15E0B244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE5DF133-D219-4782-B294-46FA15E0B244}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE5DF133-D219-4782-B294-46FA15E0B244}.Debug|x64.ActiveCfg = Debug|x64
-		{AE5DF133-D219-4782-B294-46FA15E0B244}.Debug|x64.Build.0 = Debug|x64
-		{AE5DF133-D219-4782-B294-46FA15E0B244}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE5DF133-D219-4782-B294-46FA15E0B244}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AE5DF133-D219-4782-B294-46FA15E0B244}.Release|x64.ActiveCfg = Release|x64
-		{AE5DF133-D219-4782-B294-46FA15E0B244}.Release|x64.Build.0 = Release|x64
+		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Debug|x64.ActiveCfg = Debug|x64
+		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Debug|x64.Build.0 = Debug|x64
+		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Release|x64.ActiveCfg = Release|x64
+		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

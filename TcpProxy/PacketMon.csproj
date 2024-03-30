@@ -14,7 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="F:\GithubRepos\SharpDivert\SharpDivert\SharpDivert.csproj" />
+	  <ProjectReference Include="..\SharpDivert\SharpDivert\SharpDivert.csproj" />
 	</ItemGroup>
 
 </Project>

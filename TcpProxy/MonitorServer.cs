@@ -12,12 +12,12 @@ namespace PacketMonitor
 {
     public class MonitorServer
     {
-        private const int PACKET_LATENCY = 2000;
-        private readonly WinDivert divert = new("(outbound or inbound) and (not udp.DstPort == 53) and (ip or ipv6) " +
-            "and (udp.SrcPort > 1000 or tcp.SrcPort > 1000)", WinDivert.Layer.Network, 0, 0);
+        private const int PACKET_LATENCY = 0;
+        private readonly WinDivert divert = new("" +
+            "", WinDivert.Layer.Network, 0, 0); // (udp.SrcPort > 1000 or tcp.SrcPort > 1000) // and (udp.DstPort == 8443 or tcp.DstPort == 8443 or udp.SrcPort == 8443 or tcp.SrcPort == 8443)
 
         private CancellationTokenSource tokenSource = new();
-        private readonly ConcurrentDictionary<IPAddress, string> cache = [];
+        private readonly ConcurrentDictionary<IPAddress, (int, string)> cache = [];
         private readonly ConcurrentDictionary<Stopwatch, (Memory<byte> rec, Memory<WinDivertAddress> snd)> resendBuffer = [];
         private readonly System.Timers.Timer ResendExecutionTimer = new(1) { AutoReset = true };
         private Task? ReadTask;
@@ -55,25 +55,77 @@ namespace PacketMonitor
                 var recv = recvBuf[..(int)recvLen];
                 var send = sendBuf[..(int)addrLen];
                 var (_, result) = new WinDivertIndexedPacketParser(recv).First();
-
-                if (result.Packet.Length < 40)
-                    goto End;
-
-                var smlpkt = result.Packet.Slice(0, 40);
-                var (IpAddress, IpType) = GetDestinationIP(smlpkt);
-
-                if (IpType != 4)
-                    goto End;
-
-                if (cache.TryAdd(IpAddress, string.Empty))
-                    newIpEvent.Set();
-
-                if (cache.TryGetValue(IpAddress, out var hstnm) && hstnm.Contains("valve", StringComparison.InvariantCultureIgnoreCase))
+                
                 {
+                    int port = 0;
+                    string ip = string.Empty;
+                    unsafe
+                    {
+                        if (result.TCPHdr is not null)
+                        {
+                            port = result.TCPHdr->DstPort;
+                        }
+                        else if (result.UDPHdr is not null)
+                        {
+                            port = result.UDPHdr->DstPort;
+                        }
+                        if (result.IPv4Hdr is not null)
+                        {
+                            ip = result.IPv4Hdr->DstAddr.ToString();
+                        }
+                        else if (result.IPv6Hdr is not null)
+                        {
+                            ip = result.IPv6Hdr->DstAddr.ToString();
+                        }
+                    }
+
+                    var smlpkt = result.Packet.Slice(0, Math.Min(result.Packet.Length, 40));
+                    var (IpAddress, IpType) = GetDestinationIP(smlpkt);
+
+                    if (cache.TryAdd(IPAddress.Parse(ip), (port, string.Empty)) || cache.TryAdd(IpAddress, (port, string.Empty)))
+                        newIpEvent.Set();
+                }
+
+                {
+                    int port = 0;
+                    string ip = string.Empty;
+                    unsafe
+                    {
+                        if (result.TCPHdr is not null)
+                        {
+                            port = result.TCPHdr->SrcPort;
+                        }
+                        else if (result.UDPHdr is not null)
+                        {
+                            port = result.UDPHdr->SrcPort;
+                        }
+                        if (result.IPv4Hdr is not null)
+                        {
+                            ip = result.IPv4Hdr->SrcAddr.ToString();
+                        }
+                        else if (result.IPv6Hdr is not null)
+                        {
+                            ip = result.IPv6Hdr->SrcAddr.ToString();
+                        }
+                    }
+
+                    var smlpkt = result.Packet.Slice(0, Math.Min(result.Packet.Length, 40));
+                    var (IpAddress, IpType) = GetDestinationIP(smlpkt);
+
+                    if (cache.TryAdd(IPAddress.Parse(ip), (port, string.Empty)) || cache.TryAdd(IpAddress, (port, string.Empty)))
+                        newIpEvent.Set();
+                }
+
+                //if (IpType != 4)
+                //    goto End;
+                /*
+                 * if (cache.TryGetValue(IpAddress, out _) && PACKET_LATENCY > 0 /*&& hstnm.Contains("valve", StringComparison.InvariantCultureIgnoreCase)*)
+                    {
                     this.resendBuffer.TryAdd(Stopwatch.StartNew(), (recv, send));
                     continue;
                 }
-                    
+                */
+                goto End;
             End:
                 _ = divert.SendEx(recv.Span, send.Span);
             }
@@ -88,7 +140,7 @@ namespace PacketMonitor
 
         public static (IPAddress IpAddress, int IpType) GetDestinationIP(Memory<byte> packetData)
         {
-            if (packetData.Length < 40) // Minimum length check
+            if (packetData.Length < 20) // Minimum length check
             {
                 throw new ArgumentException("Insufficient packet data length.");
             }
@@ -128,16 +180,17 @@ namespace PacketMonitor
                 newIpEvent.WaitOne();
                 Console.Clear();
 
-                foreach (var (ip, hstnm) in cache)
+                foreach (var (ip, (port, hstnm)) in cache)
                 {
                     if (ip == null || ip == default || badIps.Contains(ip))
                         continue;
                     
                     if (string.IsNullOrWhiteSpace(hstnm))
-                        Dns.GetHostEntryAsync(ip).ContinueWith(entry => cache[ip] = entry.Result.HostName);
+                        Dns.GetHostEntryAsync(ip).ContinueWith(entry => cache[ip] = (port, $"{entry.Result.HostName}; {string.Join(", ", entry.Result.Aliases)}"));
 
-                    if (hstnm.Contains("valve", StringComparison.InvariantCultureIgnoreCase))
-                        Console.WriteLine($"{hstnm}: {ip}");
+                    //if (hstnm.Contains("valve", StringComparison.InvariantCultureIgnoreCase))
+                    if (hstnm.Length > 0)
+                        Console.WriteLine($"{ip}:{port} => {hstnm}");
                 }
             }
         }

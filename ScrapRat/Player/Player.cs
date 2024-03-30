@@ -67,6 +67,8 @@ namespace ScrapRat
         {
             // process commands
 
+            
+
             this.OnProcessCommands?.Invoke(this, EventArgs.Empty);
         }
 
