@@ -1,3 +1,4 @@
+using Discord;
 using ScrapMechanic.Networking;
 using ScrapMechanic.WebApi.Discord;
 using Steamworks;
@@ -41,7 +42,6 @@ namespace ScrapMechanic.WebApi
         public static void Main(string[] args)
         {
             Environment.CurrentDirectory = Directory.GetParent(AppContext.BaseDirectory)!.FullName;
-            ScrapMechanic.Logger.LogVerbosity = ScrapMechanic.Logger.Verbosity.Debug;
             File.WriteAllText("steam_appid.txt", "387990");
 
             var client = ScrapMechanic.Client.Load();
@@ -53,11 +53,14 @@ namespace ScrapMechanic.WebApi
             const int TIMEOUT_S = 30;
             TimeSpan _c_timeout = TimeSpan.FromSeconds(TIMEOUT_S);
 
+            string getNameString(CSteamID cstid)
+                => SteamidToDiscordid.TryGetValue(cstid.m_SteamID, out ulong id) ? $"<@{id}> `{nameMaps[cstid]}`" : nameMaps[cstid];
+
             void pushUpdate(CSteamID cstid, string state)
             {
                 var name = nameMaps[cstid];
                 ScrapMechanic.Logger.LogWarning($"Player '{name}' ({cstid}) {state}");
-                string discordid = SteamidToDiscordid.TryGetValue(cstid.m_SteamID, out ulong id) ? $"<@{id}> `{name}`" : name;
+                string discordid = getNameString(cstid);
                 _webhook.SendMessage($"@everyone {discordid} {state}");
             }
 
@@ -122,8 +125,11 @@ namespace ScrapMechanic.WebApi
                     // Connection initialization detected
                     case ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting:
                         if (!connectionTimeoutTimers.ContainsKey(cstid))
+                        {
                             connectionTimeoutTimers[cstid] = new Timer(connectionTimeout, cstid, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-                        if (DateTime.Now - lastConnectionAttempt < _c_timeout)
+                            _webhook.SendMessage($"Now tracking: {getNameString(cstid)}");
+                        }
+                        else if (DateTime.Now - lastConnectionAttempt < _c_timeout)
                         {
                             lastConnectionAttempt = DateTime.Now;
                             connectionDetected(cstid, 1);
