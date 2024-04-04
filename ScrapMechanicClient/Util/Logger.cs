@@ -7,9 +7,10 @@ namespace ScrapMechanic
 {
     public static class Logger
     {
+#if DEBUG
         [DllImport("kernel32.dll")]
         static extern uint GetCurrentThreadId();
-
+#endif
         public enum Verbosity
         {
             None = 0,
@@ -87,7 +88,7 @@ namespace ScrapMechanic
 
         private static string Timestamp(object? msg) => $"[{DateTime.Now}] {msg}";
 
-        public static uint ThreadId { get; private set; }
+        public static uint ThreadId { get; private set; } = 0;
 
         private static async void Start()
         {
@@ -107,7 +108,9 @@ namespace ScrapMechanic
             {
                 while (LogQueue.TryDequeue(out var omsg))
                 {
+#if DEBUG
                     ThreadId = GetCurrentThreadId();
+#endif
                     var (ltype, msg) = omsg;
 
                     switch (ltype)
@@ -144,8 +147,9 @@ namespace ScrapMechanic
                 }
 
                 await Task.Delay(5);
-
+#if DEBUG
                 ThreadId = GetCurrentThreadId();
+#endif
             }
         }
 
