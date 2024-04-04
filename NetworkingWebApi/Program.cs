@@ -89,7 +89,7 @@ namespace ScrapMechanic.WebApi
                         break;
                     // Connecting
                     case 1:
-                        if (notify != 3) return false;
+                        if (notify != 3) return timer.Change(_c_timeout, Timeout.InfiniteTimeSpan);
                         alive();
                         break;
                     // Connected
