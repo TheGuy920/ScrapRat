@@ -60,7 +60,7 @@ namespace ScrapMechanic.WebApi
                     ? "is now playing Scrap Mechanic!" : "stopped playing Scrap Mechanic :(";
                 
                 ScrapMechanic.Logger.LogWarning($"Player '{name}' ({cstid}) {state}");
-                //_webhook.SendMessage($"@everyone {discordid} {state}");
+                _webhook.SendMessage($"@everyone {discordid} {state}");
             }
 
             client.OnConnectionPlaystateChanged += pushUpdate;
@@ -76,7 +76,7 @@ namespace ScrapMechanic.WebApi
                 client.ConnectToUserAsync(cstid);
 
                 Logger.LogInfo($"Now tracking: {getNameString(cstid)}");
-                // _webhook.SendMessage($"Now tracking: {getNameString(cstid)}");
+                _webhook.SendMessage($"Now tracking: {getNameString(cstid)}");
             }
 
             Task.Delay(Timeout.Infinite).Wait();
