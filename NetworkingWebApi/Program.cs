@@ -1,5 +1,6 @@
 using Discord;
 using ScrapMechanic.Networking;
+using ScrapMechanic.Util;
 using ScrapMechanic.WebApi.Discord;
 using Steamworks;
 using System.Collections.Concurrent;
@@ -19,7 +20,7 @@ namespace ScrapMechanic.WebApi
             76561197965646622, // moonbo
             76561198014346778, // Durf (fuck you)
             76561198018743729, // Fant (fuck you)
-            76561198299556567, // theguy920
+            // 76561198299556567, // theguy920
         ];
 
         private static readonly Dictionary<ulong, ulong> SteamidToDiscordid = new()
@@ -46,118 +47,36 @@ namespace ScrapMechanic.WebApi
 
             var client = ScrapMechanic.Client.Load();
             List<CSteamID> cstids = PeopleToTrack.Select(id => new CSteamID(id)).ToList();
-            ConcurrentDictionary<CSteamID, Timer> connectionTimeoutTimers = [];
-            ConcurrentDictionary<CSteamID, int> connectionStates = [];
             ConcurrentDictionary<CSteamID, string> nameMaps = [];
-
-            const int TIMEOUT_S = 30;
-            TimeSpan _c_timeout = TimeSpan.FromSeconds(TIMEOUT_S);
 
             string getNameString(CSteamID cstid)
                 => SteamidToDiscordid.TryGetValue(cstid.m_SteamID, out ulong id) ? $"<@{id}> `{nameMaps[cstid]}`" : nameMaps[cstid];
 
-            void pushUpdate(CSteamID cstid, string state)
+            void pushUpdate(CSteamID cstid, EPlayState isPlaying)
             {
                 var name = nameMaps[cstid];
-                ScrapMechanic.Logger.LogWarning($"Player '{name}' ({cstid}) {state}");
                 string discordid = getNameString(cstid);
+                string state = isPlaying == EPlayState.Playing 
+                    ? "is now playing Scrap Mechanic!" : "stopped playing Scrap Mechanic :(";
+                
+                ScrapMechanic.Logger.LogWarning($"Player '{name}' ({cstid}) {state}");
                 //_webhook.SendMessage($"@everyone {discordid} {state}");
             }
 
-            bool updateConnectionState(CSteamID cstid, int state, int notify)
+            client.OnConnectionPlaystateChanged += pushUpdate;
+            client.OnConnectionStatusChanged += (cstid, _, info) =>
             {
-                var timer = connectionTimeoutTimers[cstid];
-
-                void alive()
-                {
-                    timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-                    pushUpdate(cstid, "is now playing Scrap Mechanic!");
-                }
-
-                void dead()
-                {
-                    timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-                    pushUpdate(cstid, "stopped playing Scrap Mechanic :(");
-                }
-
-                switch (state)
-                {
-                    // Disconnected
-                    case 0:
-                        if (notify == 1) return timer.Change(_c_timeout, Timeout.InfiniteTimeSpan);
-                        if (notify == 2) dead();
-                        break;
-                    // Connecting
-                    case 1:
-                        if (notify == 2) break;
-                        alive();
-                        break;
-                    // Connected
-                    case 2:
-                        if (notify != 3) break;
-                        alive();
-                        break;
-                }
-
-                connectionStates[cstid] = state;
-                return true;
-            }
-
-            void connectionDetected(CSteamID cstid, int state)
-            {
-                if (connectionStates.GetOrAdd(cstid, 0) == state)
-                    return;
-
-                updateConnectionState(cstid, state, connectionStates[cstid] switch { 0 => 3, 1 => 1, 2 => 2 });
-            }
-
-            DateTime lastConnectionAttempt = DateTime.Now;
-            void connectionTimeout(object? _cstid) => updateConnectionState((CSteamID)_cstid!, 0, 2);
-
-            client.OnConnectionStatusChanged += (cstid, hconn, netConnectInfo) =>
-            {
-                switch (netConnectInfo.m_eState) 
-                {
-                    // fully established connection detected
-                    case ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected:
-                        connectionDetected(cstid, 2);
-                        break;
-                    // Connection initialization detected
-                    case ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting:
-                        if (!connectionTimeoutTimers.ContainsKey(cstid))
-                        {
-                            connectionTimeoutTimers[cstid] = new Timer(connectionTimeout, cstid, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-                            Logger.LogInfo($"Now tracking: {getNameString(cstid)}");
-                            //_webhook.SendMessage($"Now tracking: {getNameString(cstid)}");
-                        }
-                        else if (DateTime.Now - lastConnectionAttempt < _c_timeout)
-                        {
-                            lastConnectionAttempt = DateTime.Now;
-                            connectionDetected(cstid, 1);
-                        }
-                        break;
-                    // Connection status alive detected
-                    case ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute:
-                        connectionDetected(cstid, 1);
-                        break;
-                    default:
-                        // Connection status is dropped. Start timeout timer
-                        if (!netConnectInfo.IsConnectionAlive())
-                        {
-                            var timer = connectionTimeoutTimers
-                                .GetOrAdd(cstid, _cstid => new Timer(connectionTimeout, _cstid, _c_timeout, Timeout.InfiniteTimeSpan));
-
-                            connectionDetected(cstid, 0);
-                            client.ConnectToUserAsync(cstid);
-                        }
-                        break;
-                }
+                if (!info.IsConnectionAlive())
+                    client.ConnectToUserAsync(cstid);
             };
 
             foreach (var cstid in cstids)
             {
                 nameMaps[cstid] = GetName(cstid);
                 client.ConnectToUserAsync(cstid);
+
+                Logger.LogInfo($"Now tracking: {getNameString(cstid)}");
+                // _webhook.SendMessage($"Now tracking: {getNameString(cstid)}");
             }
 
             Task.Delay(Timeout.Infinite).Wait();

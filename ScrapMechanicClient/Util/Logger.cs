@@ -68,7 +68,7 @@ namespace ScrapMechanic
             LogError(message);
         }
 
-        private static readonly Thread WriteThread = new(Start) { IsBackground = true, Priority = ThreadPriority.BelowNormal };
+        private static readonly Thread WriteThread = new(Start) { IsBackground = true, Priority = ThreadPriority.AboveNormal };
         private static readonly ConcurrentQueue<(LogType, object?)> LogQueue = [];
         private static volatile bool IsRunning = false;
 

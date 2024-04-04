@@ -63,7 +63,7 @@ namespace ScrapMechanic.Networking
                 if (SteamNetworkingSockets.GetConnectionInfo(SteamNetConnection, out ConnectionInfo))
                     Status = ConnectionInfo.m_eState;
 
-                await Task.Delay(25, CancelToken.Token);
+                await Task.Delay(1, CancelToken.Token);
             }
         }
 
@@ -179,16 +179,5 @@ namespace ScrapMechanic.Networking
         public static implicit operator HSteamNetConnection(NetworkConnection connection) => connection.SteamNetConnection;
 
         public static implicit operator SteamNetworkingIdentity(NetworkConnection connection) => connection.Identity;        
-    }
-
-    public static class Extensions
-    {
-        public static bool IsConnectionAlive(this SteamNetConnectionInfo_t info) => info.m_eState switch
-        {
-            ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting => true,
-            ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute => true,
-            ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected => true,
-            _ => false
-        };
     }
 }
