@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
-namespace ScrapRatWebApi.Discord
+namespace ScrapMechanic.WebApi.Discord
 {
     public class DiscordWebhook(string webhookUrl)
     {

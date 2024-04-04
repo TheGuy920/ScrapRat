@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ScrapRat.Util
+namespace ScrapMechanic.Util
 {
-    public class InteruptHandler : IDisposable, IAsyncDisposable
+    internal class InteruptHandler : IDisposable, IAsyncDisposable
     {
         private readonly ConcurrentDictionary<object, byte> refs = [];
         private readonly ManualResetEvent refsCompleted = new(false);
         private CancellationTokenSource source = new();
+        private readonly object lockObject = new();
+        private volatile bool IsCanceling = false;
 
         public InteruptHandler()
         {
@@ -49,11 +46,16 @@ namespace ScrapRat.Util
         /// <param name="timout"></param>
         public void Interupt(TimeSpan timout)
         {
-            if (this.source.IsCancellationRequested)
+            if (this.CheckLock() || this.source.IsCancellationRequested)
                 return;
+
+            bool needsReset = this.refs.Count > 0;
+
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
-            this.refsCompleted.WaitOne(timout);
+
+            if (needsReset) this.refsCompleted.WaitOne(timout);
+            this.ResetLock();
         }
 
         /// <summary>
@@ -61,9 +63,15 @@ namespace ScrapRat.Util
         /// </summary>
         public void Reset()
         {
+            if (this.CheckLock())
+                return;
+
+            bool needsReset = this.refs.Count > 0;
+
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne();
-            this.refsCompleted.WaitOne();
+
+            if (needsReset) this.refsCompleted.WaitOne();
             this.NewToken();
         }
 
@@ -80,9 +88,15 @@ namespace ScrapRat.Util
         /// <param name="timout"></param>
         public void Reset(TimeSpan timout)
         {
+            if (this.CheckLock())
+                return;
+
+            bool needsReset = this.refs.Count > 0;
+
             this.source.Cancel();
             this.source.Token.WaitHandle.WaitOne(timout);
-            this.refsCompleted.WaitOne(timout);
+
+            if (needsReset) this.refsCompleted.WaitOne(timout);
             this.NewToken();
         }
 
@@ -136,13 +150,12 @@ namespace ScrapRat.Util
                 {
                     return @delegate.DynamicInvoke(@params);
                 }
-                catch (OperationCanceledException _) { return null; }
-                catch (Exception e) 
-                { 
-                    if (e is TargetInvocationException te && te.InnerException is OperationCanceledException)
+                catch (OperationCanceledException) { return null; }
+                catch (TargetInvocationException e) 
+                {
+                    if (e.InnerException is OperationCanceledException)
                         return null;
-                    Console.WriteLine(e);
-                    return null;
+                    throw;
                 }
             }, this.Token)
             .ContinueWith(t => { this.refs.TryRemove(@delegate, out _); return t.Result; })
@@ -193,20 +206,30 @@ namespace ScrapRat.Util
                 {
                     @delegate.DynamicInvoke(@params);
                 }
-                catch (Exception e)
+                catch (OperationCanceledException) { return; }
+                catch (TargetInvocationException e)
                 {
-                    if (e is TargetInvocationException te && te.InnerException is OperationCanceledException)
+                    if (e.InnerException is OperationCanceledException)
                         return;
-                    Console.WriteLine(e); 
+                    throw;
                 }
             }, this.Token)
             .ContinueWith(__ => this.refs.TryRemove(@delegate, out _))
             .ContinueWith(_ => this.ExecutionCompleted(@delegate));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="action"></param>
         public void RunOnCancel(Action action) =>
             this.Token.Register(action);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="delegate"></param>
+        /// <param name="params"></param>
         public void RunOnCancel(Delegate @delegate, params object[] @params) =>
             this.Token.Register(() => @delegate.DynamicInvoke(@params));
 
@@ -216,8 +239,29 @@ namespace ScrapRat.Util
         private void ExecutionCompleted(Delegate @delegate)
         {
             this.refs.TryRemove(@delegate, out _);
-            if (this.refs.IsEmpty)
-                this.refsCompleted.Set();
+            if (this.refs.IsEmpty) this.refsCompleted.Set();
+        }
+
+        /// <summary>
+        /// True if the interupt handler is currently canceling
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckLock()
+        {
+            lock (this.lockObject)
+            {
+                if (this.IsCanceling)
+                {
+                    return true;
+                }
+                this.IsCanceling = true;
+                return false;
+            }
+        }
+
+        private void ResetLock()
+        {
+            this.IsCanceling = false;
         }
 
         /// <summary>
@@ -230,6 +274,7 @@ namespace ScrapRat.Util
             this.refsCompleted.Reset();
 
             this.source.Token.Register(this.Interupt);
+            this.ResetLock();
         }
 
         /// <summary>

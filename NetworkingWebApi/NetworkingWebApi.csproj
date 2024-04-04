@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
     <PublishAot>true</PublishAot>
-    <StartupObject>ScrapRatWebApi.Program</StartupObject>
+    <StartupObject>ScrapMechanic.WebApi.Program</StartupObject>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ScrapRat\ScrapRat.csproj" />
+    <ProjectReference Include="..\ScrapMechanicClient\ScrapMechanicClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>

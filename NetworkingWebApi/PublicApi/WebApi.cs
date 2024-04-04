@@ -38,32 +38,5 @@ namespace CrashbotWebApi.PublicApi
                 return BadRequest("Invalid ID format.");
             }
         }
-
-        [HttpGet("/live/{id}")]
-        public IActionResult GetLiveStream(string id)
-        {
-            if (ulong.TryParse(id, out ulong steamId))
-            {
-                if (!LiveStreams.ContainsKey(steamId))
-                {
-                    StartLiveStream(steamId);
-                }
-
-                var streamLink = $"http://yourstreamserver.com/live/{steamId}";
-                return Redirect(streamLink);
-            }
-            else
-            {
-                return BadRequest("Invalid ID format.");
-            }
-        }
-
-        private void StartLiveStream(ulong id)
-        {
-            // Logic to start streaming
-            // ...
-
-            LiveStreams[id] = $"Stream for {id} started";
-        }
     }
 }

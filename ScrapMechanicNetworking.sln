@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapRatWebApi", "ScrapRatWebApi\ScrapRatWebApi.csproj", "{4769E0D1-7485-4057-BE7B-5FF5970FAAF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkingWebApi", "NetworkingWebApi\NetworkingWebApi.csproj", "{4769E0D1-7485-4057-BE7B-5FF5970FAAF8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapRatCli", "ScrapRatCli\ScrapRatCli.csproj", "{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapRat", "ScrapRat\ScrapRat.csproj", "{CF9848CD-D008-417A-B038-91E3FADB69D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientCli", "ClientCli\ClientCli.csproj", "{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProxyService", "ProxyService\ProxyService.csproj", "{CEF18898-70E2-4C7A-A9AE-6DAEA8D33894}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PacketMon", "TcpProxy\PacketMon.csproj", "{A06AFE69-255A-4655-BA9D-AABE1D6C5869}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpDivert", "SharpDivert\SharpDivert\SharpDivert.csproj", "{93516104-AEA9-4F47-8F02-C38D1E2675EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrapMechanicClient", "ScrapMechanicClient\ScrapMechanicClient.csproj", "{F90623B8-6364-4587-9169-067214D448F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,14 +39,6 @@ Global
 		{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}.Release|x64.ActiveCfg = Release|x64
 		{EEA00B7C-AB34-42E9-B13C-E2AB0A4C6BEE}.Release|x64.Build.0 = Release|x64
-		{CF9848CD-D008-417A-B038-91E3FADB69D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF9848CD-D008-417A-B038-91E3FADB69D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF9848CD-D008-417A-B038-91E3FADB69D8}.Debug|x64.ActiveCfg = Debug|x64
-		{CF9848CD-D008-417A-B038-91E3FADB69D8}.Debug|x64.Build.0 = Debug|x64
-		{CF9848CD-D008-417A-B038-91E3FADB69D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF9848CD-D008-417A-B038-91E3FADB69D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF9848CD-D008-417A-B038-91E3FADB69D8}.Release|x64.ActiveCfg = Release|x64
-		{CF9848CD-D008-417A-B038-91E3FADB69D8}.Release|x64.Build.0 = Release|x64
 		{CEF18898-70E2-4C7A-A9AE-6DAEA8D33894}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CEF18898-70E2-4C7A-A9AE-6DAEA8D33894}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEF18898-70E2-4C7A-A9AE-6DAEA8D33894}.Debug|x64.ActiveCfg = Debug|x64
@@ -71,6 +63,14 @@ Global
 		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Release|x64.ActiveCfg = Release|x64
 		{93516104-AEA9-4F47-8F02-C38D1E2675EC}.Release|x64.Build.0 = Release|x64
+		{F90623B8-6364-4587-9169-067214D448F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F90623B8-6364-4587-9169-067214D448F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F90623B8-6364-4587-9169-067214D448F6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F90623B8-6364-4587-9169-067214D448F6}.Debug|x64.Build.0 = Debug|Any CPU
+		{F90623B8-6364-4587-9169-067214D448F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F90623B8-6364-4587-9169-067214D448F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F90623B8-6364-4587-9169-067214D448F6}.Release|x64.ActiveCfg = Release|Any CPU
+		{F90623B8-6364-4587-9169-067214D448F6}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
