@@ -127,6 +127,7 @@ namespace ScrapMechanic.WebApi
                         if (!connectionTimeoutTimers.ContainsKey(cstid))
                         {
                             connectionTimeoutTimers[cstid] = new Timer(connectionTimeout, cstid, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+                            Logger.LogInfo($"Now tracking: {getNameString(cstid)}");
                             //_webhook.SendMessage($"Now tracking: {getNameString(cstid)}");
                         }
                         else if (DateTime.Now - lastConnectionAttempt < _c_timeout)
