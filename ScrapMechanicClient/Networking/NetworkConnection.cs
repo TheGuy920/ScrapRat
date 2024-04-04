@@ -130,7 +130,7 @@ namespace ScrapMechanic.Networking
             Identity = new();
             Identity.SetSteamID(sid);
 
-            // Logger.LogInfo($"Connecting to {sid}...");
+            Logger.LogInfo($"Connecting to {sid}...");
             SteamNetConnection = SteamNetworkingSockets.ConnectP2P(ref Identity, port, options.Length, options);
 
             if (!returnWaitHandle)

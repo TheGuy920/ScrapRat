@@ -1,33 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>ScrapMechanic</RootNamespace>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <NeutralLanguage>en</NeutralLanguage>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>ScrapMechanic</RootNamespace>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<PublishAot>true</PublishAot>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<NeutralLanguage>en</NeutralLanguage>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>none</DebugType>
-    <IsAotCompatible>True</IsAotCompatible>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>none</DebugType>
+		<IsAotCompatible>True</IsAotCompatible>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
-    <IsAotCompatible>True</IsAotCompatible>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+		<IsAotCompatible>True</IsAotCompatible>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Steamworks.NET" Version="20.2.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Steamworks.NET" Version="20.2.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="runtimes\linux-x64\lib\netstandard2.1\libsteam_api.so">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="runtimes\linux-x64\lib\netstandard2.1\libsteam_api.so">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

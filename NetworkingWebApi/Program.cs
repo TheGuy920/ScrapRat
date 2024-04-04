@@ -61,7 +61,7 @@ namespace ScrapMechanic.WebApi
                 var name = nameMaps[cstid];
                 ScrapMechanic.Logger.LogWarning($"Player '{name}' ({cstid}) {state}");
                 string discordid = getNameString(cstid);
-                _webhook.SendMessage($"@everyone {discordid} {state}");
+                //_webhook.SendMessage($"@everyone {discordid} {state}");
             }
 
             bool updateConnectionState(CSteamID cstid, int state, int notify)
@@ -127,7 +127,7 @@ namespace ScrapMechanic.WebApi
                         if (!connectionTimeoutTimers.ContainsKey(cstid))
                         {
                             connectionTimeoutTimers[cstid] = new Timer(connectionTimeout, cstid, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-                            _webhook.SendMessage($"Now tracking: {getNameString(cstid)}");
+                            //_webhook.SendMessage($"Now tracking: {getNameString(cstid)}");
                         }
                         else if (DateTime.Now - lastConnectionAttempt < _c_timeout)
                         {
