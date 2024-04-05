@@ -68,6 +68,9 @@ namespace ScrapMechanic.WebApi
             {
                 if (!info.IsConnectionAlive())
                     client.ConnectToUserAsync(cstid);
+
+                if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
+                    Logger.LogWarning($"Fully Connected to {getNameString(cstid)}");
             };
 
             foreach (var cstid in cstids)
