@@ -7,14 +7,15 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using static SharpDivert.WinDivert;
 
 namespace PacketMonitor
 {
     public class MonitorServer
     {
         private const int PACKET_LATENCY = 0;
-        private readonly WinDivert divert = new("" +
-            "", WinDivert.Layer.Network, 0, 0); // (udp.SrcPort > 1000 or tcp.SrcPort > 1000) // and (udp.DstPort == 8443 or tcp.DstPort == 8443 or udp.SrcPort == 8443 or tcp.SrcPort == 8443)
+        private readonly WinDivert divert = new("outbound and tcp and ((ip.SrcAddr == 127.0.0.1 and tcp.SrcPort == 42447) or (ip.SrcAddr == 127.0.0.1 and tcp.SrcPort == 42372) or (ip.SrcAddr == 127.0.0.1 and tcp.SrcPort == 42371) or (ip.SrcAddr == 127.0.0.1 and tcp.SrcPort == 42368) or (ip.SrcAddr == 127.0.0.1 and tcp.SrcPort == 42367) or (ip.SrcAddr == 127.0.0.1 and tcp.SrcPort == 39574) or (ip.SrcAddr == 127.0.0.1 and tcp.SrcPort == 39572) or (ip.SrcAddr == 45.92.61.3 and tcp.SrcPort == 42396) or (ip.SrcAddr == 0.0.0.0 and tcp.SrcPort == 9264) or (ip.SrcAddr == 0.0.0.0 and tcp.SrcPort == 27036))" +
+            "", WinDivert.Layer.Network, 0, Flag.Drop); // (udp.SrcPort > 1000 or tcp.SrcPort > 1000) // and (udp.DstPort == 8443 or tcp.DstPort == 8443 or udp.SrcPort == 8443 or tcp.SrcPort == 8443)
 
         private CancellationTokenSource tokenSource = new();
         private readonly ConcurrentDictionary<IPAddress, (int, string)> cache = [];
@@ -26,7 +27,7 @@ namespace PacketMonitor
         {
             this.ResendExecutionTimer.Elapsed += (_, _) => ResendAsync();
             this.ResendExecutionTimer.Start();
-            this.ReadTask = Task.Run(ReadAync, this.tokenSource.Token);
+            // this.ReadTask = Task.Run(ReadAync, this.tokenSource.Token);
         }
 
         public void Stop()

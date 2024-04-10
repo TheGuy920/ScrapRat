@@ -48,7 +48,7 @@ namespace ScrapMechanic
         /// <summary>
         /// Timeout for playstate detection. (30 seconds)
         /// </summary>
-        public int PlaystateTimeout { get; set; } = 30_000;
+        public int PlaystateTimeout { get; set; } = 60_000;
 
         /// <summary>
         /// Event raised when the connection information for a specific connection changes.
@@ -239,7 +239,6 @@ namespace ScrapMechanic
                     }
                     break;
             }
-
             playState.LastSteamConnectionState = Info.m_eState;
         }
     }

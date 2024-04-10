@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Threading;
 using System;
+using ScrapMechanic.Util;
 
 namespace ClientCli
 {
@@ -32,14 +33,14 @@ namespace ClientCli
 
         private static ulong[] steamids = [
             // 76561198359772034, // stood
-            76561198299556567, // theguy920
+            // 76561198299556567, // theguy920
             // 76561198422873503, // unknown
             // 76561198014346778, // Durf
             // 76561198018743729, // Fant
             // 76561198977226540, // Logic
             // 76561198318189561, // Dart frog
             // 76561198087792125, // sheggy
-            // 76561198000662213, // scrap man
+            76561198000662213, // scrap man
             // 76561198004277014, // kan
             // 76561198079775050, // kosmo
             // 76561197965646622, // moonbo
@@ -114,8 +115,8 @@ namespace ClientCli
 
                 if (_Status.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute)
                 {
-                    //SteamNetworkingSockets.SendMessageToConnection(_Connection, 0, 0, 0, out _);
-                    //SteamNetworkingSockets.FlushMessagesOnConnection(_Connection);
+                    SteamNetworkingSockets.SendMessageToConnection(_Connection, 0, 0, 0, out _);
+                    SteamNetworkingSockets.FlushMessagesOnConnection(_Connection);
                     /*
                     unsafe
                     {
@@ -130,11 +131,11 @@ namespace ClientCli
 
                 if (_Status.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                 {
-                    //SteamNetworkingSockets.SendMessageToConnection(_Connection, 0, 0, 0, out _);
+                    SteamNetworkingSockets.SendMessageToConnection(_Connection, 0, 0, 0, out _);
                     //reconnecttricks[_SteamId] = false;
                     //return;
                     //SteamNetworkingSockets.SendMessageToConnection(_Connection, 0, 0, 0, out _);
-                    unsafe
+                    /*unsafe
                     {
                         fixed (byte* p = new byte[] { 1 })
                         {
@@ -264,9 +265,7 @@ namespace ClientCli
             foreach (IntPtr pOpenThread in Threads)
             {
                 if (pOpenThread == IntPtr.Zero)
-                {
                     continue;
-                }
 
                 // Resume the thread
                 _ = ResumeThread(pOpenThread);
