@@ -208,17 +208,20 @@ namespace ScrapMechanic
                     Logger.LogError($"Connection to {steamID} is in an unknown state.");
                     break;
                 case ConnectionState.Connecting:
-                    // must hit this state before timeout
+                    if (playState.CurrentPlayState == EPlayState.Dead)
+                    {
+                        playState.CurrentPlayState = EPlayState.NotPlaying;
+                        return;
+                    }
+
+                    // starts the timeout timer
+                    Logger.LogWarning($"Timeout Timer due in: {this.PlaystateTimeout / 1000d:F3}s");
+                    playState.ConnectionTimeoutTimer!.Change(this.PlaystateTimeout, Timeout.Infinite);
+
                     if (playState.CurrentPlayState == EPlayState.NotPlaying)
                     {
                         playState.CurrentPlayState = EPlayState.Playing;
-                        Logger.LogWarning($"Timeout Timer due in: {this.PlaystateTimeout/1000d:F3}s");
-                        playState.ConnectionTimeoutTimer!.Change(this.PlaystateTimeout, Timeout.Infinite);
                         this.OnConnectionPlaystateChanged?.Invoke(steamID, EPlayState.Playing);
-                    }
-                    else if (playState.CurrentPlayState == EPlayState.Dead)
-                    {
-                        playState.CurrentPlayState = EPlayState.NotPlaying;
                     }
                     break;
                 case ConnectionState.Connected:
