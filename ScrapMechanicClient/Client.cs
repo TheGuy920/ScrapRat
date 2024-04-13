@@ -205,13 +205,14 @@ namespace ScrapMechanic
             switch (connectionState)
             {
                 case ConnectionState.None:
-                    Logger.LogWarning($"Connection to {steamID} is in an unknown state.");
+                    Logger.LogError($"Connection to {steamID} is in an unknown state.");
                     break;
                 case ConnectionState.Connecting:
                     // must hit this state before timeout
                     if (playState.CurrentPlayState == EPlayState.NotPlaying)
                     {
                         playState.CurrentPlayState = EPlayState.Playing;
+                        Logger.LogWarning($"Timeout Timer due in: {this.PlaystateTimeout/1000d:3F}s");
                         playState.ConnectionTimeoutTimer!.Change(this.PlaystateTimeout, Timeout.Infinite);
                         this.OnConnectionPlaystateChanged?.Invoke(steamID, EPlayState.Playing);
                     }
@@ -228,6 +229,7 @@ namespace ScrapMechanic
                         this.OnConnectionPlaystateChanged?.Invoke(steamID, EPlayState.Playing);
                     }
 
+                    Logger.LogWarning("Timeout Timer due in: Timeout.Infinite");
                     playState.ConnectionTimeoutTimer!.Change(Timeout.Infinite, Timeout.Infinite);
                     break;
                 case ConnectionState.Disconnected:
@@ -241,6 +243,7 @@ namespace ScrapMechanic
                         playState.CurrentPlayState = EPlayState.NotPlaying;
                     }
 
+                    Logger.LogWarning("Timeout Timer due in: Timeout.Infinite");
                     playState.ConnectionTimeoutTimer!.Change(Timeout.Infinite, Timeout.Infinite);
                     break;
             }
