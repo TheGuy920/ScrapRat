@@ -235,8 +235,8 @@ namespace ScrapMechanic
                     {
                         playState.CurrentPlayState = EPlayState.Dead;
                         this.OnConnectionPlaystateChanged?.Invoke(steamID, EPlayState.Dead);
-                        playState.ConnectionTimeoutTimer!.Change(Timeout.Infinite, Timeout.Infinite);
                     }
+                    playState.ConnectionTimeoutTimer!.Change(Timeout.Infinite, Timeout.Infinite);
                     break;
             }
             playState.LastSteamConnectionState = Info.m_eState;
