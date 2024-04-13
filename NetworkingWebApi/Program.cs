@@ -71,6 +71,8 @@ namespace ScrapMechanic.WebApi
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                     Logger.LogWarning($"Fully Connected to {getNameString(cstid)}");
+                else
+                    Logger.LogInfo($"['{getNameString(cstid)}'] Connection State -> {info.m_eState}");
             };
 
             foreach (var cstid in cstids)
