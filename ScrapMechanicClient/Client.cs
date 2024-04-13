@@ -212,7 +212,7 @@ namespace ScrapMechanic
                     if (playState.CurrentPlayState == EPlayState.NotPlaying)
                     {
                         playState.CurrentPlayState = EPlayState.Playing;
-                        Logger.LogWarning($"Timeout Timer due in: {this.PlaystateTimeout/1000d:3F}s");
+                        Logger.LogWarning($"Timeout Timer due in: {this.PlaystateTimeout/1000d:F3}s");
                         playState.ConnectionTimeoutTimer!.Change(this.PlaystateTimeout, Timeout.Infinite);
                         this.OnConnectionPlaystateChanged?.Invoke(steamID, EPlayState.Playing);
                     }
