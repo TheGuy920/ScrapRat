@@ -46,9 +46,9 @@ namespace ScrapMechanic
         public required CSteamID SteamID { get; init; }
 
         /// <summary>
-        /// Timeout for playstate detection. (120 seconds)
+        /// Timeout for playstate detection. (30 seconds)
         /// </summary>
-        public int PlaystateTimeout { get; set; } = 120_000;
+        public int PlaystateTimeout { get; set; } = 30_000;
 
         /// <summary>
         /// Event raised when the connection information for a specific connection changes.

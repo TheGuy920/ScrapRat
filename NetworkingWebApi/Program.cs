@@ -67,7 +67,7 @@ namespace ScrapMechanic.WebApi
             client.OnConnectionStatusChanged += (cstid, _, info) =>
             {
                 if (!info.IsConnectionAlive())
-                    client.ConnectToUserAsync(cstid);
+                    Task.Delay(30_000).ContinueWith(_ => client.ConnectToUserAsync(cstid));
 
                 if (info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
                     Logger.LogWarning($"Fully Connected to {getNameString(cstid)}");
