@@ -16,16 +16,14 @@ Now, if thats not your cup of tea I've got one last option for you (my personal 
 #
 Now, back to business...
 
-This repository implements the follow CWE's:
-
-- [x] [CWE-306](https://cwe.mitre.org/data/definitions/306.html) under [Player-GetConnection#L74-L76](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRat/Player/Player.cs#L74-L76)
+- [x] [CWE-306](https://cwe.mitre.org/data/definitions/306.html)
 ```csharp
 internal HSteamNetConnection GetConnection() =>
 this.hSteamNetConnection ??= (HSteamNetConnection)this.Interupt.RunCancelable(() => 
 SteamNetworkingSockets.ConnectP2P
     (ref this.NetworkingIdentity, 0, LongTimeoutOptions.Length, LongTimeoutOptions));
 ```
-With additional parameters under [LongTimeoutOptions#L137-L150](https://github.com/TheGuy920/Crashbot/blob/main/ScrapRat/Player/Player.cs#L137-L150)
+With additional parameters
 ```csharp
 private static readonly SteamNetworkingConfigValue_t[] LongTimeoutOptions = [
     new SteamNetworkingConfigValue_t
@@ -42,37 +40,35 @@ private static readonly SteamNetworkingConfigValue_t[] LongTimeoutOptions = [
     }
 ];
 ```
-- [x] [CWE-476](https://cwe.mitre.org/data/definitions/476.html) under [Blacklist#L143](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRat/Blacklist/MechanicNoMore.cs#L143)
+- [x] [CWE-476](https://cwe.mitre.org/data/definitions/476.html)
 ```csharp
 SteamNetworkingSockets.SendMessageToConnection(connection, 0, 0, 0, out long _);
 ```
-- [ ] [CWE-208](https://cwe.mitre.org/data/definitions/208.html) Comming Soon :tm: under [SkeletonKey](https://commingsoon)
+- [ ] [CWE-208](https://cwe.mitre.org/data/definitions/208.html) Comming Soon :tm:
 
-- [ ] [CWE-307](https://cwe.mitre.org/data/definitions/307.html) Comming Soon :tm: under [SkeletonKey](https://commingsoon)
+- [ ] [CWE-307](https://cwe.mitre.org/data/definitions/307.html) Comming Soon :tm:
 
 
 # Projects
 The CWE's above have been implemented in a few different and easy to use solutions. 
-* [Blacklist](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRat/Game.cs#L58)
-* [Spy Tool](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRat/Game.cs#L28)
-* [Passphrase Timing Attack](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRat/Game.cs#L88)
+* ~~[Blacklist](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRat/Game.cs#L58)~~
+* [Player Tracker](https://github.com/TheGuy920/ScrapRat/blob/main/NetworkingWebApi/Program.cs#L67-L76)
+* [Passphrase Timing Attack](https://github.com/TheGuy920/ScrapRat/blob/main/PasswordCracker/Program.cs#L9)
 
-### ScrapRatCli [-->](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRatCli/Program.cs#L88)
-A sample cli has been created demonstrating how to use the Blacklisting feature
+### NetworkingWebApi [-->](https://github.com/TheGuy920/ScrapRat/blob/main/NetworkingWebApi/Program.cs#L81)
+A sample has been created demonstrating how to initiate connections to users
 ```csharp
-foreach (ulong sid in steamids)
-    ScrapMechanic.Blacklist.Add(sid, true);
+foreach (CSteamID cstid in steamids)
+    client.ConnectToUserAsync(cstid);
 ```
 
-### ScrapRatWebApi [-->](https://github.com/TheGuy920/ScrapRat/blob/main/ScrapRatCli/Program.cs#L88)
-A sample WebApi has been created showcasing the cyber stalking capabilities
+### NetworkingWebApi [-->](https://github.com/TheGuy920/ScrapRat/blob/main/NetworkingWebApi/Program.cs#L67-L76)
+A sample has been created showcasing the cyber stalking capabilities
 ```csharp
-foreach (var steamid in PeopleToTrack)
+client.OnConnectionPlaystateChanged += delegate;
+foreach (var cstid in cstids)
 {
-    MagnifiedMechanic mech = ScrapMechanic.BigBrother.SpyOnMechanic(steamid);
-    mechanic.PlayerLoaded += _ =>
-        Console.WriteLine($"[{DateTime.Now}] Player '{mech.Name}' ({mech.SteamID}) is loaded.");
-    mechanic.OnUpdate += evnt =>
-        Console.WriteLine($"[{DateTime.Now}] Player '{mech.Name}' ({mech.SteamID}) is {evnt}");
+    client.ConnectToUserAsync(cstid);
+    Logger.LogInfo($"Now tracking: {getNameString(cstid)}");
 }
 ```
