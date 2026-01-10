@@ -72,3 +72,11 @@ foreach (var cstid in cstids)
     Logger.LogInfo($"Now tracking: {getNameString(cstid)}");
 }
 ```
+
+## Screenshots
+
+![Console](https://matthewelza.dev/assets/fard.png)
+
+![Demo 1](https://matthewelza.dev/assets/crash_demo.gif)
+
+![Demo 2](https://matthewelza.dev/assets/virus.gif)
