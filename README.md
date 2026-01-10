@@ -77,6 +77,6 @@ foreach (var cstid in cstids)
 
 ![Console](https://matthewelza.dev/assets/fard.png)
 
-![Demo 1](https://matthewelza.dev/assets/crash_demo.gif)
+![Demo 1](/crash_demo.gif)
 
-![Demo 2](https://matthewelza.dev/assets/virus.gif)
+![Demo 2](/virus.gif)
